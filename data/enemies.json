@@ -1,0 +1,29 @@
+{
+  "acidRat": {
+    "name": "산성 쥐",
+    "grade": 1,
+    "hp": 10,
+    "maxHp": 10,
+    "attack": 2,
+    "exp": 10,
+    "description": "피부가 녹아 근육이 드러난 거대한 쥐입니다. 찍찍거리는 소리가 신경을 긁습니다."
+  },
+  "starvingDrifter": {
+    "name": "굶주린 부랑자",
+    "grade": 2,
+    "hp": 30,
+    "maxHp": 30,
+    "attack": 5,
+    "exp": 25,
+    "description": "이성을 잃고 덤벼드는 사람입니다. 손에 녹슨 쇠파이프를 들고 있습니다."
+  },
+  "melter": {
+    "name": "멜터",
+    "grade": 3,
+    "hp": 50,
+    "maxHp": 50,
+    "attack": 8,
+    "exp": 80,
+    "description": "온몸이 반쯤 녹아내려 형체를 알아볼 수 없는 괴물입니다. 강력한 산성액을 뱉습니다."
+  }
+}

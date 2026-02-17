@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GREY CITY: ACCESS</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --panel-bg: #111;
+            --border-color: #333;
+            --neon-blue: #00e5ff;
+            --neon-purple: #bd00ff;
+            --text-color: #ccc;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+        }
+
+        .loginContainer {
+            width: 400px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+            padding: 2px;
+            position: relative;
+        }
+
+        /* 장식용 코너 */
+        .corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid var(--neon-blue);
+            transition: 0.3s;
+        }
+        .tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        .header {
+            background: #000;
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 5px var(--neon-blue);
+            letter-spacing: 2px;
+        }
+
+        .content {
+            padding: 0 20px 20px 20px;
+        }
+
+        /* 탭 버튼 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+        }
+
+        .tab {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #666;
+            padding: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .tab.active {
+            color: var(--neon-blue);
+            border-bottom: 2px solid var(--neon-blue);
+        }
+
+        /* 폼 스타일 */
+        input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            font-family: inherit;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 5px rgba(0, 229, 255, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--neon-blue);
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--neon-blue);
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            color: #444;
+            font-size: 12px;
+            position: relative;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 40%;
+            height: 1px;
+            background: #222;
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        .discord-btn {
+            background: #5865F2;
+            border: 1px solid #5865F2;
+            color: white;
+        }
+        .discord-btn:hover {
+            background: #4752C4;
+            color: white;
+            box-shadow: 0 0 15px #5865F2;
+        }
+
+        .msg {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 10px;
+            min-height: 15px;
+        }
+        .error { color: #ff5555; }
+        .success { color: #00ff00; }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="loginContainer">
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+
+        <div class="header">
+            <h1>GREY CITY</h1>
+            <div style="font-size: 10px; color: #666; margin-top: 5px;">ACCESS TERMINAL v2.0</div>
+        </div>
+
+        <div class="content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('login')">LOGIN</button>
+                <button class="tab" onclick="switchTab('register')">REGISTER</button>
+            </div>
+
+            <div id="loginForm">
+                <input type="text" id="l_id" placeholder="생존자 ID" autocomplete="off">
+                <input type="password" id="l_pw" placeholder="암호" autocomplete="off">
+                <button class="btn" onclick="localLogin()">SYSTEM ACCESS</button>
+            </div>
+
+            <div id="registerForm" class="hidden">
+                <input type="text" id="r_id" placeholder="등록할 ID" autocomplete="off">
+                <input type="password" id="r_pw" placeholder="등록할 암호" autocomplete="off">
+                <button class="btn" style="border-color:var(--neon-purple); color:var(--neon-purple)" onclick="localRegister()">NEW REGISTRATION</button>
+            </div>
+
+            <div id="statusMsg" class="msg"></div>
+
+            <div class="divider">OR EXTERNAL LINK</div>
+
+            <button class="btn discord-btn" onclick="location.href='/login/discord'">
+                Access via Discord
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(mode) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('statusMsg').innerText = '';
+            
+            if (mode === 'login') {
+                document.querySelector('.tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+            } else {
+                document.querySelector('.tab:nth-child(2)').classList.add('active');
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+            }
+        }
+
+        async function localLogin() {
+            const id = document.getElementById('l_id').value;
+            const pw = document.getElementById('l_pw').value;
+            const msgEl = document.getElementById('statusMsg');
+
+            if (!id || !pw) {
+                msgEl.innerText = "ID와 암호를 입력하십시오.";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/login_local', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: id, password: pw})
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    msgEl.innerText = "접속 승인. 시스템 연결 중...";
+                    msgEl.className = "msg success";
+                    setTimeout(() => window.location.reload(), 1000);
+                } else {
+                    msgEl.innerText = "오류: " + data.msg;
+                    msgEl.className = "msg error";
+                }
+            } catch (e) {
+                console.error(e);
+                msgEl.innerText = "네트워크 통신 오류.";
+                msgEl.className = "msg error";
+            }
+        }
+
+        async function localRegister() {
+            const id = document.getElementById('r_id').value;
+            const pw = document.getElementById('r_pw').value;
+            const msgEl = document.getElementById('statusMsg');
+
+            if (!id || !pw) {
+                msgEl.innerText = "등록 정보를 입력하십시오.";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: id, password: pw})
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    msgEl.innerText = "등록 완료. 로그인 탭으로 이동하십시오.";
+                    msgEl.className = "msg success";
+                    document.getElementById('r_id').value = '';
+                    document.getElementById('r_pw').value = '';
+                    setTimeout(() => switchTab('login'), 1500);
+                } else {
+                    msgEl.innerText = "등록 실패: " + data.msg;
+                    msgEl.className = "msg error";
+                }
+            } catch (e) {
+                console.error(e);
+                msgEl.innerText = "네트워크 통신 오류.";
+                msgEl.className = "msg error";
+            }
+        }
+    </script>
+</body>
+</html>

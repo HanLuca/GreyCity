@@ -1,0 +1,80 @@
+{
+  "system": {
+    "welcome": ["<span class='sys'>시스템: 7구역 생존자 네트워크 접속. 환영합니다.</span>"],
+    "revive": ["<span class='sys'>시스템: 응급 처치 가동. <span style='color:#4caf50; font-weight:bold;'>[ HP +50 ]</span></span>"],
+    "level_up": [
+      "<br><span style='color:#00e5ff; font-weight:bold; font-size:1.1em;'>🎉 LEVEL UP! ( Lv.{level} )</span><br><span style='color:#4caf50; margin-left:10px;'>[ MaxHP +10 ]</span> <span style='color:#ff9e80'>[ ATK +2 ]</span>",
+      "<br><span style='color:#00e5ff; font-weight:bold; font-size:1.1em;'>🎉 신체 능력 향상! ( Lv.{level} )</span><br><span style='color:#aaa; margin-left:10px;'>모든 상태가 회복되었습니다.</span>"
+    ]
+  },
+  "move": {
+    "success": [
+      "<br>👣 <b>{name}</b>(으)로 이동.",
+      "<br>🚶 <b>{name}</b> 진입.",
+      "<br>🏃 <b>{name}</b> 도착."
+    ],
+    "fail": [
+      "<br>❌ 이동 불가 (막힌 길)",
+      "<br>🚫 진입할 수 없는 구역입니다."
+    ]
+  },
+  "search": {
+    "enemy_found": [
+      "<br><span style='color:#ff5555; font-weight:bold;'>⚠ <b>{name}</b> 발견! 전투 개시!</span>",
+      "<br><span style='color:#ff5555; font-weight:bold;'>⚠ <b>{name}</b>(이)가 기습했습니다!</span>"
+    ],
+    "item_found": [
+      "<br>✨ <b>[{name}]</b> 발견.",
+      "<br>✨ <b>[{name}]</b> 획득."
+    ],
+    "empty": [
+      "<br>💨 아무것도 없습니다.",
+      "<br>🍂 빈털터리군요.",
+      "<br>🐀 쥐새끼 한 마리 없습니다."
+    ]
+  },
+  "item": {
+    "use_consumable": [
+      "<br>💊 <b>{name}</b> 사용 <span style='color:#4caf50; font-weight:bold;'>[ HP +{heal} ]</span>",
+      "<br>😋 섭취 완료 <span style='color:#4caf50; font-weight:bold;'>[ HP +{heal} ]</span>"
+    ],
+    "equip_weapon": [
+      "<br>⚔ <b>{name}</b> 장착 <span style='color:#ff9e80; font-weight:bold;'>[ ATK +{power} ]</span>",
+      "<br>⚔ 무기 교체 <span style='color:#ff9e80; font-weight:bold;'>[ ATK +{power} ]</span>"
+    ],
+    "already_equipped": ["<br>⚔ 이미 장착하고 있습니다."],
+    "discard": [
+      "<br>🗑 <b>{name}</b> 버림."
+    ]
+  },
+  "combat": {
+    "spawn": [
+      "<br><span style='color:#ff5555; font-weight:bold; border:1px solid #ff5555; padding:2px 5px;'>⚠ 경보</span> 전방에 <b>{name}</b> 출현!"
+    ],
+    "player_attack": [
+      "<br><span style='color:#ddd'>⚔ <b>{name}</b> 타격!</span> <span style='color:#ffca28; font-weight:bold;'>-{dmg}</span> <span style='color:#888; font-size:0.9em;'>(HP: {enemy_hp}/{enemy_max_hp})</span>",
+      "<br><span style='color:#ddd'>👊 <b>{name}</b> 적중!</span> <span style='color:#ffca28; font-weight:bold;'>-{dmg}</span> <span style='color:#888; font-size:0.9em;'>(HP: {enemy_hp}/{enemy_max_hp})</span>",
+      "<br><span style='color:#ddd'>🔪 <b>{name}</b> 베기!</span> <span style='color:#ffca28; font-weight:bold;'>-{dmg}</span> <span style='color:#888; font-size:0.9em;'>(HP: {enemy_hp}/{enemy_max_hp})</span>"
+    ],
+    "enemy_attack": [
+      "<br><span style='color:#ff8a80'>💥 <b>{name}</b>의 반격!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>",
+      "<br><span style='color:#ff8a80'>🩸 피격당했습니다!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>"
+    ],
+    "enemy_dead": [
+      "<br><span style='color:#888'>💀 <b>{name}</b> 처치.</span> <span style='color:#00e5ff; font-weight:bold;'>[ EXP +{exp} ]</span>"
+    ],
+    "run_success": [
+      "<br>🏃‍♂️ <b>도주 성공!</b> 따돌렸습니다.",
+      "<br>💨 전장에서 이탈했습니다."
+    ],
+    "run_fail": [
+      "<br>🚫 <b>도주 실패!</b> 적이 너무 빠릅니다."
+    ],
+    "run_fail_dmg": [
+      "<br><span style='color:#ff8a80'>💥 도망치다 잡혔습니다!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>"
+    ],
+    "player_dead": [
+      "<br><div style='text-align:center; color:red; font-weight:bold; margin-top:20px; font-size:1.5em;'>✝ Y O U  D I E D ✝</div>"
+    ]
+  }
+}

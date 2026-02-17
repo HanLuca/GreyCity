@@ -1,0 +1,253 @@
+/* 상단 상태바 */
+.statusBar {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    background: #111;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px; /* 텍스트 크기 증가 */
+    font-weight: bold;
+    color: var(--accent-cyan);
+}
+
+/* 게임 로그 */
+.gameLog {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-size: 15px; /* 텍스트 크기 증가 */
+    line-height: 1.6;
+    background: #0f0f0f;
+}
+
+.gameLog span.sys { color: var(--text-secondary); }
+.gameLog span.desc { 
+    color: #bbb; 
+    display: block; 
+    margin: 10px 0; 
+    font-style: italic; 
+    padding-left: 10px;
+    border-left: 2px solid #333;
+}
+
+/* 컨트롤 패널 */
+.controlPanel {
+    padding: 15px;
+    background: #111;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 버튼 그룹 컨테이너 */
+.buttonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 버튼 줄 간격 증가 */
+    width: 100%;
+}
+
+/* 1열: 이동 버튼 행 */
+.moveRow {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.moveRow button {
+    flex: 1; 
+    white-space: nowrap;
+    font-size: 14px; /* 버튼 텍스트 키움 */
+}
+
+/* 2열: 액션 버튼 행 */
+.actionRow {
+    width: 100%;
+    display: flex;
+}
+
+.actionRow button {
+    width: 100%; 
+    padding: 14px; /* 버튼 두께 증가 */
+    font-weight: bold;
+    font-size: 15px;
+    border: 1px dashed var(--accent-cyan);
+}
+
+/* 공통 버튼 스타일 */
+button {
+    background: #222;
+    color: #eee;
+    border: 1px solid #444;
+    padding: 12px 15px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: 0.2s;
+    border-radius: 4px; /* 둥글게 */
+}
+
+button:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: #333;
+}
+
+/* 미니맵 그리드 */
+.miniMapGrid {
+    display: grid;
+    grid-template-columns: repeat(5, var(--node-size));
+    grid-template-rows: repeat(5, var(--node-size));
+    gap: var(--grid-gap);
+    padding: 10px;
+    background: #000;
+    /* 미니맵 외곽선은 유지하거나 제거 선택 가능 (여기선 제거) */
+    border: none; 
+    border-radius: 4px;
+}
+
+.mapNode {
+    width: var(--node-size);
+    height: var(--node-size);
+    background: #222;
+    border: 1px solid #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px; /* 맵 글자 키움 */
+    color: #555;
+    position: relative;
+    border-radius: 2px;
+}
+
+.mapNode.current {
+    background: var(--accent-cyan);
+    color: #000;
+    font-weight: bold;
+    box-shadow: 0 0 8px var(--accent-cyan);
+    z-index: 10;
+}
+
+.mapNode.connected {
+    background: #2a2a2a;
+    border-color: #555;
+}
+
+/* [오른쪽 패널] 헤더 텍스트 */
+.panelHeader {
+    font-size: 16px; /* 크게 */
+    font-weight: bold;
+    color: var(--accent-cyan);
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+/* [오른쪽 패널] 인벤토리 아이템 */
+.invItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1a1a1a;
+    /* border 제거 */
+    border: none;
+    padding: 12px 15px; /* 패딩 넉넉하게 */
+    margin-bottom: 8px;
+    font-size: 14px; /* 글자 키움 */
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.invItem:hover {
+    background: #2a2a2a;
+    transform: translateX(3px); /* 호버 시 살짝 이동 */
+    box-shadow: -2px 0 0 var(--accent-cyan); /* 왼쪽에 살짝 포인트 */
+}
+
+.invItem span.name { color: #ddd; }
+
+.invItem span.equipped {
+    font-size: 12px;
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* 버리기 버튼 (쓰레기통) */
+.discardBtn {
+    background: transparent;
+    border: 1px solid #444;
+    color: #666;
+    font-size: 12px;
+    padding: 4px 8px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: 0.2s;
+}
+
+.discardBtn:hover {
+    background: #ff5555;
+    color: #fff;
+    border-color: #ff5555;
+}
+
+/* 빈 인벤토리 메시지 */
+.emptyMsg {
+    color: #666;
+    text-align: center;
+    padding-top: 50px;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* 시스템 정보 텍스트 */
+.systemInfo p, .systemInfo div {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #aaa;
+}
+
+/* 레벨 텍스트 */
+.levelText {
+    font-size: 18px; /* 강조 */
+    color: var(--accent-cyan);
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 229, 255, 0.3);
+}
+
+/* 경험치 바 컨테이너 */
+.expContainer {
+    width: 100%;
+    height: 10px; /* 두께 증가 */
+    background: #222;
+    margin-top: 5px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* 경험치 채우기 */
+.expFill {
+    height: 100%;
+    background: var(--accent-cyan);
+    width: 0%;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+/* 로그아웃 링크 */
+.logoutLink {
+    font-size: 12px;
+    color: #ff5555;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 5px 10px;
+    border: 1px solid #ff5555;
+    border-radius: 3px;
+    transition: 0.2s;
+    display: inline-block;
+}
+
+.logoutLink:hover {
+    background: #ff5555;
+    color: #fff;
+}

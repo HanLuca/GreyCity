@@ -1,0 +1,68 @@
+{
+  "shelter": {
+    "name": "7구역 임시 대피소",
+    "description": "두꺼운 철문이 산성비를 막아줍니다. 눅눅하지만 안전한 공기가 흐릅니다.",
+    "isSafe": true,
+    "connectedTo": ["slum_alley"],
+    "coordinates": {"x": 2, "y": 4},
+    "actions": ["rest"],
+    "searchable": true,
+    "itemChance": 0.05,
+    "spawnList": []
+  },
+  "slum_alley": {
+    "name": "빈민가 뒷골목",
+    "description": "버려진 판자촌 사이로 쥐들이 기어다닙니다. 갈림길이 나옵니다.",
+    "isSafe": false,
+    "connectedTo": ["shelter", "ruined_apt", "rusty_factory"],
+    "coordinates": {"x": 2, "y": 3},
+    "searchable": true,
+    "itemChance": 0.1,
+    "spawnRate": 0.3,
+    "spawnList": ["acidRat"]
+  },
+  "ruined_apt": {
+    "name": "반파된 아파트 단지",
+    "description": "사람이 살던 흔적이 남아있습니다. 쓸만한 물건이 있을지도 모릅니다.",
+    "isSafe": false,
+    "connectedTo": ["slum_alley", "central_hospital"],
+    "coordinates": {"x": 1, "y": 3},
+    "searchable": true,
+    "itemChance": 0.25,
+    "spawnRate": 0.4,
+    "spawnList": ["acidRat", "starvingDrifter"]
+  },
+  "rusty_factory": {
+    "name": "녹슨 철공소",
+    "description": "날카로운 쇠붙이들이 널려 있습니다. 무기를 구하기 좋아 보입니다.",
+    "isSafe": false,
+    "connectedTo": ["slum_alley", "central_plaza"],
+    "coordinates": {"x": 3, "y": 3},
+    "searchable": true,
+    "itemChance": 0.2,
+    "spawnRate": 0.5,
+    "spawnList": ["starvingDrifter"]
+  },
+  "central_hospital": {
+    "name": "제3병원 로비",
+    "description": "소독약 냄새와 피비린내가 섞여 있습니다. 귀한 약품이 남아있을까요?",
+    "isSafe": false,
+    "connectedTo": ["ruined_apt", "central_plaza"],
+    "coordinates": {"x": 1, "y": 2},
+    "searchable": true,
+    "itemChance": 0.15,
+    "spawnRate": 0.6,
+    "spawnList": ["starvingDrifter", "melter"]
+  },
+  "central_plaza": {
+    "name": "중앙 광장 (폐허)",
+    "description": "과거 번화가였던 곳입니다. 지금은 멜터들의 소굴이 되었습니다.",
+    "isSafe": false,
+    "connectedTo": ["rusty_factory", "central_hospital"],
+    "coordinates": {"x": 2, "y": 2},
+    "searchable": true,
+    "itemChance": 0.3,
+    "spawnRate": 0.7,
+    "spawnList": ["melter"]
+  }
+}

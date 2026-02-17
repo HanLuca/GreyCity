@@ -1,0 +1,62 @@
+/* layout.css에서 크기를 제어하므로 여기서는 스타일만 지정 */
+.inventoryContainer {
+    /* flex, height 관련 설정 제거 */
+    background: #0a0a0a;
+    border: 1px solid #333;
+    padding: 5px;
+    /* margin-bottom은 layout.css에서 처리 */
+}
+
+.invItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #222;
+    border: 1px solid #444;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.invItem:hover {
+    border-color: var(--accent-cyan);
+    background: #2a2a2a;
+    transform: translateX(2px);
+}
+
+.invItem span.name { color: #eee; }
+
+.invItem span.equipped {
+    color: var(--accent-cyan);
+    font-weight: bold;
+    font-size: 10px;
+    border: 1px solid var(--accent-cyan);
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.discardBtn {
+    background: transparent;
+    border: 1px solid #555;
+    color: #ff5555;
+    font-size: 12px;
+    padding: 2px 6px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.discardBtn:hover {
+    background: #ff5555;
+    color: white;
+}
+
+.emptyMsg {
+    color: #555;
+    text-align: center;
+    padding-top: 40px; /* 중앙 정렬 느낌 */
+    font-style: italic;
+    font-size: 12px;
+}
