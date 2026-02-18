@@ -13,54 +13,86 @@
                 <div class="statusItem">HP: <span id="hpVal">--</span> / <span id="maxHpVal">--</span></div>
                 <div class="statusItem"><span id="locName">System Init...</span></div>
             </header>
-            
-            <div id="gameLog" class="gameLog">
-                </div>
-            
-            <div class="controlPanel">
-                <div id="actionButtons" class="buttonGroup">
-                    </div>
-            </div>
+            <div id="gameLog" class="gameLog"></div>
+            <div class="controlPanel"><div id="actionButtons" class="buttonGroup"></div></div>
         </div>
 
         <div class="sidePanel">
-            
-            <div>
-                <div class="panelHeader">:: NAVIGATION ::</div>
-                <div class="mapWrapper">
-                    <div id="miniMap" class="miniMapGrid"></div>
-                </div>
-            </div>
-
+            <div><div class="panelHeader">:: NAVIGATION ::</div><div class="mapWrapper"><div id="miniMap" class="miniMapGrid"></div></div></div>
             <div style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
-                <div class="panelHeader">:: INVENTORY ::</div>
-                <div id="inventoryList" class="inventoryContainer">
-                    <div class="emptyMsg">가방이 비었습니다.</div>
+                <div class="panelHeader" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>:: INVENTORY ::</span>
+                    <button id="openArchiveBtn" style="padding:4px 10px; font-size:11px; border:1px solid #555; background:#222; color:#ccc; cursor:pointer; border-radius:3px; font-weight:bold;">📜 ARCHIVE</button>
                 </div>
+                <div id="inventoryList" class="inventoryContainer"><div class="emptyMsg">가방이 비었습니다.</div></div>
             </div>
-
             <div class="systemInfo">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end;">
                     <p style="margin:0;">USER: <span style="color:var(--accent-cyan); font-weight:bold;">{{ username }}</span></p>
                     <span class="levelText">LV.<span id="levelVal">1</span></span>
                 </div>
-                
-                <div class="expContainer">
-                    <div id="expBar" class="expFill"></div>
+                <div class="expContainer"><div id="expBar" class="expFill"></div></div>
+                <div style="text-align:right; font-size:12px; color:#888; margin-top:5px;">EXP: <span id="expVal">0</span> / <span id="maxExpVal">100</span></div>
+                <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                    <p style="margin:0;">ATK: <span id="atkVal" style="color:var(--accent-red); font-size:16px;">10</span></p>
+                    <p style="margin:0;">🫀 <span id="fragVal" style="color:#ff0080; font-weight:bold;">0</span></p>
                 </div>
-                <div style="text-align:right; font-size:12px; color:#888; margin-top:5px;">
-                    EXP: <span id="expVal">0</span> / <span id="maxExpVal">100</span>
-                </div>
-
-                <p style="margin-top:10px;">ATK: <span id="atkVal" style="color:var(--accent-red); font-size:16px;">10</span></p>
-                
-                <div style="margin-top: 15px; text-align: right;">
-                    <a href="/logout" class="logoutLink">[ SYSTEM LOGOUT ]</a>
-                </div>
+                <div style="margin-top: 15px; text-align: right;"><a href="/logout" class="logoutLink">[ SYSTEM LOGOUT ]</a></div>
             </div>
         </div>
     </div>
 
-    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <div id="archiveModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('archiveModal').style.display='none'">&times;</span>
+            <h2 style="color:var(--accent-cyan); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📂 SURVIVAL LOGS</h2>
+            <div id="archiveList" style="max-height:400px; overflow-y:auto; padding-right:5px;"></div>
+        </div>
+    </div>
+
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('itemModal').style.display='none'">&times;</span>
+            <div class="item-header"><span id="modalItemName" class="item-name"></span><span id="modalItemType" class="item-type"></span></div>
+            <div id="modalItemDesc" class="item-desc"></div>
+            <div id="modalItemStat" class="item-stat"></div>
+            <div class="modal-actions"><button id="modalBtnUse" class="btn-use">사용하기</button><button id="modalBtnDiscard" class="btn-discard">버리기</button></div>
+        </div>
+    </div>
+
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="document.getElementById('locationModal').style.display='none'">&times;</span>
+            <div class="loc-header">
+                <div class="loc-header-top">
+                    <span id="modalLocName" class="loc-title">장소 이름</span>
+                </div>
+                <div class="loc-meta">
+                    <span id="modalLocCoord" class="loc-coord">X:0 Y:0</span>
+                    <span id="modalLocStatus"></span>
+                </div>
+            </div>
+            <div id="modalLocDesc" class="loc-desc">설명</div>
+            <div id="modalLocInfo"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Main } from "{{ url_for('static', filename='js/main.js') }}";
+        
+        window.onclick = (event) => {
+            const archiveModal = document.getElementById('archiveModal');
+            const itemModal = document.getElementById('itemModal');
+            const locationModal = document.getElementById('locationModal');
+            if (event.target == archiveModal) archiveModal.style.display = "none";
+            if (event.target == itemModal) itemModal.style.display = "none";
+            if (event.target == locationModal) locationModal.style.display = "none";
+        };
+
+        const openBtn = document.getElementById('openArchiveBtn');
+        if (openBtn) {
+            openBtn.onclick = () => document.getElementById('archiveModal').style.display = "block";
+        }
+    </script>
 </body>
 </html>

@@ -1,0 +1,32 @@
+{
+    "note_janitor_diary": {
+        "title": "낡은 당직실 일기",
+        "content": "2025년 12월 14일. 지하상가 셔터를 내렸다. 밖은 이미 아수라장이지만 여긴 아직 조용하다. 역무실 녀석들이 지하 3층 통로에 대해 속닥거리는 걸 들었다. 통제구역 카드키는 역무실 금고에 보관한다던데...",
+        "dropLoc": "janitor_room",
+        "chance": 1.0
+    },
+    "note_station_memo": {
+        "title": "역무원 사무실 메모",
+        "content": "경고: 배전반실(Utility Room)의 전압이 불안정함. 최근 지하 3층 터널 쪽에서 이상한 긁는 소리가 들린다는 보고가 있음. 조사팀은 반드시 무장 후 진입할 것. 관리자 카드는 비상시를 대비해 상시 휴대해야 함.",
+        "dropLoc": "station_office",
+        "chance": 1.0
+    },
+    "note_vending_receipt": {
+        "title": "구겨진 영수증",
+        "content": "배고파... 자판기도 다 털렸어. 화장실 쪽에 숨어있던 사람들은 어떻게 됐을까? 거기서 비명소리가 들린 지 벌써 이틀째다. 나도 곧 죽겠지.",
+        "dropLoc": "vending_area",
+        "chance": 0.5
+    },
+    "note_blood_letter": {
+        "title": "피 묻은 편지",
+        "content": "엄마, 난 선로 아래 통제구역에 갇혔어. 여기엔 나 말고 다른 것들이 있어. 그것들은 인간의 목소리를 흉내 내. 절대 문을 열어주면 안 돼. 카드키를 가진 사람이 와도...",
+        "dropLoc": "dark_tunnel",
+        "chance": 0.3
+    },
+    "note_experiment_log": {
+        "title": "기밀 실험 기록 #09",
+        "content": "프로토타입 X의 활성화 성공. 지하철역은 완벽한 격리 장소가 되었다. 지상의 생존자들은 이곳이 단순한 대피소인 줄 알겠지. 하지만 이곳은 '심장 조각'을 배양하기 위한 거대한 사육장일 뿐이다.",
+        "dropLoc": "secret_bunker",
+        "chance": 0.2
+    }
+}

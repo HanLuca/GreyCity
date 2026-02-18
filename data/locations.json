@@ -1,68 +1,192 @@
 {
-  "shelter": {
-    "name": "7구역 임시 대피소",
-    "description": "두꺼운 철문이 산성비를 막아줍니다. 눅눅하지만 안전한 공기가 흐릅니다.",
-    "isSafe": true,
-    "connectedTo": ["slum_alley"],
-    "coordinates": {"x": 2, "y": 4},
-    "actions": ["rest"],
-    "searchable": true,
-    "itemChance": 0.05,
-    "spawnList": []
-  },
-  "slum_alley": {
-    "name": "빈민가 뒷골목",
-    "description": "버려진 판자촌 사이로 쥐들이 기어다닙니다. 갈림길이 나옵니다.",
-    "isSafe": false,
-    "connectedTo": ["shelter", "ruined_apt", "rusty_factory"],
-    "coordinates": {"x": 2, "y": 3},
-    "searchable": true,
-    "itemChance": 0.1,
-    "spawnRate": 0.3,
-    "spawnList": ["acidRat"]
-  },
-  "ruined_apt": {
-    "name": "반파된 아파트 단지",
-    "description": "사람이 살던 흔적이 남아있습니다. 쓸만한 물건이 있을지도 모릅니다.",
-    "isSafe": false,
-    "connectedTo": ["slum_alley", "central_hospital"],
-    "coordinates": {"x": 1, "y": 3},
-    "searchable": true,
-    "itemChance": 0.25,
-    "spawnRate": 0.4,
-    "spawnList": ["acidRat", "starvingDrifter"]
-  },
-  "rusty_factory": {
-    "name": "녹슨 철공소",
-    "description": "날카로운 쇠붙이들이 널려 있습니다. 무기를 구하기 좋아 보입니다.",
-    "isSafe": false,
-    "connectedTo": ["slum_alley", "central_plaza"],
-    "coordinates": {"x": 3, "y": 3},
-    "searchable": true,
-    "itemChance": 0.2,
-    "spawnRate": 0.5,
-    "spawnList": ["starvingDrifter"]
-  },
-  "central_hospital": {
-    "name": "제3병원 로비",
-    "description": "소독약 냄새와 피비린내가 섞여 있습니다. 귀한 약품이 남아있을까요?",
-    "isSafe": false,
-    "connectedTo": ["ruined_apt", "central_plaza"],
-    "coordinates": {"x": 1, "y": 2},
-    "searchable": true,
-    "itemChance": 0.15,
-    "spawnRate": 0.6,
-    "spawnList": ["starvingDrifter", "melter"]
-  },
-  "central_plaza": {
-    "name": "중앙 광장 (폐허)",
-    "description": "과거 번화가였던 곳입니다. 지금은 멜터들의 소굴이 되었습니다.",
-    "isSafe": false,
-    "connectedTo": ["rusty_factory", "central_hospital"],
-    "coordinates": {"x": 2, "y": 2},
-    "searchable": true,
-    "itemChance": 0.3,
-    "spawnRate": 0.7,
-    "spawnList": ["melter"]
-  }
+    "janitor_room": {
+        "name": "낡은 당직실",
+        "description": "지하상가 구석에 있는 당직실입니다. 문을 잠글 수 있어 안전합니다.",
+        "dangerLevel": "SAFE",
+        "coordinates": {
+            "x": 2,
+            "y": 4
+        },
+        "connectedTo": [
+            "underground_mall",
+            "secret_bunker"
+        ],
+        "searchable": false,
+        "itemChance": 0
+    },
+    "underground_mall": {
+        "name": "지하상가 중앙",
+        "description": "깨진 유리창과 마네킹들이 널려있습니다. 서쪽은 화장실, 동쪽은 역무실, 남쪽은 개찰구입니다.",
+        "dangerLevel": "NORMAL",
+        "coordinates": {
+            "x": 2,
+            "y": 3
+        },
+        "connectedTo": [
+            "janitor_room",
+            "public_restroom",
+            "station_office",
+            "ticket_gates"
+        ],
+        "searchable": true,
+        "itemChance": 0.3,
+        "spawnRate": 0.3,
+        "spawnList": [
+            "giantRat"
+        ]
+    },
+    "public_restroom": {
+        "name": "훼손된 화장실",
+        "description": "지하상가 서쪽 끝입니다. 악취가 진동합니다.",
+        "dangerLevel": "NORMAL",
+        "coordinates": {
+            "x": 1,
+            "y": 3
+        },
+        "connectedTo": [
+            "underground_mall"
+        ],
+        "searchable": true,
+        "itemChance": 0.4,
+        "spawnRate": 0.4,
+        "spawnList": [
+            "acidRat"
+        ]
+    },
+    "station_office": {
+        "name": "역무원 사무실",
+        "description": "지하상가 동쪽입니다. 서류들이 흩날립니다. 중요한 열쇠가 있을지도 모릅니다.",
+        "dangerLevel": "NORMAL",
+        "coordinates": {
+            "x": 3,
+            "y": 3
+        },
+        "connectedTo": [
+            "underground_mall"
+        ],
+        "searchable": true,
+        "itemChance": 0.2,
+        "spawnRate": 0.4,
+        "spawnList": [
+            "starvingDrifter"
+        ]
+    },
+    "ticket_gates": {
+        "name": "지하철 개찰구",
+        "description": "지하 2층으로 내려가는 입구입니다. 붉은 비상등만이 깜빡입니다.",
+        "dangerLevel": "NORMAL",
+        "coordinates": {
+            "x": 2,
+            "y": 2
+        },
+        "connectedTo": [
+            "underground_mall",
+            "subway_platform"
+        ],
+        "searchable": true,
+        "itemChance": 0.1,
+        "spawnRate": 0.5,
+        "spawnList": [
+            "starvingDrifter",
+            "patient"
+        ]
+    },
+    "subway_platform": {
+        "name": "중앙 승강장",
+        "description": "스크린도어가 모두 부서져 있습니다. 선로에서 기괴한 울음소리가 들립니다.",
+        "dangerLevel": "DANGER",
+        "coordinates": {
+            "x": 2,
+            "y": 1
+        },
+        "connectedTo": [
+            "ticket_gates",
+            "vending_area",
+            "utility_room",
+            "dark_tunnel"
+        ],
+        "searchable": true,
+        "itemChance": 0.1,
+        "spawnRate": 0.6,
+        "spawnList": [
+            "patient",
+            "melter"
+        ]
+    },
+    "vending_area": {
+        "name": "자판기 쉼터",
+        "description": "승강장 서쪽 구석입니다. 부서진 자판기 틈새에 무언가 보입니다.",
+        "dangerLevel": "NORMAL",
+        "coordinates": {
+            "x": 1,
+            "y": 1
+        },
+        "connectedTo": [
+            "subway_platform"
+        ],
+        "searchable": true,
+        "itemChance": 0.5,
+        "spawnRate": 0.3,
+        "spawnList": [
+            "giantRat"
+        ]
+    },
+    "utility_room": {
+        "name": "배전반실",
+        "description": "승강장 동쪽 끝, 관계자 외 출입금지 구역입니다. 전기 스파크가 튀고 있습니다.",
+        "dangerLevel": "DANGER",
+        "coordinates": {
+            "x": 3,
+            "y": 1
+        },
+        "connectedTo": [
+            "subway_platform"
+        ],
+        "searchable": true,
+        "itemChance": 0.2,
+        "spawnRate": 0.5,
+        "spawnList": [
+            "screamer"
+        ]
+    },
+    "dark_tunnel": {
+        "name": "어둠 속 선로",
+        "description": "승강장 아래 깊은 터널입니다. 칠흑 같은 어둠 속에 거대한 철문이 보입니다.",
+        "dangerLevel": "DANGER",
+        "coordinates": {
+            "x": 2,
+            "y": 0
+        },
+        "connectedTo": [
+            "subway_platform",
+            "secret_bunker"
+        ],
+        "searchable": true,
+        "itemChance": 0.1,
+        "spawnRate": 0.8,
+        "spawnList": [
+            "melter",
+            "screamer"
+        ]
+    },
+    "secret_bunker": {
+        "name": "비밀 통제구역",
+        "description": "[접근 제한 구역] 지하철 공사 도중 발견된 미지의 공간입니다.",
+        "dangerLevel": "DANGER",
+        "coordinates": {
+            "x": 2,
+            "y": -1
+        },
+        "connectedTo": [
+            "dark_tunnel",
+            "janitor_room"
+        ],
+        "requiresKey": "admin_card",
+        "searchable": true,
+        "itemChance": 0.3,
+        "spawnRate": 1.0,
+        "spawnList": [
+            "prototype_x"
+        ]
+    }
 }

@@ -8,9 +8,11 @@ class GameEngine:
         self.items = self.loadJson('items.json')
         self.enemies = self.loadJson('enemies.json')
         self.systemMsgs = self.loadJson('system.json')
+        self.lore = self.loadJson('lore.json')
 
     def loadJson(self, fileName):
         path = os.path.join('data', fileName)
+        if not os.path.exists(path): return {}
         with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
@@ -29,8 +31,11 @@ class GameEngine:
             "level": 1, "exp": 0, "maxExp": 100,
             "hp": 100, "maxHp": 100,
             "attack": 10, "defense": 0,
-            "currentLocation": "shelter",
-            "inventory": [], 
+            "heart_fragments": 0,
+            "currentLocation": "janitor_room", 
+            "inventory": [],
+            "archive": [],
+            "unlocked_places": [],
             "equipment": {"weapon": None, "armor": None},
             "logs": [welcome_msg],
             "status": "normal",
@@ -38,24 +43,22 @@ class GameEngine:
         }
 
     def validateUserData(self, userData):
+        if 'heart_fragments' not in userData: userData['heart_fragments'] = 0
+        if 'unlocked_places' not in userData: userData['unlocked_places'] = []
+        if 'archive' not in userData: userData['archive'] = []
+            
         defaults = {
-            "level": 1, "exp": 0, "maxExp": 100,
-            "hp": 100, "maxHp": 100,
-            "attack": 10, "defense": 0,
-            "currentLocation": "shelter",
-            "inventory": [],
-            "equipment": {"weapon": None, "armor": None},
-            "logs": [],
-            "status": "normal",
-            "combatData": None
+            "level": 1, "exp": 0, "maxExp": 100, "hp": 100, "maxHp": 100,
+            "attack": 10, "defense": 0, "currentLocation": "janitor_room",
+            "inventory": [], "archive": [], "unlocked_places": [],
+            "equipment": {"weapon": None, "armor": None}, "logs": [],
+            "status": "normal", "combatData": None
         }
         for key, val in defaults.items():
-            if key not in userData:
-                userData[key] = val
+            if key not in userData: userData[key] = val
         
         if userData['currentLocation'] not in self.locations:
-             userData['currentLocation'] = "shelter"
-             
+             userData['currentLocation'] = "janitor_room"
         return userData
 
     def getTotalStats(self, userData):
@@ -71,11 +74,9 @@ class GameEngine:
             userData['exp'] -= userData['maxExp']
             userData['level'] += 1
             userData['maxExp'] = int(userData['maxExp'] * 1.2)
-            
             userData['maxHp'] += 10
             userData['hp'] = userData['maxHp']
             userData['attack'] += 2
-            
             msg = self.getMsg('system', 'level_up', level=userData['level'])
             self.addLog(userData, msg)
             leveled_up = True
@@ -84,191 +85,172 @@ class GameEngine:
     def getGameResponse(self, userData):
         userData = self.validateUserData(userData)
         currentLocData = self.locations[userData['currentLocation']]
+        connectedInfo = [{"id": locId, "name": self.locations[locId]['name']} for locId in currentLocData.get('connectedTo', []) if locId in self.locations]
         
-        connectedInfo = []
-        for locId in currentLocData.get('connectedTo', []):
-            if locId in self.locations:
-                connectedInfo.append({
-                    "id": locId,
-                    "name": self.locations[locId]['name']
-                })
-        
+        archive_details = []
+        for note_id in userData.get('archive', []):
+            if note_id in self.lore:
+                note = self.lore[note_id]
+                archive_details.append({"id": note_id, "title": note['title'], "content": note['content']})
+
         return {
-            "userData": userData,
-            "stats": self.getTotalStats(userData),
-            "locationInfo": currentLocData,
-            "connectedLocations": connectedInfo,
-            "allLocations": self.locations,
-            "itemData": self.items 
+            "userData": userData, "stats": self.getTotalStats(userData),
+            "locationInfo": currentLocData, "connectedLocations": connectedInfo,
+            "allLocations": self.locations, "itemData": self.items,
+            "enemyData": self.enemies, "archiveData": archive_details
         }
 
     def processAction(self, userData, actionType, target):
         userData = self.validateUserData(userData)
-
-        if actionType == "useItem":
-            return self.processItemUsage(userData, target)
-        
-        if actionType == "discardItem":
-            return self.processItemDiscard(userData, target)
+        if actionType == "useItem": return self.processItemUsage(userData, target)
+        if actionType == "discardItem": return self.processItemDiscard(userData, target)
 
         if userData['status'] == 'dead':
             if actionType == 'revive':
-                userData['hp'] = 50
-                userData['status'] = 'normal'
-                userData['exp'] = 0
-                msg = self.getMsg('system', 'revive')
-                userData['logs'].append(msg)
+                required_fragments = userData['level'] * 5
+                if target == 'fragment':
+                    if userData['heart_fragments'] >= required_fragments:
+                        userData['heart_fragments'] -= required_fragments
+                        self.executeRevive(userData)
+                    else: self.addLog(userData, self.getMsg('error', 'no_fragment', count=required_fragments))
+                elif target == 'kit':
+                    if 'first_aid_kit' in userData['inventory']:
+                        userData['inventory'].remove('first_aid_kit')
+                        self.executeRevive(userData)
+                    else: self.addLog(userData, self.getMsg('error', 'no_kit'))
             return self.getGameResponse(userData)
 
-        if userData['status'] == 'combat':
-            return self.processCombat(userData, actionType, target)
+        if userData['status'] == 'combat': return self.processCombat(userData, actionType, target)
 
         currentLocData = self.locations[userData['currentLocation']]
         message = ""
 
         if actionType == "move":
             if target in currentLocData['connectedTo']:
-                userData['currentLocation'] = target
                 newLoc = self.locations[target]
-                message = self.getMsg('move', 'success', name=newLoc['name'])
-                
-                if not newLoc.get('isSafe') and 'spawnList' in newLoc:
-                    if random.random() < newLoc.get('spawnRate', 0):
-                        enemyId = random.choice(newLoc['spawnList'])
-                        self.startCombat(userData, enemyId)
-                        message += self.getMsg('combat', 'spawn', name=self.enemies[enemyId]['name'])
-            else:
-                message = self.getMsg('move', 'fail')
+                can_enter = True
+                requiredKey = newLoc.get('requiresKey')
+                if requiredKey:
+                    if target in userData['unlocked_places']: can_enter = True
+                    else:
+                        if requiredKey in userData['inventory']:
+                            userData['unlocked_places'].append(target)
+                            userData['inventory'].remove(requiredKey)
+                            message += self.getMsg('info', 'unlock_door', keyName=self.items[requiredKey]['name'])
+                            can_enter = True
+                        else:
+                            message = self.getMsg('error', 'locked', keyName=self.items[requiredKey]['name'])
+                            can_enter = False
+
+                if can_enter:
+                    userData['currentLocation'] = target
+                    message += self.getMsg('move', 'success', name=newLoc['name'])
+                    if newLoc.get('dangerLevel') != 'SAFE' and 'spawnList' in newLoc:
+                        if random.random() < newLoc.get('spawnRate', 0):
+                            enemyId = random.choice(newLoc['spawnList'])
+                            self.startCombat(userData, enemyId)
+                            message += self.getMsg('warning', 'boss_appear', name=self.enemies[enemyId]['name']) if self.enemies[enemyId].get('grade', 1) >= 4 else self.getMsg('combat', 'spawn', name=self.enemies[enemyId]['name'])
+            else: message = self.getMsg('move', 'fail')
 
         elif actionType == "search":
             if currentLocData.get('searchable', False):
-                if 'spawnList' in currentLocData and random.random() < 0.2:
+                event_happened = False
+                if not event_happened and random.random() < 0.01:
+                    amount = random.randint(1, 3)
+                    userData['heart_fragments'] += amount
+                    message = self.getMsg('search', 'fragment_found', amount=amount)
+                    event_happened = True
+                if not event_happened and 'spawnList' in currentLocData and random.random() < 0.2:
                     enemyId = random.choice(currentLocData['spawnList'])
                     self.startCombat(userData, enemyId)
                     message = self.getMsg('search', 'enemy_found', name=self.enemies[enemyId]['name'])
-                
-                elif random.random() < currentLocData.get('itemChance', 0):
-                    all_item_keys = list(self.items.keys())
-                    weights = [self.items[k].get('dropRate', 1.0) for k in all_item_keys]
-                    foundItemKey = random.choices(all_item_keys, weights=weights, k=1)[0]
-                    item = self.items[foundItemKey]
+                    event_happened = True
+                if not event_happened:
+                    for note_id, note in self.lore.items():
+                        if note.get('dropLoc') == userData['currentLocation'] and note_id not in userData['archive']:
+                            if random.random() < note.get('chance', 0):
+                                userData['archive'].append(note_id)
+                                message = self.getMsg('search', 'note_found', title=note['title'])
+                                event_happened = True
+                                break
+                if not event_happened and random.random() < currentLocData.get('itemChance', 0):
+                    valid_items = [k for k, v in self.items.items() if v['type'] != 'currency']
+                    weights = [self.items[k].get('dropRate', 1.0) for k in valid_items]
+                    foundItemKey = random.choices(valid_items, weights=weights, k=1)[0]
                     userData['inventory'].append(foundItemKey)
-                    message = self.getMsg('search', 'item_found', name=item['name'])
-                else:
-                    message = self.getMsg('search', 'empty')
+                    message = self.getMsg('search', 'item_found', name=self.items[foundItemKey]['name'])
+                    event_happened = True
+                if not event_happened: message = self.getMsg('search', 'empty')
 
         self.addLog(userData, message)
         return self.getGameResponse(userData)
 
     def processItemUsage(self, userData, itemKey):
-        if itemKey not in userData['inventory']:
-            return self.getGameResponse(userData)
-
-        item = self.items[itemKey]
-        msg = ""
-
-        if item['type'] == 'consumable':
-            heal = item.get('heal', 0)
-            userData['hp'] = min(userData['hp'] + heal, userData['maxHp'])
+        if itemKey not in userData['inventory']: return self.getGameResponse(userData)
+        item, msg = self.items[itemKey], ""
+        if itemKey == 'first_aid_kit':
+             userData['hp'] = min(userData['hp'] + item.get('heal', 80), userData['maxHp'])
+             userData['inventory'].remove(itemKey)
+             msg = self.getMsg('item', 'use_first_aid', heal=item.get('heal', 80))
+        elif item['type'] == 'consumable':
+            userData['hp'] = min(userData['hp'] + item.get('heal', 0), userData['maxHp'])
             userData['inventory'].remove(itemKey)
-            msg = self.getMsg('item', 'use_consumable', name=item['name'], heal=heal)
-
+            msg = self.getMsg('item', 'use_consumable', name=item['name'], heal=item.get('heal', 0))
         elif item['type'] == 'weapon':
             currentWeapon = userData['equipment']['weapon']
-            if currentWeapon == itemKey:
-                msg = self.getMsg('item', 'already_equipped')
+            if currentWeapon == itemKey: msg = self.getMsg('item', 'already_equipped')
             else:
-                if currentWeapon: 
-                    userData['inventory'].append(currentWeapon)
-                
-                userData['equipment']['weapon'] = itemKey
+                if currentWeapon: userData['inventory'].append(currentWeapon)
+                userData['equipment']['weapon'], msg = itemKey, self.getMsg('item', 'equip_weapon', name=item['name'], power=item['power'])
                 userData['inventory'].remove(itemKey)
-                msg = self.getMsg('item', 'equip_weapon', name=item['name'], power=item['power'])
-
+        elif item['type'] == 'key': msg = self.getMsg('info', 'key_desc', name=item['name'])
         self.addLog(userData, msg)
         return self.getGameResponse(userData)
 
     def processItemDiscard(self, userData, itemKey):
-        if itemKey not in userData['inventory']:
-            return self.getGameResponse(userData)
-
-        item = self.items[itemKey]
-        userData['inventory'].remove(itemKey)
-        msg = self.getMsg('item', 'discard', name=item['name'])
-        
-        self.addLog(userData, msg)
+        if itemKey in userData['inventory']:
+            msg = self.getMsg('item', 'discard', name=self.items[itemKey]['name'])
+            userData['inventory'].remove(itemKey)
+            self.addLog(userData, msg)
         return self.getGameResponse(userData)
 
+    def executeRevive(self, userData):
+        userData['hp'], userData['status'] = int(userData['maxHp'] * 0.8), 'normal'
+        self.addLog(userData, self.getMsg('info', 'revive_success', hp=userData['hp']))
+
     def startCombat(self, userData, enemyId):
-        enemyTemplate = self.enemies[enemyId]
-        userData['status'] = 'combat'
-        userData['combatData'] = {
-            "id": enemyId,
-            "name": enemyTemplate['name'],
-            "hp": enemyTemplate['hp'],
-            "maxHp": enemyTemplate['maxHp'],
-            "attack": enemyTemplate['attack']
-        }
+        e = self.enemies[enemyId]
+        userData['status'], userData['combatData'] = 'combat', {"id": enemyId, "name": e['name'], "hp": e['hp'], "maxHp": e['maxHp'], "attack": e['attack']}
 
-    # [수정] 전투 메시지에 enemy_hp, enemy_max_hp 전달
     def processCombat(self, userData, actionType, target):
-        enemy = userData['combatData']
-        message = ""
-
+        enemy, message = userData['combatData'], ""
         if actionType == "attack":
-            stats = self.getTotalStats(userData)
-            atk = stats['attack']
-            dmg = random.randint(int(atk * 0.8), int(atk * 1.2))
-            
-            # 데미지 적용
+            dmg = random.randint(int(self.getTotalStats(userData)['attack'] * 0.8), int(self.getTotalStats(userData)['attack'] * 1.2))
             enemy['hp'] -= dmg
-            
-            # 메시지 생성 (체력은 0 밑으로 내려가지 않게 표시용 변수 사용)
-            display_hp = max(0, enemy['hp'])
-            
-            message = self.getMsg('combat', 'player_attack', 
-                                  name=enemy['name'], 
-                                  dmg=dmg,
-                                  enemy_hp=display_hp,
-                                  enemy_max_hp=enemy['maxHp'])
-
+            message = self.getMsg('combat', 'player_attack', name=enemy['name'], dmg=dmg, enemy_hp=max(0, enemy['hp']), enemy_max_hp=enemy['maxHp'])
             if enemy['hp'] <= 0:
-                userData['status'] = 'normal'
-                userData['combatData'] = None
+                userData['status'], userData['combatData'] = 'normal', None
                 exp = self.enemies[enemy['id']].get('exp', 0)
                 userData['exp'] += exp
-                message += self.getMsg('combat', 'enemy_dead', name=enemy['name'], exp=exp)
-                
+                frag = random.randint(1, 3) + (random.randint(2, 5) if self.enemies[enemy['id']].get('grade', 1) >= 3 else 0)
+                userData['heart_fragments'] += frag
+                message += self.getMsg('combat', 'enemy_dead', name=enemy['name'], exp=exp) + self.getMsg('combat', 'fragment_drop', count=frag)
                 self.checkLevelUp(userData)
-                self.addLog(userData, message)
-                return self.getGameResponse(userData)
-
-            enemyAtk = enemy['attack']
-            enemyDmg = random.randint(int(enemyAtk * 0.8), int(enemyAtk * 1.2))
-            userData['hp'] -= enemyDmg
-            message += self.getMsg('combat', 'enemy_attack', name=enemy['name'], dmg=enemyDmg)
-
-        elif actionType == "run":
-            if random.random() > 0.4:
-                userData['status'] = 'normal'
-                userData['combatData'] = None
-                message = self.getMsg('combat', 'run_success')
             else:
-                message = self.getMsg('combat', 'run_fail')
-                enemyDmg = random.randint(5, 10)
-                userData['hp'] -= enemyDmg
-                message += self.getMsg('combat', 'run_fail_dmg', dmg=enemyDmg)
-
-        if userData['hp'] <= 0:
-            userData['hp'] = 0
-            userData['status'] = 'dead'
-            message += self.getMsg('combat', 'player_dead')
-
+                e_dmg = random.randint(int(enemy['attack'] * 0.8), int(enemy['attack'] * 1.2))
+                userData['hp'] -= e_dmg
+                message += self.getMsg('combat', 'enemy_attack', name=enemy['name'], dmg=e_dmg)
+        elif actionType == "run":
+            if random.random() > 0.4: userData['status'], userData['combatData'], message = 'normal', None, self.getMsg('combat', 'run_success')
+            else:
+                e_dmg = random.randint(5, 10)
+                userData['hp'] -= e_dmg
+                message = self.getMsg('combat', 'run_fail') + self.getMsg('combat', 'run_fail_dmg', dmg=e_dmg)
+        if userData['hp'] <= 0: userData['hp'], userData['status'], message = 0, 'dead', message + self.getMsg('combat', 'player_dead')
         self.addLog(userData, message)
         return self.getGameResponse(userData)
 
     def addLog(self, userData, text):
         if text:
             userData.setdefault('logs', []).append(text)
-            if len(userData['logs']) > 30:
-                userData['logs'].pop(0)
+            if len(userData['logs']) > 30: userData['logs'].pop(0)

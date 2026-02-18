@@ -1,0 +1,127 @@
+/* 모달 공통 스타일 */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 100; 
+    left: 0; top: 0; 
+    width: 100%; height: 100%; 
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(4px);
+    overflow-y: auto; /* 내용이 길어지면 스크롤 */
+}
+.modal-content {
+    background-color: #111;
+    /* [수정] 상단 여백 축소: 15% -> 5% (위로 올림) */
+    margin: 5% auto; 
+    padding: 25px; 
+    border: 1px solid var(--accent-cyan);
+    width: 85%; max-width: 420px;
+    box-shadow: 0 0 25px rgba(0,229,255,0.15);
+    color: #eee;
+    position: relative;
+    border-radius: 4px;
+}
+.close {
+    color: #666; float: right; font-size: 24px; font-weight: bold; cursor: pointer; transition: 0.2s;
+}
+.close:hover { color: var(--accent-cyan); }
+
+/* 아카이브 스타일 */
+.note-item {
+    background: #1a1a1a; border: 1px solid #333; padding: 15px; margin-bottom: 10px; border-radius: 4px;
+}
+.note-title { color: var(--accent-cyan); font-weight: bold; margin-bottom: 8px; font-size: 15px; border-bottom: 1px dashed #333; padding-bottom: 5px;}
+.note-content { font-size: 13px; color: #ccc; line-height: 1.6; }
+
+/* 아이템 모달 스타일 */
+.item-header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+.item-name { font-size: 20px; font-weight: bold; color: #fff; }
+.item-type { font-size: 12px; color: #888; background: #222; padding: 2px 6px; border-radius: 3px; border: 1px solid #444; }
+
+.item-desc {
+    font-size: 14px; color: #bbb; line-height: 1.6;
+    background: #161616; padding: 15px; border-radius: 4px; border: 1px solid #222;
+    margin-bottom: 20px; white-space: pre-wrap;
+}
+
+/* 아이템 스탯창 스타일 */
+.item-stat {
+    background: #0f0f0f;
+    padding: 12px;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid #333;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.modal-actions { display: flex; gap: 10px; }
+.btn-use { flex: 2; background: #004d4d; border: 1px solid var(--accent-cyan); color: #fff; padding: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; border-radius: 3px; }
+.btn-use:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 10px var(--accent-cyan); }
+.btn-discard { flex: 1; background: #2a0000; border: 1px solid #ff5555; color: #ff5555; padding: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; border-radius: 3px; }
+.btn-discard:hover { background: #ff5555; color: #fff; box-shadow: 0 0 10px #ff5555; }
+.btn-use:disabled { opacity: 0.5; cursor: not-allowed; }
+
+
+/* 장소 정보 모달 스타일 */
+.loc-header {
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.loc-header-top { display: flex; justify-content: space-between; align-items: center; }
+.loc-title { font-size: 22px; font-weight: bold; color: #fff; text-shadow: 0 0 10px rgba(0, 229, 255, 0.3); }
+.loc-meta { display: flex; align-items: center; gap: 10px; }
+.loc-coord { font-size: 13px; color: #666; font-family: monospace; background: #222; padding: 2px 6px; border-radius: 3px; border: 1px solid #333; }
+
+.status-badge { font-size: 12px; font-weight: bold; padding: 2px 8px; border-radius: 3px; border: 1px solid; }
+.badge-safe { background: rgba(76, 175, 80, 0.1); border-color: #4caf50; color: #4caf50; }
+.badge-normal { background: rgba(255, 152, 0, 0.1); border-color: #ff9800; color: #ff9800; }
+.badge-danger { background: rgba(255, 85, 85, 0.1); border-color: #ff5555; color: #ff5555; }
+
+.loc-desc {
+    font-size: 14px; color: #bbb; line-height: 1.6;
+    background: #161616; padding: 15px; border-radius: 4px; border: 1px solid #222;
+    margin-bottom: 20px;
+}
+.loc-section { margin-bottom: 15px; }
+.loc-label { font-size: 11px; color: #888; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px; border-bottom: 1px solid #222; padding-bottom: 3px; }
+
+.status-box { padding: 12px; border-radius: 4px; text-align: center; font-weight: bold; font-size: 14px; }
+.status-safe { background: rgba(76, 175, 80, 0.1); border: 1px solid #4caf50; color: #4caf50; }
+.status-normal { background: rgba(255, 152, 0, 0.1); border: 1px solid #ff9800; color: #ff9800; }
+.status-danger { background: rgba(255, 85, 85, 0.1); border: 1px solid #ff5555; color: #ff5555; }
+
+.enemy-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+.enemy-badge { 
+    background: #222; border: 1px solid #444; padding: 6px 10px; 
+    border-radius: 4px; font-size: 12px; color: #ccc;
+    display: flex; align-items: center; gap: 5px;
+}
+.enemy-grade-1 { border-color: #666; color: #ccc; }
+.enemy-grade-3 { border-color: #ff5555; color: #ff8a80; }
+.enemy-grade-4 { border-color: #bd00ff; color: #e040fb; font-weight:bold; }
+.enemy-grade-5 { border-color: #ff0000; color: #ff0000; font-weight:bold; box-shadow: 0 0 5px red;} 
+
+.loot-info { display: flex; align-items: center; justify-content: space-between; background: #222; padding: 10px; border-radius: 4px; border: 1px solid #333; }
+.loot-rate { color: var(--accent-cyan); font-weight: bold; font-size: 14px; }
+
+.mapNode { cursor: pointer; }
+.mapNode:hover { border-color: #fff; transform: scale(1.1); transition: 0.1s; z-index: 10; }

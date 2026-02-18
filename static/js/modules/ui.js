@@ -1,36 +1,58 @@
+/**
+ * 화면 렌더링을 담당하는 모듈
+ */
 export class UIManager {
     constructor() {
         this.els = {
             hpVal: document.getElementById('hpVal'),
             maxHpVal: document.getElementById('maxHpVal'),
             atkVal: document.getElementById('atkVal'),
-            levelVal: document.getElementById('levelVal'), // 레벨
-            expVal: document.getElementById('expVal'),     // 현재 경험치
-            maxExpVal: document.getElementById('maxExpVal'), // 최대 경험치
-            expBar: document.getElementById('expBar'),     // 경험치 바
+            
+            levelVal: document.getElementById('levelVal'),
+            expVal: document.getElementById('expVal'),
+            maxExpVal: document.getElementById('maxExpVal'),
+            expBar: document.getElementById('expBar'),
+            fragVal: document.getElementById('fragVal'),
+
             locName: document.getElementById('locName'),
             gameLog: document.getElementById('gameLog'),
+            
             btnGroup: document.getElementById('actionButtons'),
             miniMap: document.getElementById('miniMap'),
-            invList: document.getElementById('inventoryList')
+            invList: document.getElementById('inventoryList'),
+            archiveList: document.getElementById('archiveList'),
+
+            itemModal: document.getElementById('itemModal'),
+            modalItemName: document.getElementById('modalItemName'),
+            modalItemType: document.getElementById('modalItemType'),
+            modalItemDesc: document.getElementById('modalItemDesc'),
+            modalItemStat: document.getElementById('modalItemStat'),
+            modalBtnUse: document.getElementById('modalBtnUse'),
+            modalBtnDiscard: document.getElementById('modalBtnDiscard'),
+
+            locationModal: document.getElementById('locationModal'),
+            modalLocName: document.getElementById('modalLocName'),
+            modalLocCoord: document.getElementById('modalLocCoord'),
+            modalLocStatus: document.getElementById('modalLocStatus'),
+            modalLocDesc: document.getElementById('modalLocDesc'),
+            modalLocInfo: document.getElementById('modalLocInfo')
         };
     }
 
     update(data, actionCallback) {
-        const { userData, stats, locationInfo, connectedLocations, allLocations, itemData } = data;
+        const { userData, stats, locationInfo, connectedLocations, allLocations, itemData, enemyData, archiveData } = data;
 
-        // 1. 전투 상태 UI
         if (userData.status === 'combat') {
              this.els.locName.innerHTML = `<span style="color:#ff2a2a">⚠ BATTLE: ${userData.combatData.name}</span>`;
              this.els.hpVal.style.color = "#ff2a2a";
         } else if (userData.status === 'dead') {
-             this.els.locName.innerText = "✝ YOU ARE DEAD ✝";
+             this.els.locName.innerText = "⚠ SYSTEM CRITICAL (FAINTED)";
+             this.els.hpVal.style.color = "#888";
         } else {
              this.els.locName.innerText = locationInfo.name;
              this.els.hpVal.style.color = "var(--accent-red)";
         }
         
-        // 2. 스탯 및 경험치 업데이트
         this.els.hpVal.innerText = userData.hp;
         this.els.maxHpVal.innerText = userData.maxHp;
         this.els.atkVal.innerText = stats.attack;
@@ -38,30 +60,52 @@ export class UIManager {
         this.els.levelVal.innerText = userData.level;
         this.els.expVal.innerText = userData.exp;
         this.els.maxExpVal.innerText = userData.maxExp;
+        
+        if (this.els.fragVal) {
+            this.els.fragVal.innerText = userData.heart_fragments || 0;
+        }
 
-        // 경험치 바 퍼센트 계산
         const expPercent = Math.min((userData.exp / userData.maxExp) * 100, 100);
         this.els.expBar.style.width = `${expPercent}%`;
 
-        // 3. 로그 및 맵
         this.els.gameLog.innerHTML = userData.logs.join('<br>');
         this.els.gameLog.scrollTop = this.els.gameLog.scrollHeight;
-        this.drawMap(allLocations, userData.currentLocation, connectedLocations);
-        
-        // 4. 버튼 및 인벤토리
+
+        this.drawMap(allLocations, userData.currentLocation, connectedLocations, enemyData, userData);
         this.renderButtons(userData, connectedLocations, locationInfo.searchable, actionCallback);
         this.renderInventory(userData, itemData, actionCallback);
+        this.renderArchive(archiveData);
     }
 
     renderButtons(userData, connectedLocations, isSearchable, callback) {
         this.els.btnGroup.innerHTML = '';
 
         if (userData.status === 'dead') {
-            const reviveBtn = document.createElement('button');
-            reviveBtn.innerText = "👼 부활하기 (치트)";
-            reviveBtn.style.width = "100%";
-            reviveBtn.onclick = () => callback('revive');
-            this.els.btnGroup.appendChild(reviveBtn);
+            const fragCost = userData.level * 5;
+            const hasKit = userData.inventory.includes('first_aid_kit');
+
+            const fragBtn = document.createElement('button');
+            fragBtn.innerHTML = `🫀 <b>심장 조각 사용</b><br><span style="font-size:11px; color:#aaa;">(필요: ${fragCost}개)</span>`;
+            fragBtn.style.border = "1px solid #ff0080";
+            fragBtn.style.color = "#ff0080";
+            if (userData.heart_fragments < fragCost) {
+                fragBtn.disabled = true;
+                fragBtn.style.opacity = 0.5;
+                fragBtn.innerHTML += " [부족]";
+            }
+            fragBtn.onclick = () => callback('revive', 'fragment');
+
+            const kitBtn = document.createElement('button');
+            kitBtn.innerHTML = `💊 <b>구급약 사용</b><br><span style="font-size:11px; color:#aaa;">(소지: ${hasKit ? '있음' : '없음'})</span>`;
+            kitBtn.style.border = "1px solid #fff";
+            if (!hasKit) {
+                kitBtn.disabled = true;
+                kitBtn.style.opacity = 0.5;
+            }
+            kitBtn.onclick = () => callback('revive', 'kit');
+
+            this.els.btnGroup.appendChild(fragBtn);
+            this.els.btnGroup.appendChild(kitBtn);
             return;
         }
 
@@ -114,7 +158,6 @@ export class UIManager {
 
     renderInventory(userData, itemData, callback) {
         this.els.invList.innerHTML = '';
-        
         const allItems = [...userData.inventory];
         
         if (allItems.length === 0 && !userData.equipment.weapon) {
@@ -128,6 +171,7 @@ export class UIManager {
             const el = document.createElement('div');
             el.className = 'invItem';
             el.innerHTML = `<span>⚔ ${item.name}</span> <span class="equipped">E</span>`;
+            el.onclick = () => this.openItemModal(item, wpnKey, callback, true); 
             this.els.invList.appendChild(el);
         }
 
@@ -139,31 +183,168 @@ export class UIManager {
             const nameSpan = document.createElement('span');
             nameSpan.className = 'name';
             nameSpan.innerText = item.name;
-            nameSpan.onclick = () => {
-                if (confirm(`[${item.name}]을(를) 사용/장착 하시겠습니까?`)) {
-                    callback('useItem', itemKey);
-                }
-            };
-
-            const discardBtn = document.createElement('button');
-            discardBtn.className = 'discardBtn';
-            discardBtn.innerText = '🗑';
-            discardBtn.title = "버리기";
-            discardBtn.onclick = (e) => {
-                e.stopPropagation();
-                if (confirm(`정말로 [${item.name}]을(를) 버리시겠습니까?`)) {
-                    callback('discardItem', itemKey);
-                }
-            };
-
-            el.appendChild(nameSpan);
-            el.appendChild(discardBtn);
             
+            el.onclick = () => this.openItemModal(item, itemKey, callback, false);
+            el.appendChild(nameSpan);
             this.els.invList.appendChild(el);
         });
     }
 
-    drawMap(allLocations, currentId, connectedLocs) {
+    openItemModal(item, itemKey, callback, isEquipped) {
+        const modal = this.els.itemModal;
+        
+        this.els.modalItemName.innerText = item.name;
+        this.els.modalItemType.innerText = item.type === 'weapon' ? 'WEAPON' : 'CONSUMABLE';
+        this.els.modalItemDesc.innerText = item.description || "설명이 없습니다.";
+
+        let statHtml = '';
+        let btnText = '사용하기';
+        let btnDisabled = false;
+
+        if (item.type === 'weapon') {
+            statHtml = `<span style="color:#ff9e80;">⚔ ATK +${item.power}</span>`;
+            btnText = isEquipped ? "장착 중" : "장착하기";
+        } else if (item.type === 'consumable') {
+            statHtml = `<span style="color:#4caf50;">💊 HP +${item.heal}</span>`;
+            btnText = "사용하기";
+        } else if (item.type === 'currency') {
+             statHtml = `<span style="color:#ff0080;">🫀 특수 재화</span>`;
+             btnText = "사용 불가";
+             btnDisabled = true;
+        } else if (item.type === 'key') {
+             statHtml = `<span style="color:#ffd700;">🔑 열쇠 아이템</span>`;
+             btnText = "사용 불가 (자동)";
+             btnDisabled = true;
+        } else {
+            statHtml = `<span style="color:#888;">특수 효과 없음</span>`;
+        }
+
+        this.els.modalItemStat.innerHTML = statHtml;
+        this.els.modalBtnUse.innerText = btnText;
+        this.els.modalBtnUse.disabled = btnDisabled;
+        if (btnDisabled) this.els.modalBtnUse.style.opacity = 0.5;
+        else this.els.modalBtnUse.style.opacity = 1;
+
+        this.els.modalBtnUse.onclick = () => {
+            if (isEquipped) {
+                alert("이미 장착 중입니다.");
+            } else if (!btnDisabled) {
+                callback('useItem', itemKey);
+                modal.style.display = 'none';
+            }
+        };
+
+        this.els.modalBtnDiscard.onclick = () => {
+            if (isEquipped) {
+                alert("장착 중인 아이템은 버릴 수 없습니다.");
+            } else {
+                if (confirm(`정말 [${item.name}]을(를) 버리시겠습니까?`)) {
+                    callback('discardItem', itemKey);
+                    modal.style.display = 'none';
+                }
+            }
+        };
+
+        modal.style.display = "block";
+    }
+
+    openLocationModal(locationData, enemyData, userData, locId) {
+        const modal = this.els.locationModal;
+        const isLocked = locationData.requiresKey && (!userData.unlocked_places || !userData.unlocked_places.includes(locId));
+
+        this.els.modalLocName.innerText = locationData.name;
+        this.els.modalLocCoord.innerText = `X:${locationData.coordinates.x} Y:${locationData.coordinates.y}`;
+        
+        if (isLocked) {
+            this.els.modalLocStatus.innerHTML = `🔒 LOCKED`;
+            this.els.modalLocStatus.className = 'status-badge badge-danger';
+            this.els.modalLocDesc.innerText = "이 구역에 대한 정보가 없습니다.\n접근 권한이 필요합니다.";
+            this.els.modalLocInfo.innerHTML = `
+                <div style="text-align:center; padding:30px; color:#666;">
+                    <div style="font-size:40px; margin-bottom:10px;">🚫</div>
+                    <div><b>[보안 등급 미달]</b></div>
+                    <div style="font-size:12px; margin-top:5px;">해당 구역의 데이터에 접근할 수 없습니다.</div>
+                </div>
+            `;
+        } else {
+            const level = locationData.dangerLevel || "NORMAL";
+            
+            if (level === "SAFE") {
+                this.els.modalLocStatus.innerHTML = `🛡 SAFE`;
+                this.els.modalLocStatus.className = 'status-badge badge-safe';
+            } else if (level === "NORMAL") {
+                this.els.modalLocStatus.innerHTML = `⚠ NORMAL`;
+                this.els.modalLocStatus.className = 'status-badge badge-normal';
+            } else {
+                this.els.modalLocStatus.innerHTML = `☠ DANGER`;
+                this.els.modalLocStatus.className = 'status-badge badge-danger';
+            }
+
+            this.els.modalLocDesc.innerText = locationData.description || "설명이 없는 지역입니다.";
+
+            let html = "";
+            html += `<div class="loc-section">`;
+            html += `<div class="loc-label">SAFETY STATUS</div>`;
+            if (level === "SAFE") html += `<div class="status-box status-safe">🛡 안전 지역 (Safe Zone)</div>`;
+            else if (level === "NORMAL") html += `<div class="status-box status-normal">⚠ 주의 지역 (Caution Zone)</div>`;
+            else html += `<div class="status-box status-danger">☠ 위험 지역 (Danger Zone)</div>`;
+            html += `</div>`;
+
+            if (level !== "SAFE" && locationData.spawnList && locationData.spawnList.length > 0 && enemyData) {
+                html += `<div class="loc-section"><div class="loc-label">DETECTED THREATS</div><div class="enemy-grid">`;
+                locationData.spawnList.forEach(enemyId => {
+                    const enemy = enemyData[enemyId];
+                    if (enemy) {
+                        let gradeClass = `enemy-grade-1`;
+                        let icon = "Rat";
+                        if (enemy.grade >= 3) { gradeClass = `enemy-grade-3`; icon = "🧟"; }
+                        if (enemy.grade >= 4) { gradeClass = `enemy-grade-4`; icon = "☠"; }
+                        html += `<div class="enemy-badge ${gradeClass}"><span>${icon}</span><span>${enemy.name}</span></div>`;
+                    }
+                });
+                html += `</div></div>`;
+            }
+
+            html += `<div class="loc-section"><div class="loc-label">SEARCH INTEL</div>`;
+            if (locationData.itemChance > 0 && locationData.searchable) {
+                const chance = Math.round(locationData.itemChance * 100);
+                html += `<div class="loot-info"><span style="color:#bbb; font-size:13px;">아이템 발견 확률</span><span class="loot-rate">✨ ${chance}%</span></div>`;
+            } else {
+                html += `<div style="color:#666; font-size:13px; padding:5px 0;">❌ 탐색 불가능한 지역입니다.</div>`;
+            }
+            html += `</div>`;
+
+            this.els.modalLocInfo.innerHTML = html;
+        }
+
+        modal.style.display = "block";
+    }
+
+    renderArchive(archiveData) {
+        if (!this.els.archiveList) return;
+        this.els.archiveList.innerHTML = '';
+        if (!archiveData || archiveData.length === 0) {
+            this.els.archiveList.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">수집된 기록이 없습니다.<br><br>탐색을 통해 쪽지를 찾아보세요.</div>';
+            return;
+        }
+
+        // 최신 수집 순으로 정렬하여 표시
+        [...archiveData].reverse().forEach(note => {
+            const div = document.createElement('div');
+            div.className = 'note-item';
+            div.style.borderLeft = "4px solid var(--accent-cyan)";
+            div.innerHTML = `
+                <div class="note-title" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>📜 ${note.title}</span>
+                    <small style="font-size:10px; color:#555;">ARCHIVED</small>
+                </div>
+                <div class="note-content" style="margin-top:10px; color:#ccc; font-style: italic;">"${note.content}"</div>
+            `;
+            this.els.archiveList.appendChild(div);
+        });
+    }
+
+    drawMap(allLocations, currentId, connectedLocs, enemyData, userData) {
         this.els.miniMap.innerHTML = '';
         const connectedIds = connectedLocs ? connectedLocs.map(l => l.id) : [];
 
@@ -183,6 +364,8 @@ export class UIManager {
                 if (connectedIds.includes(key)) {
                     node.classList.add('connected');
                 }
+
+                node.onclick = () => this.openLocationModal(loc, enemyData, userData, key);
                 this.els.miniMap.appendChild(node);
             }
         });
