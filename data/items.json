@@ -4,6 +4,7 @@
         "type": "weapon",
         "power": 1,
         "dropRate": 0,
+        "dropLocation": [],
         "description": "당신의 두 주먹입니다.\n믿을 건 자신뿐입니다."
     },
     "rusty_knife": {
@@ -11,6 +12,7 @@
         "type": "weapon",
         "power": 5,
         "dropRate": 0.1,
+        "dropLocation": [],
         "description": "날이 매우 무디고 녹슬었습니다.\n아마 누군가 쓰다 버린 듯 합니다."
     },
     "iron_pipe": {
@@ -18,6 +20,7 @@
         "type": "weapon",
         "power": 8,
         "dropRate": 0.08,
+        "dropLocation": [],
         "description": "묵직한 쇠파이프입니다.\n어디서 떨어져나왔는지는 모르겠군요."
     },
     "fire_axe": {
@@ -25,13 +28,15 @@
         "type": "weapon",
         "power": 12,
         "dropRate": 0.05,
+        "dropLocation": [],
         "description": "비상용 도끼입니다.\n휘두르면.. 강력하겠죠."
     },
     "stun_baton": {
         "name": "전기 충격기",
         "type": "weapon",
         "power": 15,
-        "dropRate": 0.03,
+        "dropRate": 0.01,
+        "dropLocation": ["electrical_room"],
         "description": "경찰용 진압 장비입니다.\n고전압 전류가 흐릅니다."
     },
     "revolver": {
@@ -39,6 +44,7 @@
         "type": "weapon",
         "power": 25,
         "dropRate": 0.01,
+        "dropLocation": [],
         "description": "짧지만 강력합니다."
     },
     "dirty_water": {
@@ -46,6 +52,7 @@
         "type": "consumable",
         "heal": 10,
         "dropRate": 0.2,
+        "dropLocation": [],
         "description": "방사능 정수 필터를 거치지 않은 물입니다."
     },
     "canned_beans": {
@@ -53,6 +60,7 @@
         "type": "consumable",
         "heal": 30,
         "dropRate": 0.15,
+        "dropLocation": [],
         "description": "유통기한이 지워졌지만 냄새는 괜찮아 보입니다.\n훌륭한 단백질 공급원입니다."
     },
     "antibiotics": {
@@ -60,6 +68,7 @@
         "type": "consumable",
         "heal": 50,
         "dropRate": 0.05,
+        "dropLocation": [],
         "description": "귀한 의약품입니다.\n감염된 상처를 치료하고 체력을 대폭 회복합니다."
     },
     "first_aid_kit": {
@@ -67,48 +76,56 @@
         "type": "consumable",
         "heal": 80,
         "dropRate": 0.02,
+        "dropLocation": [],
         "description": "전문적인 응급 처치 키트입니다.\n기절 상태에서 즉시 소생할 수 있습니다."
     },
     "heart_fragment": {
         "name": "HEART PIECE",
         "type": "currency",
         "dropRate": 0.1,
+        "dropLocation": [],
         "description": "변이체들의 심장에서 추출한 붉은 결정체입니다.\n생명 유지 장치의 동력원으로 쓰입니다."
     },
     "admin_card": {
         "name": "관리자 ID 카드",
         "type": "important",
-        "dropRate": 0.01,
+        "dropRate": 0.05,
+        "dropLocation": ["1f_manage_office"],
         "description": ""
     },
     "master_keycard": {
         "name": "마스터 키카드",
         "type": "important",
-        "dropRate": 1,
+        "dropRate": 0.005,
+        "dropLocation": ["2f_shop_3"],
         "description": ""
     },
     "security_card_1": {
         "name": "첫 번째 보안 키카드",
         "type": "important",
         "dropRate": 0.005,
+        "dropLocation": ["3f_hidden_admin_area"],
         "description": ""
     },
     "security_card_2": {
         "name": "두 번째 보안 키카드",
         "type": "important",
         "dropRate": 0.005,
+        "dropLocation": ["3f_hidden_laboratory_1"],
         "description": ""
     },
     "security_card_3": {
         "name": "세 번째 보안 키카드",
         "type": "important",
         "dropRate": 0.005,
+        "dropLocation": ["3f_hidden_laboratory_2"],
         "description": ""
     },
     "security_card_4": {
         "name": "네 번째 보안 키카드",
         "type": "important",
         "dropRate": 0.005,
+        "dropLocation": ["3f_hidden_isolation_ward"],
         "description": ""
     }
 }

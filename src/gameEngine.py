@@ -140,16 +140,26 @@ class GameEngine:
         if userData['status'] == 'dead':
             if actionType == 'revive':
                 required_fragments = userData['level'] * 5
+                
                 if target == 'fragment':
                     if userData['heart_fragments'] >= required_fragments:
                         userData['heart_fragments'] -= required_fragments
                         self.executeRevive(userData)
                     else: self.addLog(userData, self.getMsg('error', 'no_fragment', count=required_fragments))
+                
                 elif target == 'kit':
                     if 'first_aid_kit' in userData['inventory']:
                         userData['inventory'].remove('first_aid_kit')
                         self.executeRevive(userData)
                     else: self.addLog(userData, self.getMsg('error', 'no_kit'))
+                
+                # [완전 초기화 소생 복구됨]
+                elif target == 'reset':
+                    if int(userData.get('heart_fragments', 0)) < required_fragments and 'first_aid_kit' not in userData.get('inventory', []):
+                        self.executeResetRevive(userData)
+                    else:
+                        self.addLog(userData, self.getMsg('error', 'cannot_reset'))
+
             return self.getGameResponse(userData)
 
         if userData['status'] == 'combat': return self.processCombat(userData, actionType, target)
@@ -167,7 +177,6 @@ class GameEngine:
                     else:
                         if requiredKey in userData['inventory']:
                             userData['unlocked_places'].append(target)
-                            # [수정됨] 중요 아이템(키)은 사용 후 소멸되지 않고 영구 보존됨
                             message += self.getMsg('info', 'unlock_door', keyName=self.items[requiredKey]['name'])
                             can_enter = True
                         else:
@@ -206,19 +215,26 @@ class GameEngine:
                                 event_happened = True
                                 break
                 if not event_happened and random.random() < currentLocData.get('itemChance', 0):
-                    # [수정됨] 이미 보유 중인 important 아이템은 드롭 풀에서 영구 제외 (계정당 1회 제한)
                     valid_items = []
+                    current_loc = userData['currentLocation']
+                    
                     for k, v in self.items.items():
                         if v.get('type') == 'currency': continue
                         if v.get('type') == 'important' and k in userData.get('inventory', []): continue
+                        
+                        drop_locs = v.get('dropLocation', [])
+                        if drop_locs and current_loc not in drop_locs:
+                            continue
+                            
                         valid_items.append(k)
                     
                     if valid_items:
                         weights = [self.items[k].get('dropRate', 1.0) for k in valid_items]
-                        foundItemKey = random.choices(valid_items, weights=weights, k=1)[0]
-                        userData['inventory'].append(foundItemKey)
-                        message = self.getMsg('search', 'item_found', name=self.items[foundItemKey]['name'])
-                        event_happened = True
+                        if sum(weights) > 0:
+                            foundItemKey = random.choices(valid_items, weights=weights, k=1)[0]
+                            userData['inventory'].append(foundItemKey)
+                            message = self.getMsg('search', 'item_found', name=self.items[foundItemKey]['name'])
+                            event_happened = True
                 
                 if not event_happened: message = self.getMsg('search', 'empty')
 
@@ -257,7 +273,6 @@ class GameEngine:
             self.addLog(userData, msg)
         return self.getGameResponse(userData)
 
-    # [수정됨] 중요 아이템(important)은 백엔드에서도 버릴 수 없도록 차단
     def processItemDiscard(self, userData, itemKey):
         if itemKey in userData['inventory']:
             if self.items[itemKey].get('type') == 'important':
@@ -272,6 +287,18 @@ class GameEngine:
     def executeRevive(self, userData):
         userData['hp'], userData['status'] = int(userData['maxHp'] * 0.8), 'normal'
         self.addLog(userData, self.getMsg('info', 'revive_success', hp=userData['hp']))
+
+    # [완전 초기화 로직 복구됨] DB 계정 정보가 날아가지 않도록 안전한 키 덮어쓰기
+    def executeResetRevive(self, userData):
+        new_data = self.initNewPlayer()
+        game_keys = [
+            "level", "exp", "maxExp", "hp", "maxHp", "attack", "defense",
+            "heart_fragments", "currentLocation", "inventory", "archive", 
+            "unlocked_places", "upgrades", "equipment", "status", "combatData"
+        ]
+        for key in game_keys:
+            userData[key] = new_data.get(key)
+        self.addLog(userData, self.getMsg('info', 'reset_revive'))
 
     def startCombat(self, userData, enemyId):
         e = self.enemies[enemyId]

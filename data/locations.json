@@ -9,26 +9,26 @@
         "connectedTo": ["gate_east", "ground_zero_east"],
         "coordinates": {"x": 10, "y": 11},
         "searchable": true,
-        "itemChance": 0.5
+        "itemChance": 0.2
     },
 
     "central_control_room": {
         "name": "중앙 통제 관리실",
-        "description": "이 건물 전체에서 가장 뛰어난 보안을 자랑합니다.\n당신은 이곳으로 대피했습니다.",
+        "description": "이 건물에서 가장 뛰어난 보안을 자랑합니다.\n당신은 이곳으로 대피했습니다.",
         "dangerLevel": "SAFE",
         "spawnList": [],
         "spawnRate": 0,
         "connectedTo": ["1f_west_passage", "1f_east_passage"],
         "coordinates": {"x": 10, "y": 10},
         "searchable": true,
-        "itemChance": 0.1
+        "itemChance": 0
     },
     "1f_west_passage": {
         "name": "1층 서관 통로",
         "description": "주변에서 음산한 기운이 느껴집니다.",
         "dangerLevel": "NORMAL",
         "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
-        "spawnRate": 0.1,
+        "spawnRate": 0.3,
         "connectedTo": ["1f_manage_office", "central_control_room"],
         "coordinates": {"x": 9, "y": 10},
         "searchable": true,
@@ -39,7 +39,7 @@
         "description": "그저 평범한 복합 상점 건물입니다만..\n이상할 정도로 보안에 많은 신경을 씁니다.\n이 관리실도 그 중 하나고요.",
         "dangerLevel": "NORMAL",
         "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
-        "spawnRate": 0.2,
+        "spawnRate": 0.3,
         "connectedTo": ["1f_west_passage"],
         "coordinates": {"x": 8, "y": 10},
         "searchable": true,
@@ -51,7 +51,7 @@
         "description": "박살나 있는 유리창에서 누군가 넘나든 흔적이 보입니다.",
         "dangerLevel": "NORMAL",
         "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
-        "spawnRate": 0.1,
+        "spawnRate": 0.3,
         "connectedTo": ["central_control_room", "1f_stairs"],
         "coordinates": {"x": 11, "y": 10},
         "searchable": true,
@@ -74,44 +74,44 @@
         "description": "밖에서 보기에 이 건물은 3층까지 있지만..\n이상하게도 계단은 찾을 수 없군요.",
         "dangerLevel": "NORMAL",
         "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
-        "spawnRate": 0.3,
+        "spawnRate": 0.5,
         "connectedTo": ["2f_shop_1", "1f_stairs"],
         "coordinates": {"x": 12, "y": 9},
         "searchable": true,
-        "itemChance": 0.2
+        "itemChance": 0.3
     },
     "2f_shop_1": {
         "name": "2층 상점가",
         "description": "이미 엉망이 되어버린 상점가입니다.",
         "dangerLevel": "NORMAL",
         "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
-        "spawnRate": 0.3,
+        "spawnRate": 0.5,
         "connectedTo": ["2f_shop_2", "2f_stairs"],
         "coordinates": {"x": 11, "y": 9},
         "searchable": true,
-        "itemChance": 0.2
+        "itemChance": 0.3
     },
     "2f_shop_2": {
         "name": "2층 상점가",
         "description": "이미 엉망이 되어버린 상점가입니다.",
         "dangerLevel": "NORMAL",
         "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
-        "spawnRate": 0.3,
+        "spawnRate": 0.5,
         "connectedTo": ["2f_shop_3", "2f_shop_1"],
         "coordinates": {"x": 10, "y": 9},
         "searchable": true,
-        "itemChance": 0.2
+        "itemChance": 0.3
     },
     "2f_shop_3": {
         "name": "2층 상점가",
         "description": "이미 엉망이 되어버린 상점가입니다.",
         "dangerLevel": "DANGER",
-        "spawnList": ["crazed_survivor", "toxic_crawler", "security_bot"],
-        "spawnRate": 0.3,
+        "spawnList": ["crazed_survivor", "toxic_crawler", "security_bot", "flesh_beast", "armored_infected"],
+        "spawnRate": 0.5,
         "connectedTo": ["2f_admin_area", "2f_shop_2"],
         "coordinates": {"x": 9, "y": 9},
         "searchable": true,
-        "itemChance": 0.2
+        "itemChance": 0.3
     },
     "2f_admin_area": {
         "name": "관리자 구역",
@@ -119,11 +119,11 @@
         "dangerLevel": "DANGER",
         "requiresKey": "master_keycard",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant"],
-        "spawnRate": 0.9,
+        "spawnRate": 0.5,
         "connectedTo": ["2f_shop_3", "3f_hidden_admin_area"],
         "coordinates": {"x": 8, "y": 9},
         "searchable": true,
-        "itemChance": 0.8
+        "itemChance": 0.4
     },
 
     "3f_hidden_admin_area": {
@@ -132,11 +132,11 @@
         "dangerLevel": "DANGER",
         "requiresKey": "master_keycard",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant"],
-        "spawnRate": 1.2,
+        "spawnRate": 0.8,
         "connectedTo": ["2f_admin_area", "3f_hidden_laboratory_1"],
         "coordinates": {"x": 8, "y": 8},
         "searchable": true,
-        "itemChance": 0.8
+        "itemChance": 0.4
     },
     "3f_hidden_laboratory_1": {
         "name": "숨겨진 연구실",
@@ -144,11 +144,11 @@
         "dangerLevel": "DANGER",
         "requiresKey": "security_card_1",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
-        "spawnRate": 1.2,
+        "spawnRate": 0.8,
         "connectedTo": ["3f_hidden_admin_area", "3f_hidden_laboratory_2"],
         "coordinates": {"x": 9, "y": 8},
         "searchable": true,
-        "itemChance": 0.8
+        "itemChance": 0.4
     },
     "3f_hidden_laboratory_2": {
         "name": "숨겨진 실험실",
@@ -156,11 +156,11 @@
         "dangerLevel": "DANGER",
         "requiresKey": "security_card_2",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
-        "spawnRate": 1.5,
+        "spawnRate": 0.8,
         "connectedTo": ["3f_hidden_laboratory_1", "3f_hidden_isolation_ward"],
         "coordinates": {"x": 10, "y": 8},
         "searchable": true,
-        "itemChance": 0.8
+        "itemChance": 0.4
     },
     "3f_hidden_isolation_ward": {
         "name": "숨겨진 격리실",
@@ -168,11 +168,11 @@
         "dangerLevel": "DANGER",
         "requiresKey": "security_card_3",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut", "bio_weapon_alpha"],
-        "spawnRate": 2,
+        "spawnRate": 0.8,
         "connectedTo": ["3f_hidden_laboratory_2", "3f_hidden_archive"],
         "coordinates": {"x": 11, "y": 8},
         "searchable": true,
-        "itemChance": 0.8
+        "itemChance": 0.4
     },
     "3f_hidden_archive": {
         "name": "숨겨진 자료보관소",
@@ -180,10 +180,10 @@
         "dangerLevel": "DANGER",
         "requiresKey": "security_card_4",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut", "bio_weapon_alpha", "patient_zero"],
-        "spawnRate": 5,
+        "spawnRate": 1,
         "connectedTo": ["3f_hidden_isolation_ward"],
         "coordinates": {"x": 12, "y": 8},
         "searchable": true,
-        "itemChance": 0.8
+        "itemChance": 0.4
     }
 }

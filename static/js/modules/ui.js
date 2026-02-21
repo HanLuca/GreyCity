@@ -28,6 +28,8 @@ export class UIManager {
             modalItemType: document.getElementById('modalItemType'),
             modalItemDesc: document.getElementById('modalItemDesc'),
             modalItemStat: document.getElementById('modalItemStat'),
+            modalItemDropLoc: document.getElementById('modalItemDropLoc'),
+            modalItemDropRate: document.getElementById('modalItemDropRate'),
             modalBtnUse: document.getElementById('modalBtnUse'),
             modalBtnDiscard: document.getElementById('modalBtnDiscard'),
             modalTopAccent: document.getElementById('modalTopAccent'),
@@ -76,14 +78,14 @@ export class UIManager {
         const expPercent = Math.min((userData.exp / userData.maxExp) * 100, 100);
         this.els.expBar.style.width = `${expPercent}%`;
 
-        this.els.gameLog.innerHTML = userData.logs.join('<br>');
+        this.els.gameLog.innerHTML = (userData.logs || []).join('<br>');
         setTimeout(() => {
             this.els.gameLog.scrollTop = this.els.gameLog.scrollHeight;
         }, 10);
 
         this.drawMap(allLocations, userData.currentLocation, connectedLocations, enemyData, userData);
-        this.renderButtons(userData, connectedLocations, locationInfo.searchable, actionCallback);
-        this.renderInventory(userData, itemData, actionCallback);
+        this.renderButtons(userData, connectedLocations, allLocations, locationInfo.searchable, actionCallback);
+        this.renderInventory(userData, itemData, actionCallback, allLocations);
         this.renderArchive(archiveData);
         this.renderUpgrade(userData, actionCallback);
     }
@@ -155,18 +157,20 @@ export class UIManager {
         return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 255, 255';
     }
 
-    renderButtons(userData, connectedLocations, isSearchable, callback) {
+    renderButtons(userData, connectedLocations, allLocations, isSearchable, callback) {
         this.els.btnGroup.innerHTML = '';
 
         if (userData.status === 'dead') {
-            const fragCost = userData.level * 5;
-            const hasKit = userData.inventory.includes('first_aid_kit');
+            const fragCost = (userData.level || 1) * 5;
+            const inventory = userData.inventory || [];
+            const hasKit = inventory.includes('first_aid_kit');
+            const fragments = userData.heart_fragments || 0;
 
             const fragBtn = document.createElement('button');
-            fragBtn.innerHTML = `<b>[ 🫀 조각 소생 ]</b><br><span style="font-size:11px; color:#aaa; font-weight:normal;">필요 조각: ${fragCost}</span>`;
+            fragBtn.innerHTML = `<b>[ 🫀 심장 조각 소생 ]</b><br><span style="font-size:11px; color:#aaa; font-weight:normal;">🫀${fragCost} 개를 사용하여 소생</span>`;
             fragBtn.style.border = "1px solid #ff0080";
             fragBtn.style.color = "#ff0080";
-            if (userData.heart_fragments < fragCost) {
+            if (fragments < fragCost) {
                 fragBtn.disabled = true;
                 fragBtn.style.opacity = 0.5;
                 fragBtn.innerHTML += " <span style='font-size:11px'>[부족]</span>";
@@ -174,7 +178,7 @@ export class UIManager {
             fragBtn.onclick = () => callback('revive', 'fragment');
 
             const kitBtn = document.createElement('button');
-            kitBtn.innerHTML = `<b>[ 💊 키트 소생 ]</b><br><span style="font-size:11px; color:#aaa; font-weight:normal;">구급약 사용</span>`;
+            kitBtn.innerHTML = `<b>[ 💊 응급키트 소생 ]</b><br><span style="font-size:11px; color:#aaa; font-weight:normal;">구급약을 사용하여 소생</span>`;
             kitBtn.style.border = "1px solid #4caf50";
             kitBtn.style.color = "#4caf50";
             if (!hasKit) {
@@ -187,6 +191,22 @@ export class UIManager {
 
             this.els.btnGroup.appendChild(fragBtn);
             this.els.btnGroup.appendChild(kitBtn);
+
+            // [초기화 소생 로직 복구됨]
+            if (fragments < fragCost && !hasKit) {
+                const resetBtn = document.createElement('button');
+                resetBtn.innerHTML = `<b>[ ☠️ 완전 초기화 소생 ]</b><br><span style="font-size:11px; color:#aaa; font-weight:normal;">모든 것을 잃고 부활합니다.</span>`;
+                resetBtn.style.border = "1px solid #ff2a2a";
+                resetBtn.style.color = "#ff2a2a";
+                resetBtn.style.marginTop = "10px";
+                resetBtn.style.width = "100%";
+                resetBtn.onclick = () => {
+                    if(confirm("경고: 레벨, 스탯, 아이템, 진행 상황 등 모든 정보가 지워집니다.\n이 끔찍한 육체를 버리고 새롭게 시작하시겠습니까?")) {
+                        callback('revive', 'reset');
+                    }
+                };
+                this.els.btnGroup.appendChild(resetBtn);
+            }
             return;
         }
 
@@ -216,8 +236,12 @@ export class UIManager {
 
             connectedLocations.forEach(loc => {
                 const btn = document.createElement('button');
-                // [수정됨] [ 이동 ] 텍스트 대신 다시 👣 이모지 적용
-                btn.innerText = `👣 ${loc.name}`;
+                
+                const targetLocData = allLocations[loc.id];
+                const isLocked = targetLocData && targetLocData.requiresKey && !(userData.unlocked_places || []).includes(loc.id);
+                const displayName = isLocked ? "???" : loc.name;
+                
+                btn.innerText = `👣 ${displayName}`;
                 btn.onclick = () => callback('move', loc.id);
                 moveRow.appendChild(btn);
             });
@@ -238,7 +262,7 @@ export class UIManager {
         }
     }
 
-    renderInventory(userData, itemData, callback) {
+    renderInventory(userData, itemData, callback, allLocations) {
         this.els.invList.innerHTML = '';
         const allItems = [...userData.inventory];
         
@@ -253,12 +277,14 @@ export class UIManager {
             const el = document.createElement('div');
             el.className = 'invItem';
             el.innerHTML = `<span><span style="color:#ff9e80; font-size:10px; margin-right:6px;">■</span>${item.name}</span> <span class="equipped" style="font-size:10px; padding:2px 5px; border:1px solid #ff9e80; color:#ff9e80; border-radius:3px;">EQUIPPED</span>`;
-            el.onclick = () => this.openItemModal(item, wpnKey, callback, true); 
+            el.onclick = () => this.openItemModal(item, wpnKey, callback, true, allLocations); 
             this.els.invList.appendChild(el);
         }
 
         allItems.forEach(itemKey => {
             const item = itemData[itemKey];
+            if(!item) return;
+
             const el = document.createElement('div');
             el.className = 'invItem';
             
@@ -270,16 +296,31 @@ export class UIManager {
 
             el.innerHTML = `<span><span style="color:${dotColor}; font-size:10px; margin-right:6px;">■</span><span class="name">${item.name}</span></span>`;
             
-            el.onclick = () => this.openItemModal(item, itemKey, callback, false);
+            el.onclick = () => this.openItemModal(item, itemKey, callback, false, allLocations);
             this.els.invList.appendChild(el);
         });
     }
 
-    openItemModal(item, itemKey, callback, isEquipped) {
+    openItemModal(item, itemKey, callback, isEquipped, allLocations) {
         const modal = this.els.itemModal;
         
         this.els.modalItemName.innerText = item.name;
         this.els.modalItemDesc.innerText = item.description || "설명이 없습니다.";
+
+        let percent = (item.dropRate || 0) * 100;
+        let dropRateText = percent % 1 === 0 ? percent + "%" : percent.toFixed(1) + "%";
+        if (item.dropRate === 0) dropRateText = "0% (특수 획득)";
+
+        let dropLocText = "모든 곳";
+        if (item.dropLocation && item.dropLocation.length > 0) {
+            const locNames = item.dropLocation.map(id => {
+                return allLocations && allLocations[id] ? allLocations[id].name : id;
+            });
+            dropLocText = locNames.join(", ");
+        }
+
+        if(this.els.modalItemDropLoc) this.els.modalItemDropLoc.innerText = dropLocText;
+        if(this.els.modalItemDropRate) this.els.modalItemDropRate.innerText = dropRateText;
 
         let statHtml = '';
         let btnText = '사용하기';
@@ -400,15 +441,15 @@ export class UIManager {
 
     openLocationModal(locationData, enemyData, userData, locId) {
         const modal = this.els.locationModal;
-        const isLocked = locationData.requiresKey && (!userData.unlocked_places || !userData.unlocked_places.includes(locId));
+        const isLocked = locationData.requiresKey && (!(userData.unlocked_places || []).includes(locId));
 
-        this.els.modalLocName.innerText = locationData.name;
+        this.els.modalLocName.innerText = isLocked ? "???" : locationData.name;
         this.els.modalLocCoord.innerText = `X:${locationData.coordinates.x} Y:${locationData.coordinates.y}`;
         
         if (isLocked) {
             this.els.modalLocStatus.innerHTML = `[ LOCKED ]`;
             this.els.modalLocStatus.className = 'status-badge badge-danger';
-            this.els.modalLocDesc.innerText = "접근 권한이 없는 구역입니다. 보안 해제가 필요합니다.";
+            this.els.modalLocDesc.innerText = "접근 권한이 없는 구역입니다.\n보안 해제가 필요합니다.";
             this.els.modalLocInfo.innerHTML = `
                 <div style="text-align:center; padding:30px; color:#666;">
                     <div style="font-size:40px; margin-bottom:10px;">🔒</div>
@@ -501,11 +542,13 @@ export class UIManager {
         Object.keys(allLocations).forEach(key => {
             const loc = allLocations[key];
             if (loc.coordinates) {
+                const isLocked = loc.requiresKey && !(userData.unlocked_places || []).includes(key);
+                
                 const node = document.createElement('div');
                 node.className = 'mapNode';
                 node.style.gridColumn = loc.coordinates.x + 1;
                 node.style.gridRow = loc.coordinates.y + 2; 
-                node.innerText = loc.name.substring(0, 2);
+                node.innerText = isLocked ? "??" : loc.name.substring(0, 2);
 
                 if (key === currentId) {
                     node.classList.add('current');

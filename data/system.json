@@ -23,17 +23,23 @@
         ],
         "cannot_discard": [
             "<br>⚠️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 중요 아이템은 폐기할 수 없습니다."
+        ],
+        "cannot_reset": [
+            "<br>⚠️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 아직 다른 소생 방법이 남아있어 초기화할 수 없습니다."
         ]
     },
     "info": {
         "revive_success": [
             "<br>🖥️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 생명 반응 복구 완료. <span style='color:#4caf50; font-weight:bold;'>[ HP {hp} 회복 ]</span>"
         ],
+        "reset_revive": [
+            "<br>🌀 <b><span style='color:#bd00ff'>[SYSTEM]</span></b> 치명적 손상으로 인해 모든 데이터가 소거되었습니다."
+        ],
         "important_desc": [
             "<br>⭐ <b><span style='color:#ffd700'>[ITEM]</span></b> {name} : 중요한 아이템입니다. 특정 상황에서 자동으로 사용됩니다."
         ],
         "unlock_door": [
-            "<br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> {keyName} 승인.<br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 해당 구역의 보안이 영구적으로 해제되었습니다.<br>"
+            "<br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> {keyName} 승인. <br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 해당 구역의 보안이 영구적으로 해제되었습니다.<br>"
         ],
         "upgrade_success": [
             "<br>🫀 <b><span style='color:#ff0080'>[UPGRADE]</span></b> 신체 개조 완료. {stat}"
