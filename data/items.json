@@ -70,15 +70,15 @@
         "description": "전문적인 응급 처치 키트입니다. 기절 상태에서 즉시 소생할 수 있습니다."
     },
     "heart_fragment": {
-        "name": "심장 조각",
+        "name": "HEART PIECE",
         "type": "currency",
-        "dropRate": 0.01,
+        "dropRate": 0.1,
         "description": "변이체들의 심장에서 추출한 붉은 결정체입니다. 생명 유지 장치의 동력원으로 쓰입니다."
     },
     "admin_card": {
         "name": "관리자 ID 카드",
         "type": "key",
-        "dropRate": 1,
+        "dropRate": 0.01,
         "description": "지하 통제구역의 출입 카드입니다. [LEVEL 5] 보안 등급이 적혀있습니다."
     }
 }

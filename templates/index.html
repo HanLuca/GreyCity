@@ -18,33 +18,101 @@
         </div>
 
         <div class="sidePanel">
-            <div><div class="panelHeader">:: NAVIGATION ::</div><div class="mapWrapper"><div id="miniMap" class="miniMapGrid"></div></div></div>
-            <div style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+            <div>
+                <div class="panelHeader" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>:: NAVIGATION ::</span>
+                    <button id="openSettingsBtn" onclick="openModalAnimation('settingsModal')" style="padding:4px 10px; font-size:11px; border:1px solid #555; background:#222; color:#ccc; cursor:pointer; border-radius:3px; font-weight:bold;">⚙️ SETTINGS</button>
+                </div>
+                <div class="mapWrapper"><div id="miniMap" class="miniMapGrid"></div></div>
+            </div>
+            
+            <div style="display: flex; flex-direction: column; height: 200px; flex: none;">
                 <div class="panelHeader" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>:: INVENTORY ::</span>
-                    <button id="openArchiveBtn" style="padding:4px 10px; font-size:11px; border:1px solid #555; background:#222; color:#ccc; cursor:pointer; border-radius:3px; font-weight:bold;">📜 ARCHIVE</button>
+                    <button id="openArchiveBtn" onclick="openModalAnimation('archiveModal')" style="padding:4px 10px; font-size:11px; border:1px solid #555; background:#222; color:#ccc; cursor:pointer; border-radius:3px; font-weight:bold;">📜 ARCHIVE</button>
                 </div>
-                <div id="inventoryList" class="inventoryContainer"><div class="emptyMsg">가방이 비었습니다.</div></div>
+                <div id="inventoryList" class="inventoryContainer" style="overflow-y: auto; height: 100%;">
+                    <div class="emptyMsg">가방이 비었습니다.</div>
+                </div>
             </div>
-            <div class="systemInfo">
-                <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                    <p style="margin:0;">USER: <span style="color:var(--accent-cyan); font-weight:bold;">{{ username }}</span></p>
-                    <span class="levelText">LV.<span id="levelVal">1</span></span>
+            
+            <div style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+                
+                <div class="panelHeader" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+                    <span style="color: var(--accent-cyan); font-size: 16px; font-weight: bold; letter-spacing: 1px;">:: STATUS ::</span>
+                    <button id="openUpgradeBtn" onclick="openModalAnimation('upgradeModal')" style="padding:4px 10px; font-size:11px; border:1px solid #555; background:#222; color:#ccc; cursor:pointer; border-radius:3px; font-weight:bold;">🫀 UPGRADE</button>
                 </div>
-                <div class="expContainer"><div id="expBar" class="expFill"></div></div>
-                <div style="text-align:right; font-size:12px; color:#888; margin-top:5px;">EXP: <span id="expVal">0</span> / <span id="maxExpVal">100</span></div>
-                <div style="display:flex; justify-content:space-between; margin-top:10px;">
-                    <p style="margin:0;">ATK: <span id="atkVal" style="color:var(--accent-red); font-size:16px;">10</span></p>
-                    <p style="margin:0;">🫀 <span id="fragVal" style="color:#ff0080; font-weight:bold;">0</span></p>
+
+                <div class="systemInfo" style="display: flex; flex-direction: column; flex: 1; margin-top: 0; padding-top: 0;">
+                    
+                    <div style="display: flex; flex-direction: column; background: linear-gradient(145deg, #161616 0%, #0d0d0d 100%); border: 1px solid #333; border-radius: 6px; padding: 12px; margin-bottom: 10px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div style="background: #0f0f0f; border: 1px solid #222; border-radius: 4px; padding: 10px; text-align: center;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 4px;">ATTACK</div>
+                                <div style="font-size: 20px; color: var(--accent-red); font-weight: bold; text-shadow: 0 0 8px rgba(255,85,85,0.4);" id="atkVal">10</div>
+                            </div>
+                            <div style="background: #0f0f0f; border: 1px solid #222; border-radius: 4px; padding: 10px; text-align: center;">
+                                <div style="font-size: 11px; color: #666; font-weight: bold; margin-bottom: 4px;">EVASION</div>
+                                <div style="font-size: 20px; color: #00e5ff; font-weight: bold; text-shadow: 0 0 8px rgba(0,229,255,0.4);"><span id="evaVal">0.0</span><span style="font-size:12px;">%</span></div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: center; align-items: center; background: #0a0a0a; border: 1px solid #222; padding: 8px; border-radius: 4px; margin-top: 3px; gap: 10px;">
+                            <span style="font-size: 16px; filter: drop-shadow(0 0 3px rgba(255,0,128,0.5));">🫀</span>
+                            <span style="font-size: 13px; color: #888; font-weight: bold;">HEART PIECE :</span>
+                            <span id="fragVal" style="font-size: 18px; color: #ff0080; font-weight: bold;">0</span>
+                        </div>
+                    </div>
+
+                    <div style="background: #111; padding: 10px 15px; border-radius: 6px; border: 1px solid #333; margin-top: auto;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                            <p style="margin:0; font-weight:bold; color:#888;">USER: <span style="color:var(--accent-cyan);">{{ username }}</span></p>
+                            <span class="levelText" style="font-size: 16px;">LV.<span id="levelVal">1</span></span>
+                        </div>
+                        <div class="expContainer" style="margin-top: 8px;"><div id="expBar" class="expFill"></div></div>
+                        <div style="text-align:right; font-size:11px; color:#aaa; margin-top:5px;">EXP: <span id="expVal">0</span> / <span id="maxExpVal">100</span></div>
+                    </div>
+
                 </div>
-                <div style="margin-top: 15px; text-align: right;"><a href="/logout" class="logoutLink">[ SYSTEM LOGOUT ]</a></div>
             </div>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal">
+        <div class="modal-content" style="max-width: 300px;">
+            <span class="close" onclick="closeModalAnimation(this.closest('.modal'))">&times;</span>
+            <h2 style="color:var(--accent-cyan); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px; font-size:20px;">⚙️ SYSTEM SETTINGS</h2>
+            
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:20px;">
+                <span style="font-size:11px; color:#666; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">PREFERENCES</span>
+                <button disabled style="background:#111; border:1px solid #222; color:#555; padding:12px 15px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; font-family:inherit;">
+                    <span>🔊 사운드 설정</span><span style="font-size:10px; color:#444;">[지원 예정]</span>
+                </button>
+                <button disabled style="background:#111; border:1px solid #222; color:#555; padding:12px 15px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; font-family:inherit;">
+                    <span>🖥️ 화면 효과</span><span style="font-size:10px; color:#444;">[지원 예정]</span>
+                </button>
+                <hr style="border: 0; border-top: 1px dashed #333; width:100%; margin:15px 0;">
+                <span style="font-size:11px; color:#666; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">ACCOUNT</span>
+                <a href="/logout" style="text-decoration:none;">
+                    <button style="width:100%; display:block; padding:14px; font-size:14px; background:rgba(255,85,85,0.05); border:1px solid rgba(255,85,85,0.3); color:#ff5555; font-weight:bold; border-radius:4px; cursor:pointer; transition:0.2s;" onmouseover="this.style.background='rgba(255,85,85,0.2)'; this.style.boxShadow='0 0 10px rgba(255,85,85,0.2)';" onmouseout="this.style.background='rgba(255,85,85,0.05)'; this.style.boxShadow='none';">
+                        [ SYSTEM LOGOUT ]
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div id="upgradeModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModalAnimation(this.closest('.modal'))">&times;</span>
+            <h2 style="color:#ff0080; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">🫀 신체 개조 (UPGRADE)</h2>
+            <div id="upgradeList"></div>
         </div>
     </div>
 
     <div id="archiveModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="document.getElementById('archiveModal').style.display='none'">&times;</span>
+            <span class="close" onclick="closeModalAnimation(this.closest('.modal'))">&times;</span>
             <h2 style="color:var(--accent-cyan); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📂 SURVIVAL LOGS</h2>
             <div id="archiveList" style="max-height:400px; overflow-y:auto; padding-right:5px;"></div>
         </div>
@@ -52,7 +120,7 @@
 
     <div id="itemModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="document.getElementById('itemModal').style.display='none'">&times;</span>
+            <span class="close" onclick="closeModalAnimation(this.closest('.modal'))">&times;</span>
             <div class="item-header"><span id="modalItemName" class="item-name"></span><span id="modalItemType" class="item-type"></span></div>
             <div id="modalItemDesc" class="item-desc"></div>
             <div id="modalItemStat" class="item-stat"></div>
@@ -62,7 +130,7 @@
 
     <div id="locationModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="document.getElementById('locationModal').style.display='none'">&times;</span>
+            <span class="close" onclick="closeModalAnimation(this.closest('.modal'))">&times;</span>
             <div class="loc-header">
                 <div class="loc-header-top">
                     <span id="modalLocName" class="loc-title">장소 이름</span>
@@ -79,20 +147,36 @@
 
     <script type="module">
         import { Main } from "{{ url_for('static', filename='js/main.js') }}";
-        
-        window.onclick = (event) => {
-            const archiveModal = document.getElementById('archiveModal');
-            const itemModal = document.getElementById('itemModal');
-            const locationModal = document.getElementById('locationModal');
-            if (event.target == archiveModal) archiveModal.style.display = "none";
-            if (event.target == itemModal) itemModal.style.display = "none";
-            if (event.target == locationModal) locationModal.style.display = "none";
-        };
+    </script>
 
-        const openBtn = document.getElementById('openArchiveBtn');
-        if (openBtn) {
-            openBtn.onclick = () => document.getElementById('archiveModal').style.display = "block";
+    <script>
+        window.openModalAnimation = function(modalId) {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            const content = modal.querySelector('.modal-content');
+            modal.style.display = "block";
+            void modal.offsetWidth; 
+            modal.classList.add('active');
+            content.classList.add('appears');
         }
+
+        window.closeModalAnimation = function(modal) {
+            if (!modal) return;
+            const content = modal.querySelector('.modal-content');
+            modal.classList.remove('active');
+            content.classList.remove('appears');
+            setTimeout(() => {
+                if (!modal.classList.contains('active')) {
+                    modal.style.display = "none";
+                }
+            }, 400); 
+        }
+
+        window.onclick = (event) => {
+            if (event.target.classList.contains('modal')) {
+                closeModalAnimation(event.target);
+            }
+        };
     </script>
 </body>
 </html>

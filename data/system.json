@@ -17,21 +17,33 @@
             "<br>🚫 <b>[접근 불가]</b> 보안 잠금 장치가 작동 중입니다. <span style='color:#ff5555'>({keyName} 필요)</span>"
         ],
         "no_fragment": [
-            "<span style='color:red'>심장 조각이 부족합니다. (필요: {count}개)</span>"
+            "<br><span style='color:red'>HEART PIECE이 부족합니다. (필요: {count}개)</span>"
         ],
         "no_kit": [
-            "<span style='color:red'>구급약이 없습니다.</span>"
+            "<br><span style='color:red'>구급약이 없습니다.</span>"
         ]
     },
     "info": {
         "revive_success": [
-            "<span style='color:#4caf50'><b>[시스템]</b> 생명 반응 복구 완료. (HP {hp} 회복)</span>"
+            "<br><span style='color:#4caf50'><b>[시스템]</b> 생명 반응 복구 완료. (HP {hp} 회복)</span>"
         ],
         "key_desc": [
             "<br>🔑 <b>{name}</b>입니다. 잠긴 문을 열 때 자동으로 사용됩니다."
         ],
         "unlock_door": [
-            "<br>🔓 <b>{keyName}</b> 승인. <span style='color:#4caf50'>[보안 해제 완료]</span><br>이제 자유롭게 출입할 수 있습니다."
+            "<br>🔓 <b>{keyName}</b> 승인. <span style='color:#4caf50'>[보안 해제 완료]</span> 이제 자유롭게 출입할 수 있습니다."
+        ],
+        "upgrade_success": [
+            "<br><span style='color:#ff0080; font-weight:bold;'>🫀 신체 능력이 개조되었습니다. {stat}</span>"
+        ],
+        "upgrades_atk": [
+            "<span style='color:#ff2a2a; font-weight:bold;'>[ ATK +1 ]</span>"
+        ],
+        "upgrades_mhp": [
+            "<span style='color:#ff5555; font-weight:bold;'>[ MHP +5 ]</span>"
+        ],
+        "upgrades_ivd": [
+            "<span style='color:#00e5ff; font-weight:bold;'>[ IVD +0.1% ]</span>"
         ]
     },
     "warning": {
@@ -61,8 +73,8 @@
             "<br>✨ <b>[{name}]</b> 획득."
         ],
         "fragment_found": [
-            "<br><span style='color:#ff0080'>🫀 잔해 속에서 <b>[심장 조각 {amount}개]</b>를 찾았습니다.</span>",
-            "<br><span style='color:#ff0080'>🫀 붉게 빛나는 <b>[심장 조각 {amount}개]</b>를 발견했습니다.</span>"
+            "<br><span style='color:#ff0080'>🫀 잔해 속에서 <b>[HEART PIECE {amount}개]</b>를 찾았습니다.</span>",
+            "<br><span style='color:#ff0080'>🫀 붉게 빛나는 <b>[HEART PIECE {amount}개]</b>를 발견했습니다.</span>"
         ],
         "note_found": [
             "<br><span style='color:#00e5ff'>📜 <b>[{title}]</b>을(를) 발견하여 아카이브에 기록했습니다.</span>",
@@ -106,11 +118,15 @@
             "<br><span style='color:#ff8a80'>💥 <b>{name}</b>의 반격!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>",
             "<br><span style='color:#ff8a80'>🩸 피격당했습니다!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>"
         ],
+        "player_evade": [
+            "<br><span style='color:#00e5ff; font-weight:bold;'>💫 반사신경 발동! 적의 공격을 완벽히 회피했습니다!</span>",
+            "<br><span style='color:#00e5ff; font-weight:bold;'>💨 아슬아슬하게 적의 공격을 피했습니다! (데미지 무효화)</span>"
+        ],
         "enemy_dead": [
             "<br><span style='color:#888'>💀 <b>{name}</b> 처치.</span> <span style='color:#00e5ff; font-weight:bold;'>[ EXP +{exp} ]</span>"
         ],
         "fragment_drop": [
-            " <span style='color:#ff0080'>🫀 [심장조각 +{count}]</span>"
+            " <span style='color:#ff0080; font-weight:bold;'>[ 🫀 HEART PIECE +{count} ]</span>"
         ],
         "run_success": [
             "<br>🏃‍♂️ <b>도주 성공!</b> 따돌렸습니다.",

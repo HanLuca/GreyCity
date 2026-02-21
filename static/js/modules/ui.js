@@ -7,6 +7,7 @@ export class UIManager {
             hpVal: document.getElementById('hpVal'),
             maxHpVal: document.getElementById('maxHpVal'),
             atkVal: document.getElementById('atkVal'),
+            evaVal: document.getElementById('evaVal'),
             
             levelVal: document.getElementById('levelVal'),
             expVal: document.getElementById('expVal'),
@@ -35,7 +36,10 @@ export class UIManager {
             modalLocCoord: document.getElementById('modalLocCoord'),
             modalLocStatus: document.getElementById('modalLocStatus'),
             modalLocDesc: document.getElementById('modalLocDesc'),
-            modalLocInfo: document.getElementById('modalLocInfo')
+            modalLocInfo: document.getElementById('modalLocInfo'),
+
+            upgradeModal: document.getElementById('upgradeModal'),
+            upgradeList: document.getElementById('upgradeList')
         };
     }
 
@@ -57,6 +61,9 @@ export class UIManager {
         this.els.maxHpVal.innerText = userData.maxHp;
         this.els.atkVal.innerText = stats.attack;
 
+        const evdLvl = userData.upgrades ? userData.upgrades.evasion : 0;
+        if(this.els.evaVal) this.els.evaVal.innerText = (evdLvl * 0.1).toFixed(1);
+
         this.els.levelVal.innerText = userData.level;
         this.els.expVal.innerText = userData.exp;
         this.els.maxExpVal.innerText = userData.maxExp;
@@ -75,6 +82,57 @@ export class UIManager {
         this.renderButtons(userData, connectedLocations, locationInfo.searchable, actionCallback);
         this.renderInventory(userData, itemData, actionCallback);
         this.renderArchive(archiveData);
+        this.renderUpgrade(userData, actionCallback);
+    }
+
+    renderUpgrade(userData, callback) {
+        if (!this.els.upgradeList) return;
+        const upg = userData.upgrades || {atk: 0, hp: 0, evasion: 0};
+        const frags = userData.heart_fragments || 0;
+        
+        this.els.upgradeList.innerHTML = '';
+
+        const configs = [
+            { key: 'hp', name: '체력 개조', color: '#4caf50', current: `+${upg.hp * 5}`, next: `+${(upg.hp+1)*5}`, desc: '최대 체력이 5 증가합니다.', lvl: upg.hp },
+            { key: 'atk', name: '근력 개조', color: '#ff9e80', current: `+${upg.atk}`, next: `+${upg.atk+1}`, desc: '기본 공격력이 1 증가합니다.', lvl: upg.atk },
+            { key: 'evasion', name: '반사신경 개조', color: '#00e5ff', current: `${(upg.evasion*0.1).toFixed(1)}%`, next: `${((upg.evasion+1)*0.1).toFixed(1)}%`, desc: '전투 중 적의 공격을 무시할 확률이 0.1% 증가합니다.', lvl: upg.evasion }
+        ];
+
+        configs.forEach(conf => {
+            const cost = 5 + (conf.lvl * 2);
+            const canBuy = frags >= cost;
+            
+            const row = document.createElement('div');
+            row.style = "background:#161616; border:1px solid #333; padding:15px; margin-bottom:12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
+            
+            row.innerHTML = `
+                <div>
+                    <div style="color:${conf.color}; font-weight:bold; font-size:16px; text-shadow: 0 0 5px rgba(${this.hexToRgb(conf.color)}, 0.3);">
+                        ${conf.name} <span style="font-size:12px; color:#888; font-weight:normal;">(Lv.${conf.lvl})</span>
+                    </div>
+                    <div style="font-size:12px; color:#bbb; margin-top:6px; letter-spacing: 0.5px;">${conf.desc}</div>
+                    <div style="font-size:12px; color:#888; margin-top:4px;">
+                        누적 증가량: <span style="color:#ddd;">${conf.current}</span> ➔ <span style="color:${conf.color}; font-weight:bold;">${conf.next}</span>
+                    </div>
+                </div>
+                <button class="upg-btn" style="flex:none; width:70px; height:45px; background:#222; border:1px solid ${canBuy ? conf.color : '#444'}; color:${canBuy ? conf.color : '#666'}; border-radius:4px; cursor:${canBuy ? 'pointer' : 'not-allowed'}; opacity:${canBuy ? '1' : '0.5'}; font-weight:bold; font-size:14px; transition:0.2s;">
+                    🫀 ${cost}
+                </button>
+            `;
+            
+            const btn = row.querySelector('.upg-btn');
+            if(canBuy) {
+                btn.onmouseover = () => { btn.style.background = conf.color; btn.style.color = "#000"; };
+                btn.onmouseout = () => { btn.style.background = "#222"; btn.style.color = conf.color; };
+                btn.onclick = () => callback('upgrade', conf.key);
+            }
+            this.els.upgradeList.appendChild(row);
+        });
+    }
+
+    hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '255, 255, 255';
     }
 
     renderButtons(userData, connectedLocations, isSearchable, callback) {
@@ -85,7 +143,7 @@ export class UIManager {
             const hasKit = userData.inventory.includes('first_aid_kit');
 
             const fragBtn = document.createElement('button');
-            fragBtn.innerHTML = `🫀 <b>심장 조각 사용</b><br><span style="font-size:11px; color:#aaa;">(필요: ${fragCost}개)</span>`;
+            fragBtn.innerHTML = `🫀 <b>HEART PIECE 사용</b><br><span style="font-size:11px; color:#aaa;">(필요: ${fragCost}개)</span>`;
             fragBtn.style.border = "1px solid #ff0080";
             fragBtn.style.color = "#ff0080";
             if (userData.heart_fragments < fragCost) {
@@ -230,7 +288,7 @@ export class UIManager {
                 alert("이미 장착 중입니다.");
             } else if (!btnDisabled) {
                 callback('useItem', itemKey);
-                modal.style.display = 'none';
+                window.closeModalAnimation(modal);
             }
         };
 
@@ -240,12 +298,12 @@ export class UIManager {
             } else {
                 if (confirm(`정말 [${item.name}]을(를) 버리시겠습니까?`)) {
                     callback('discardItem', itemKey);
-                    modal.style.display = 'none';
+                    window.closeModalAnimation(modal);
                 }
             }
         };
 
-        modal.style.display = "block";
+        window.openModalAnimation('itemModal');
     }
 
     openLocationModal(locationData, enemyData, userData, locId) {
@@ -283,26 +341,23 @@ export class UIManager {
             this.els.modalLocDesc.innerText = locationData.description || "설명이 없는 지역입니다.";
 
             let html = "";
-            html += `<div class="loc-section">`;
-            html += `<div class="loc-label">SAFETY STATUS</div>`;
-            if (level === "SAFE") html += `<div class="status-box status-safe">🛡 안전 지역 (Safe Zone)</div>`;
-            else if (level === "NORMAL") html += `<div class="status-box status-normal">⚠ 주의 지역 (Caution Zone)</div>`;
-            else html += `<div class="status-box status-danger">☠ 위험 지역 (Danger Zone)</div>`;
-            html += `</div>`;
-
             if (level !== "SAFE" && locationData.spawnList && locationData.spawnList.length > 0 && enemyData) {
                 html += `<div class="loc-section"><div class="loc-label">DETECTED THREATS</div><div class="enemy-grid">`;
                 locationData.spawnList.forEach(enemyId => {
                     const enemy = enemyData[enemyId];
                     if (enemy) {
                         let gradeClass = `enemy-grade-1`;
-                        let icon = "Rat";
+                        let icon = "🐀";
                         if (enemy.grade >= 3) { gradeClass = `enemy-grade-3`; icon = "🧟"; }
                         if (enemy.grade >= 4) { gradeClass = `enemy-grade-4`; icon = "☠"; }
+                        if (enemy.grade >= 5) { gradeClass = `enemy-grade-5`; icon = "👿"; }
+
                         html += `<div class="enemy-badge ${gradeClass}"><span>${icon}</span><span>${enemy.name}</span></div>`;
                     }
                 });
                 html += `</div></div>`;
+            } else if (level !== "SAFE") {
+                 html += `<div class="loc-section"><div class="loc-label">THREATS</div><div style="color:#666; font-size:13px;">감지된 생명체가 없습니다.</div></div>`;
             }
 
             html += `<div class="loc-section"><div class="loc-label">SEARCH INTEL</div>`;
@@ -317,7 +372,7 @@ export class UIManager {
             this.els.modalLocInfo.innerHTML = html;
         }
 
-        modal.style.display = "block";
+        window.openModalAnimation('locationModal');
     }
 
     renderArchive(archiveData) {
@@ -328,7 +383,6 @@ export class UIManager {
             return;
         }
 
-        // 최신 수집 순으로 정렬하여 표시
         [...archiveData].reverse().forEach(note => {
             const div = document.createElement('div');
             div.className = 'note-item';
@@ -348,18 +402,21 @@ export class UIManager {
         this.els.miniMap.innerHTML = '';
         const connectedIds = connectedLocs ? connectedLocs.map(l => l.id) : [];
 
+        let currentNodeEl = null;
+
         Object.keys(allLocations).forEach(key => {
             const loc = allLocations[key];
             if (loc.coordinates) {
                 const node = document.createElement('div');
                 node.className = 'mapNode';
                 node.style.gridColumn = loc.coordinates.x + 1;
-                node.style.gridRow = loc.coordinates.y + 1;
+                node.style.gridRow = loc.coordinates.y + 2; 
                 node.innerText = loc.name.substring(0, 2);
 
                 if (key === currentId) {
                     node.classList.add('current');
                     node.innerText = "ME";
+                    currentNodeEl = node;
                 }
                 if (connectedIds.includes(key)) {
                     node.classList.add('connected');
@@ -369,5 +426,19 @@ export class UIManager {
                 this.els.miniMap.appendChild(node);
             }
         });
+
+        if (currentNodeEl) {
+            setTimeout(() => {
+                const wrapper = this.els.miniMap.parentElement;
+                const scrollX = currentNodeEl.offsetLeft - (wrapper.clientWidth / 2) + (currentNodeEl.clientWidth / 2);
+                const scrollY = currentNodeEl.offsetTop - (wrapper.clientHeight / 2) + (currentNodeEl.clientHeight / 2);
+                
+                wrapper.scrollTo({
+                    left: scrollX,
+                    top: scrollY,
+                    behavior: 'smooth'
+                });
+            }, 50);
+        }
     }
 }

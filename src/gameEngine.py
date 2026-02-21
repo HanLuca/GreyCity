@@ -36,6 +36,7 @@ class GameEngine:
             "inventory": [],
             "archive": [],
             "unlocked_places": [],
+            "upgrades": {"atk": 0, "hp": 0, "evasion": 0},
             "equipment": {"weapon": None, "armor": None},
             "logs": [welcome_msg],
             "status": "normal",
@@ -46,11 +47,13 @@ class GameEngine:
         if 'heart_fragments' not in userData: userData['heart_fragments'] = 0
         if 'unlocked_places' not in userData: userData['unlocked_places'] = []
         if 'archive' not in userData: userData['archive'] = []
+        if 'upgrades' not in userData: userData['upgrades'] = {"atk": 0, "hp": 0, "evasion": 0}
             
         defaults = {
             "level": 1, "exp": 0, "maxExp": 100, "hp": 100, "maxHp": 100,
             "attack": 10, "defense": 0, "currentLocation": "janitor_room",
             "inventory": [], "archive": [], "unlocked_places": [],
+            "upgrades": {"atk": 0, "hp": 0, "evasion": 0},
             "equipment": {"weapon": None, "armor": None}, "logs": [],
             "status": "normal", "combatData": None
         }
@@ -104,6 +107,33 @@ class GameEngine:
         userData = self.validateUserData(userData)
         if actionType == "useItem": return self.processItemUsage(userData, target)
         if actionType == "discardItem": return self.processItemDiscard(userData, target)
+
+        if actionType == "upgrade":
+            stat = target
+            lvl = userData['upgrades'].get(stat, 0)
+            cost = 5 + (lvl * 2) 
+            
+            if userData['heart_fragments'] >= cost:
+                userData['heart_fragments'] -= cost
+                userData['upgrades'][stat] = lvl + 1
+                
+                if stat == 'hp':
+                    userData['maxHp'] += 5
+                    userData['hp'] += 5
+                    msg_stat = self.getMsg('info', 'upgrades_mhp')
+
+                elif stat == 'atk':
+                    userData['attack'] += 1
+                    msg_stat = self.getMsg('info', 'upgrades_atk')
+
+                elif stat == 'evasion':
+                    msg_stat = self.getMsg('info', 'upgrades_ivd')
+                    
+                self.addLog(userData, self.getMsg('info', 'upgrade_success', stat=msg_stat))
+                
+            else:
+                self.addLog(userData, self.getMsg('error', 'no_fragment', count=cost))
+            return self.getGameResponse(userData)
 
         if userData['status'] == 'dead':
             if actionType == 'revive':
@@ -228,6 +258,7 @@ class GameEngine:
             dmg = random.randint(int(self.getTotalStats(userData)['attack'] * 0.8), int(self.getTotalStats(userData)['attack'] * 1.2))
             enemy['hp'] -= dmg
             message = self.getMsg('combat', 'player_attack', name=enemy['name'], dmg=dmg, enemy_hp=max(0, enemy['hp']), enemy_max_hp=enemy['maxHp'])
+            
             if enemy['hp'] <= 0:
                 userData['status'], userData['combatData'] = 'normal', None
                 exp = self.enemies[enemy['id']].get('exp', 0)
@@ -237,15 +268,21 @@ class GameEngine:
                 message += self.getMsg('combat', 'enemy_dead', name=enemy['name'], exp=exp) + self.getMsg('combat', 'fragment_drop', count=frag)
                 self.checkLevelUp(userData)
             else:
-                e_dmg = random.randint(int(enemy['attack'] * 0.8), int(enemy['attack'] * 1.2))
-                userData['hp'] -= e_dmg
-                message += self.getMsg('combat', 'enemy_attack', name=enemy['name'], dmg=e_dmg)
+                evasion_rate = userData.get('upgrades', {}).get('evasion', 0) * 0.001
+                if random.random() < evasion_rate:
+                    message += self.getMsg('combat', 'player_evade')
+                else:
+                    e_dmg = random.randint(int(enemy['attack'] * 0.8), int(enemy['attack'] * 1.2))
+                    userData['hp'] -= e_dmg
+                    message += self.getMsg('combat', 'enemy_attack', name=enemy['name'], dmg=e_dmg)
+                    
         elif actionType == "run":
             if random.random() > 0.4: userData['status'], userData['combatData'], message = 'normal', None, self.getMsg('combat', 'run_success')
             else:
                 e_dmg = random.randint(5, 10)
                 userData['hp'] -= e_dmg
                 message = self.getMsg('combat', 'run_fail') + self.getMsg('combat', 'run_fail_dmg', dmg=e_dmg)
+                
         if userData['hp'] <= 0: userData['hp'], userData['status'], message = 0, 'dead', message + self.getMsg('combat', 'player_dead')
         self.addLog(userData, message)
         return self.getGameResponse(userData)

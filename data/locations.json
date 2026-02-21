@@ -175,7 +175,7 @@
         "dangerLevel": "DANGER",
         "coordinates": {
             "x": 2,
-            "y": -1
+            "y": 5
         },
         "connectedTo": [
             "dark_tunnel",
