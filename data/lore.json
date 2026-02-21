@@ -2,7 +2,7 @@
     "note_janitor_diary": {
         "title": "낡은 당직실 일기",
         "content": "2025년 12월 14일. 지하상가 셔터를 내렸다. 밖은 이미 아수라장이지만 여긴 아직 조용하다. 역무실 녀석들이 지하 3층 통로에 대해 속닥거리는 걸 들었다. 통제구역 카드키는 역무실 금고에 보관한다던데...",
-        "dropLoc": "janitor_room",
+        "dropLoc": "central_control_room",
         "chance": 1.0
     },
     "note_station_memo": {

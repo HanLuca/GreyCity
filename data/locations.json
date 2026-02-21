@@ -1,192 +1,189 @@
 {
-    "janitor_room": {
-        "name": "낡은 당직실",
-        "description": "지하상가 구석에 있는 당직실입니다. 문을 잠글 수 있어 안전합니다.",
-        "dangerLevel": "SAFE",
-        "coordinates": {
-            "x": 2,
-            "y": 4
-        },
-        "connectedTo": [
-            "underground_mall",
-            "secret_bunker"
-        ],
-        "searchable": false,
-        "itemChance": 0
-    },
-    "underground_mall": {
-        "name": "지하상가 중앙",
-        "description": "깨진 유리창과 마네킹들이 널려있습니다. 서쪽은 화장실, 동쪽은 역무실, 남쪽은 개찰구입니다.",
-        "dangerLevel": "NORMAL",
-        "coordinates": {
-            "x": 2,
-            "y": 3
-        },
-        "connectedTo": [
-            "janitor_room",
-            "public_restroom",
-            "station_office",
-            "ticket_gates"
-        ],
-        "searchable": true,
-        "itemChance": 0.3,
-        "spawnRate": 0.3,
-        "spawnList": [
-            "giantRat"
-        ]
-    },
-    "public_restroom": {
-        "name": "훼손된 화장실",
-        "description": "지하상가 서쪽 끝입니다. 악취가 진동합니다.",
-        "dangerLevel": "NORMAL",
-        "coordinates": {
-            "x": 1,
-            "y": 3
-        },
-        "connectedTo": [
-            "underground_mall"
-        ],
-        "searchable": true,
-        "itemChance": 0.4,
-        "spawnRate": 0.4,
-        "spawnList": [
-            "acidRat"
-        ]
-    },
-    "station_office": {
-        "name": "역무원 사무실",
-        "description": "지하상가 동쪽입니다. 서류들이 흩날립니다. 중요한 열쇠가 있을지도 모릅니다.",
-        "dangerLevel": "NORMAL",
-        "coordinates": {
-            "x": 3,
-            "y": 3
-        },
-        "connectedTo": [
-            "underground_mall"
-        ],
-        "searchable": true,
-        "itemChance": 0.2,
-        "spawnRate": 0.4,
-        "spawnList": [
-            "starvingDrifter"
-        ]
-    },
-    "ticket_gates": {
-        "name": "지하철 개찰구",
-        "description": "지하 2층으로 내려가는 입구입니다. 붉은 비상등만이 깜빡입니다.",
-        "dangerLevel": "NORMAL",
-        "coordinates": {
-            "x": 2,
-            "y": 2
-        },
-        "connectedTo": [
-            "underground_mall",
-            "subway_platform"
-        ],
-        "searchable": true,
-        "itemChance": 0.1,
-        "spawnRate": 0.5,
-        "spawnList": [
-            "starvingDrifter",
-            "patient"
-        ]
-    },
-    "subway_platform": {
-        "name": "중앙 승강장",
-        "description": "스크린도어가 모두 부서져 있습니다. 선로에서 기괴한 울음소리가 들립니다.",
+    "electrical_room": {
+        "name": "전기실",
+        "description": "알 수 없는 공간입니다.",
         "dangerLevel": "DANGER",
-        "coordinates": {
-            "x": 2,
-            "y": 1
-        },
-        "connectedTo": [
-            "ticket_gates",
-            "vending_area",
-            "utility_room",
-            "dark_tunnel"
-        ],
-        "searchable": true,
-        "itemChance": 0.1,
-        "spawnRate": 0.6,
-        "spawnList": [
-            "patient",
-            "melter"
-        ]
-    },
-    "vending_area": {
-        "name": "자판기 쉼터",
-        "description": "승강장 서쪽 구석입니다. 부서진 자판기 틈새에 무언가 보입니다.",
-        "dangerLevel": "NORMAL",
-        "coordinates": {
-            "x": 1,
-            "y": 1
-        },
-        "connectedTo": [
-            "subway_platform"
-        ],
-        "searchable": true,
-        "itemChance": 0.5,
-        "spawnRate": 0.3,
-        "spawnList": [
-            "giantRat"
-        ]
-    },
-    "utility_room": {
-        "name": "배전반실",
-        "description": "승강장 동쪽 끝, 관계자 외 출입금지 구역입니다. 전기 스파크가 튀고 있습니다.",
-        "dangerLevel": "DANGER",
-        "coordinates": {
-            "x": 3,
-            "y": 1
-        },
-        "connectedTo": [
-            "subway_platform"
-        ],
-        "searchable": true,
-        "itemChance": 0.2,
-        "spawnRate": 0.5,
-        "spawnList": [
-            "screamer"
-        ]
-    },
-    "dark_tunnel": {
-        "name": "어둠 속 선로",
-        "description": "승강장 아래 깊은 터널입니다. 칠흑 같은 어둠 속에 거대한 철문이 보입니다.",
-        "dangerLevel": "DANGER",
-        "coordinates": {
-            "x": 2,
-            "y": 0
-        },
-        "connectedTo": [
-            "subway_platform",
-            "secret_bunker"
-        ],
-        "searchable": true,
-        "itemChance": 0.1,
-        "spawnRate": 0.8,
-        "spawnList": [
-            "melter",
-            "screamer"
-        ]
-    },
-    "secret_bunker": {
-        "name": "비밀 통제구역",
-        "description": "[접근 제한 구역] 지하철 공사 도중 발견된 미지의 공간입니다.",
-        "dangerLevel": "DANGER",
-        "coordinates": {
-            "x": 2,
-            "y": 5
-        },
-        "connectedTo": [
-            "dark_tunnel",
-            "janitor_room"
-        ],
         "requiresKey": "admin_card",
+        "spawnList": ["juggernaut", "chemical_mutant"],
+        "spawnRate": 0.6,
+        "connectedTo": ["gate_east", "ground_zero_east"],
+        "coordinates": {"x": 10, "y": 11},
         "searchable": true,
-        "itemChance": 0.3,
-        "spawnRate": 1.0,
-        "spawnList": [
-            "prototype_x"
-        ]
+        "itemChance": 0.5
+    },
+
+    "central_control_room": {
+        "name": "중앙 통제 관리실",
+        "description": "이 건물 전체에서 가장 뛰어난 보안을 자랑합니다.\n당신은 이곳으로 대피했습니다.",
+        "dangerLevel": "SAFE",
+        "spawnList": [],
+        "spawnRate": 0,
+        "connectedTo": ["1f_west_passage", "1f_east_passage"],
+        "coordinates": {"x": 10, "y": 10},
+        "searchable": true,
+        "itemChance": 0.1
+    },
+    "1f_west_passage": {
+        "name": "1층 서관 통로",
+        "description": "주변에서 음산한 기운이 느껴집니다.",
+        "dangerLevel": "NORMAL",
+        "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
+        "spawnRate": 0.1,
+        "connectedTo": ["1f_manage_office", "central_control_room"],
+        "coordinates": {"x": 9, "y": 10},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+    "1f_manage_office": {
+        "name": "1층 정문 관리실",
+        "description": "그저 평범한 복합 상점 건물입니다만..\n이상할 정도로 보안에 많은 신경을 씁니다.\n이 관리실도 그 중 하나고요.",
+        "dangerLevel": "NORMAL",
+        "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
+        "spawnRate": 0.2,
+        "connectedTo": ["1f_west_passage"],
+        "coordinates": {"x": 8, "y": 10},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+
+    "1f_east_passage": {
+        "name": "1층 동관 통로",
+        "description": "박살나 있는 유리창에서 누군가 넘나든 흔적이 보입니다.",
+        "dangerLevel": "NORMAL",
+        "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
+        "spawnRate": 0.1,
+        "connectedTo": ["central_control_room", "1f_stairs"],
+        "coordinates": {"x": 11, "y": 10},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+    "1f_stairs": {
+        "name": "1층 계단실",
+        "description": "일부분 무너지긴 했지만.. 올라갈만합니다.",
+        "dangerLevel": "NORMAL",
+        "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
+        "spawnRate": 0.3,
+        "connectedTo": ["1f_east_passage", "2f_stairs"],
+        "coordinates": {"x": 12, "y": 10},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+
+    "2f_stairs": {
+        "name": "2층 계단실",
+        "description": "밖에서 보기에 이 건물은 3층까지 있지만..\n이상하게도 계단은 찾을 수 없군요.",
+        "dangerLevel": "NORMAL",
+        "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
+        "spawnRate": 0.3,
+        "connectedTo": ["2f_shop_1", "1f_stairs"],
+        "coordinates": {"x": 12, "y": 9},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+    "2f_shop_1": {
+        "name": "2층 상점가",
+        "description": "이미 엉망이 되어버린 상점가입니다.",
+        "dangerLevel": "NORMAL",
+        "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
+        "spawnRate": 0.3,
+        "connectedTo": ["2f_shop_2", "2f_stairs"],
+        "coordinates": {"x": 11, "y": 9},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+    "2f_shop_2": {
+        "name": "2층 상점가",
+        "description": "이미 엉망이 되어버린 상점가입니다.",
+        "dangerLevel": "NORMAL",
+        "spawnList": ["mutated_rat", "wild_dog", "crazed_survivor"],
+        "spawnRate": 0.3,
+        "connectedTo": ["2f_shop_3", "2f_shop_1"],
+        "coordinates": {"x": 10, "y": 9},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+    "2f_shop_3": {
+        "name": "2층 상점가",
+        "description": "이미 엉망이 되어버린 상점가입니다.",
+        "dangerLevel": "DANGER",
+        "spawnList": ["crazed_survivor", "toxic_crawler", "security_bot"],
+        "spawnRate": 0.3,
+        "connectedTo": ["2f_admin_area", "2f_shop_2"],
+        "coordinates": {"x": 9, "y": 9},
+        "searchable": true,
+        "itemChance": 0.2
+    },
+    "2f_admin_area": {
+        "name": "관리자 구역",
+        "description": "무언가 숨기고 싶었나봅니다.\n생각보다 더 넓은 공간이군요.",
+        "dangerLevel": "DANGER",
+        "requiresKey": "master_keycard",
+        "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant"],
+        "spawnRate": 0.9,
+        "connectedTo": ["2f_shop_3", "3f_hidden_admin_area"],
+        "coordinates": {"x": 8, "y": 9},
+        "searchable": true,
+        "itemChance": 0.8
+    },
+
+    "3f_hidden_admin_area": {
+        "name": "숨겨진 관리자 구역",
+        "description": "3층이 이곳에 숨겨져있었네요.",
+        "dangerLevel": "DANGER",
+        "requiresKey": "master_keycard",
+        "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant"],
+        "spawnRate": 1.2,
+        "connectedTo": ["2f_admin_area", "3f_hidden_laboratory_1"],
+        "coordinates": {"x": 8, "y": 8},
+        "searchable": true,
+        "itemChance": 0.8
+    },
+    "3f_hidden_laboratory_1": {
+        "name": "숨겨진 연구실",
+        "description": "연구실처럼 보입니다.\n무엇을 연구하던걸까요?",
+        "dangerLevel": "DANGER",
+        "requiresKey": "security_card_1",
+        "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
+        "spawnRate": 1.2,
+        "connectedTo": ["3f_hidden_laboratory_2", "3f_hidden_admin_area"],
+        "coordinates": {"x": 9, "y": 8},
+        "searchable": true,
+        "itemChance": 0.8
+    },
+    "3f_hidden_laboratory_2": {
+        "name": "숨겨진 실험실",
+        "description": "여긴.. 무언가 생체실험을 행한 흔적이네요.\n대체 무엇을 실험하던 걸까요?",
+        "dangerLevel": "DANGER",
+        "requiresKey": "security_card_2",
+        "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
+        "spawnRate": 1.5,
+        "connectedTo": ["3f_hidden_isolation_ward", "3f_hidden_laboratory_1"],
+        "coordinates": {"x": 10, "y": 8},
+        "searchable": true,
+        "itemChance": 0.8
+    },
+    "3f_hidden_isolation_ward": {
+        "name": "숨겨진 격리실",
+        "description": "방대한 크기의 유리 격리실들이 즐비합니다.\n그런데.. 전부 깨져있군요.",
+        "dangerLevel": "DANGER",
+        "requiresKey": "security_card_3",
+        "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
+        "spawnRate": 2,
+        "connectedTo": ["3f_hidden_archive", "3f_hidden_laboratory_2"],
+        "coordinates": {"x": 11, "y": 8},
+        "searchable": true,
+        "itemChance": 0.8
+    },
+    "3f_hidden_archive": {
+        "name": "숨겨진 자료보관소",
+        "description": "엄청난 양의 자료가 보관되어있습니다.\n여기서 이 건물의 비밀을 찾을 수 있을까요?\n그런데... 좀 많이 위험해보입니다.",
+        "dangerLevel": "DANGER",
+        "requiresKey": "security_card_4",
+        "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
+        "spawnRate": 5,
+        "connectedTo": ["3f_hidden_isolation_ward"],
+        "coordinates": {"x": 12, "y": 8},
+        "searchable": true,
+        "itemChance": 0.8
     }
 }

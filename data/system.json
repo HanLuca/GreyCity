@@ -1,43 +1,45 @@
 {
     "system": {
         "welcome": [
-            "<span class='sys'>시스템: 7구역 생존자 네트워크 접속. 환영합니다.</span>"
+            "<span style='color:#888;'>🖥️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 7구역 생존자 네트워크에 접속했습니다. 환영합니다.</span>"
         ],
         "revive": [
-            "<span class='sys'>시스템: 응급 처치 가동. <span style='color:#4caf50; font-weight:bold;'>[ HP +50 ]</span></span>"
+            "<br>🖥️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 응급 소생 프로토콜 가동. <span style='color:#4caf50; font-weight:bold;'>[ HP +50 ]</span>"
         ],
         "level_up": [
-            "<br><span style='color:#00e5ff; font-weight:bold; font-size:1.1em;'>🎉 LEVEL UP! ( Lv.{level} )</span><br><span style='color:#4caf50; margin-left:10px;'>[ MaxHP +10 ]</span> <span style='color:#ff9e80'>[ ATK +2 ]</span>",
-            "<br><span style='color:#00e5ff; font-weight:bold; font-size:1.1em;'>🎉 신체 능력 향상! ( Lv.{level} )</span><br><span style='color:#aaa; margin-left:10px;'>모든 상태가 회복되었습니다.</span>"
+            "<br>✨ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 신체 능력이 향상되었습니다! (Lv.{level})<br><span style='color:#ff5555; margin-left:24px; font-weight:bold;'>[ MHP +10 ]</span> <span style='color:#ff9e80; font-weight:bold;'>[ ATK +2 ]</span>",
+            "<br>✨ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 레벨 업! 모든 상태가 회복되었습니다. (Lv.{level})<br><span style='color:#ff5555; margin-left:24px; font-weight:bold;'>[ MHP +10 ]</span> <span style='color:#ff9e80; font-weight:bold;'>[ ATK +2 ]</span>"
         ]
     },
     "error": {
         "locked": [
-            "<br>🔒 <b>[잠김]</b> 문이 굳게 잠겨있습니다. <span style='color:#ff5555'>({keyName} 필요)</span>",
-            "<br>🚫 <b>[접근 불가]</b> 보안 잠금 장치가 작동 중입니다. <span style='color:#ff5555'>({keyName} 필요)</span>"
+            "<br>🔒 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 보안 잠금 장치가 작동 중입니다. <span style='color:#ff5555'>({keyName} 필요)</span>"
         ],
         "no_fragment": [
-            "<br><span style='color:red'>HEART PIECE이 부족합니다. (필요: {count}개)</span>"
+            "<br>⚠️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> HEART PIECE가 부족합니다. (필요: {count}개)"
         ],
         "no_kit": [
-            "<br><span style='color:red'>구급약이 없습니다.</span>"
+            "<br>⚠️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 구급약이 없습니다."
+        ],
+        "cannot_discard": [
+            "<br>⚠️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 중요 아이템은 폐기할 수 없습니다."
         ]
     },
     "info": {
         "revive_success": [
-            "<br><span style='color:#4caf50'><b>[시스템]</b> 생명 반응 복구 완료. (HP {hp} 회복)</span>"
+            "<br>🖥️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 생명 반응 복구 완료. <span style='color:#4caf50; font-weight:bold;'>[ HP {hp} 회복 ]</span>"
         ],
-        "key_desc": [
-            "<br>🔑 <b>{name}</b>입니다. 잠긴 문을 열 때 자동으로 사용됩니다."
+        "important_desc": [
+            "<br>⭐ <b><span style='color:#ffd700'>[ITEM]</span></b> {name} : 중요한 아이템입니다. 특정 상황에서 자동으로 사용됩니다."
         ],
         "unlock_door": [
-            "<br>🔓 <b>{keyName}</b> 승인. <span style='color:#4caf50'>[보안 해제 완료]</span> 이제 자유롭게 출입할 수 있습니다."
+            "<br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> {keyName} 승인. 해당 구역의 보안이 영구적으로 해제되었습니다."
         ],
         "upgrade_success": [
-            "<br><span style='color:#ff0080; font-weight:bold;'>🫀 신체 능력이 개조되었습니다. {stat}</span>"
+            "<br>🫀 <b><span style='color:#ff0080'>[UPGRADE]</span></b> 신체 개조 완료. {stat}"
         ],
         "upgrades_atk": [
-            "<span style='color:#ff2a2a; font-weight:bold;'>[ ATK +1 ]</span>"
+            "<span style='color:#ff9e80; font-weight:bold;'>[ ATK +1 ]</span>"
         ],
         "upgrades_mhp": [
             "<span style='color:#ff5555; font-weight:bold;'>[ MHP +5 ]</span>"
@@ -48,98 +50,85 @@
     },
     "warning": {
         "boss_appear": [
-            "<br><span style='color:#bd00ff; font-weight:bold; font-size:1.2em;'>⚠ [경고] {name} 출현!!!</span>",
-            "<br><span style='color:#bd00ff; font-weight:bold; font-size:1.2em;'>☠ [DANGER] {name}이(가) 당신을 노립니다!</span>"
+            "<br><span style='color:#bd00ff; font-weight:bold; font-size:1.1em;'>⚠️ [DANGER] 강력 개체 '{name}'(이)가 당신을 노립니다!</span>"
         ]
     },
     "move": {
         "success": [
-            "<br>👣 <b>{name}</b>(으)로 이동.",
-            "<br>🚶 <b>{name}</b> 진입.",
-            "<br>🏃 <b>{name}</b> 도착."
+            "<br>👣 <b><span style='color:#aaa'>[MOVE]</span></b> {name}(으)로 이동했습니다.",
+            "<br>👣 <b><span style='color:#aaa'>[MOVE]</span></b> {name}에 진입했습니다."
         ],
         "fail": [
-            "<br>❌ 이동 불가 (막힌 길)",
-            "<br>🚫 진입할 수 없는 구역입니다."
+            "<br>❌ <b><span style='color:#aaa'>[MOVE]</span></b> 진입할 수 없는 구역입니다."
         ]
     },
     "search": {
         "enemy_found": [
-            "<br><span style='color:#ff5555; font-weight:bold;'>⚠ <b>{name}</b> 발견! 전투 개시!</span>",
-            "<br><span style='color:#ff5555; font-weight:bold;'>⚠ <b>{name}</b>(이)가 기습했습니다!</span>"
+            "<br>⚠️ <b><span style='color:#ffca28'>[EXPLORE]</span></b> {name} 발견! 전투가 시작됩니다."
         ],
         "item_found": [
-            "<br>✨ <b>[{name}]</b> 발견.",
-            "<br>✨ <b>[{name}]</b> 획득."
+            "<br>🔍 <b><span style='color:#ffca28'>[EXPLORE]</span></b> {name} 획득."
         ],
         "fragment_found": [
-            "<br><span style='color:#ff0080'>🫀 잔해 속에서 <b>[HEART PIECE {amount}개]</b>를 찾았습니다.</span>",
-            "<br><span style='color:#ff0080'>🫀 붉게 빛나는 <b>[HEART PIECE {amount}개]</b>를 발견했습니다.</span>"
+            "<br>🔍 <b><span style='color:#ffca28'>[EXPLORE]</span></b> 붉게 빛나는 조각 발견. <span style='color:#ff0080; font-weight:bold;'>[ 🫀 +{amount} ]</span>"
         ],
         "note_found": [
-            "<br><span style='color:#00e5ff'>📜 <b>[{title}]</b>을(를) 발견하여 아카이브에 기록했습니다.</span>",
-            "<br><span style='color:#00e5ff'>📜 낡은 기록 <b>[{title}]</b>을(를) 확보했습니다. (아카이브 저장)</span>"
+            "<br>📜 <b><span style='color:#ffca28'>[EXPLORE]</span></b> 낡은 기록 '{title}' 획득. (아카이브 저장)"
         ],
         "empty": [
-            "<br>💨 아무것도 없습니다.",
-            "<br>🍂 빈털터리군요.",
-            "<br>🐀 쥐새끼 한 마리 없습니다."
+            "<br>💨 <b><span style='color:#ffca28'>[EXPLORE]</span></b> 주변을 탐색했으나 아무것도 없습니다."
         ]
     },
     "item": {
         "use_consumable": [
-            "<br>💊 <b>{name}</b> 사용 <span style='color:#4caf50; font-weight:bold;'>[ HP +{heal} ]</span>",
-            "<br>😋 섭취 완료 <span style='color:#4caf50; font-weight:bold;'>[ HP +{heal} ]</span>"
+            "<br>🎒 <b><span style='color:#4caf50'>[ITEM]</span></b> {name} 사용. <span style='color:#4caf50; font-weight:bold;'>[ HP +{heal} ]</span>"
         ],
         "use_first_aid": [
-            "<br>💊 <b>구급약</b>으로 치료했습니다. <span style='color:#4caf50'>( HP +{heal} )</span>"
+            "<br>🎒 <b><span style='color:#4caf50'>[ITEM]</span></b> 구급약 사용. <span style='color:#4caf50; font-weight:bold;'>[ HP +{heal} ]</span>"
         ],
         "equip_weapon": [
-            "<br>⚔ <b>{name}</b> 장착 <span style='color:#ff9e80; font-weight:bold;'>[ ATK +{power} ]</span>",
-            "<br>⚔ 무기 교체 <span style='color:#ff9e80; font-weight:bold;'>[ ATK +{power} ]</span>"
+            "<br>🎒 <b><span style='color:#4caf50'>[ITEM]</span></b> {name} 장착. <span style='color:#ff9e80; font-weight:bold;'>[ ATK +{power} ]</span>"
         ],
         "already_equipped": [
-            "<br>⚔ 이미 장착하고 있습니다."
+            "<br>⚠️ <b><span style='color:#4caf50'>[ITEM]</span></b> 이미 장착 중인 장비입니다."
         ],
         "discard": [
-            "<br>🗑 <b>{name}</b> 버림."
+            "<br>🗑️ <b><span style='color:#4caf50'>[ITEM]</span></b> {name} 폐기 완료."
+        ],
+        "unequip": [
+            "<br>🎒 <b><span style='color:#4caf50'>[ITEM]</span></b> {name} 장착 해제."
         ]
     },
     "combat": {
         "spawn": [
-            "<br><span style='color:#ff5555; font-weight:bold; border:1px solid #ff5555; padding:2px 5px;'>⚠ 경보</span> 전방에 <b>{name}</b> 출현!"
+            "<br><span style='color:#ff5555'>⚠️ <b>[BATTLE]</b> 전방에 {name} 출현!</span>"
         ],
         "player_attack": [
-            "<br><span style='color:#ddd'>⚔ <b>{name}</b> 타격!</span> <span style='color:#ffca28; font-weight:bold;'>-{dmg}</span> <span style='color:#888; font-size:0.9em;'>(HP: {enemy_hp}/{enemy_max_hp})</span>",
-            "<br><span style='color:#ddd'>👊 <b>{name}</b> 적중!</span> <span style='color:#ffca28; font-weight:bold;'>-{dmg}</span> <span style='color:#888; font-size:0.9em;'>(HP: {enemy_hp}/{enemy_max_hp})</span>",
-            "<br><span style='color:#ddd'>🔪 <b>{name}</b> 베기!</span> <span style='color:#ffca28; font-weight:bold;'>-{dmg}</span> <span style='color:#888; font-size:0.9em;'>(HP: {enemy_hp}/{enemy_max_hp})</span>"
+            "<br>⚔️ <b><span style='color:#ff5555'>[BATTLE]</span></b> {name} 타격! <span style='color:#ffca28; font-weight:bold;'>-{dmg}</span> <span style='color:#888; font-size:0.9em;'>(HP: {enemy_hp}/{enemy_max_hp})</span>"
         ],
         "enemy_attack": [
-            "<br><span style='color:#ff8a80'>💥 <b>{name}</b>의 반격!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>",
-            "<br><span style='color:#ff8a80'>🩸 피격당했습니다!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>"
+            "<br>🩸 <b><span style='color:#ff5555'>[BATTLE]</span></b> {name}의 공격! <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>"
         ],
         "player_evade": [
-            "<br><span style='color:#00e5ff; font-weight:bold;'>💫 반사신경 발동! 적의 공격을 완벽히 회피했습니다!</span>",
-            "<br><span style='color:#00e5ff; font-weight:bold;'>💨 아슬아슬하게 적의 공격을 피했습니다! (데미지 무효화)</span>"
+            "<br>💨 <b><span style='color:#ff5555'>[BATTLE]</span></b> 적의 공격을 회피했습니다! <span style='color:#00e5ff; font-weight:bold;'>[ 데미지 무효화 ]</span>"
         ],
         "enemy_dead": [
-            "<br><span style='color:#888'>💀 <b>{name}</b> 처치.</span> <span style='color:#00e5ff; font-weight:bold;'>[ EXP +{exp} ]</span>"
+            "<br>💀 <b><span style='color:#ff5555'>[BATTLE]</span></b> {name} 처치. <span style='color:#00e5ff; font-weight:bold;'>[ EXP +{exp} ]</span>"
         ],
         "fragment_drop": [
-            " <span style='color:#ff0080; font-weight:bold;'>[ 🫀 HEART PIECE +{count} ]</span>"
+            " <span style='color:#ff0080; font-weight:bold;'>[ 🫀 +{count} ]</span>"
         ],
         "run_success": [
-            "<br>🏃‍♂️ <b>도주 성공!</b> 따돌렸습니다.",
-            "<br>💨 전장에서 이탈했습니다."
+            "<br>🏃 <b><span style='color:#ff5555'>[BATTLE]</span></b> 도주 성공! 전장에서 이탈했습니다."
         ],
         "run_fail": [
-            "<br>🚫 <b>도주 실패!</b> 적이 너무 빠릅니다."
+            "<br>🚫 <b><span style='color:#ff5555'>[BATTLE]</span></b> 도주 실패! 적이 앞을 가로막습니다."
         ],
         "run_fail_dmg": [
-            "<br><span style='color:#ff8a80'>💥 도망치다 잡혔습니다!</span> <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>"
+            " <span style='color:#ff5555; font-weight:bold;'>[ HP -{dmg} ]</span>"
         ],
         "player_dead": [
-            "<br><div style='text-align:center; color:red; font-weight:bold; margin-top:20px; font-size:1.5em;'>✝ B L A C K O U T ✝</div>"
+            "<br><div style='text-align:center; color:#ff2a2a; font-weight:bold; margin-top:20px; font-size:1.5em; letter-spacing: 2px;'>☠️ B L A C K O U T ☠️</div>"
         ]
     }
 }

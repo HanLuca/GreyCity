@@ -32,11 +32,11 @@ class GameEngine:
             "hp": 100, "maxHp": 100,
             "attack": 10, "defense": 0,
             "heart_fragments": 0,
-            "currentLocation": "janitor_room", 
+            "currentLocation": "central_control_room", 
             "inventory": [],
             "archive": [],
             "unlocked_places": [],
-            "upgrades": {"atk": 0, "hp": 0, "evasion": 0},
+            "upgrades": {"upgrades_atk": 0, "upgrades_hp": 0, "upgrades_evasion": 0},
             "equipment": {"weapon": None, "armor": None},
             "logs": [welcome_msg],
             "status": "normal",
@@ -47,13 +47,13 @@ class GameEngine:
         if 'heart_fragments' not in userData: userData['heart_fragments'] = 0
         if 'unlocked_places' not in userData: userData['unlocked_places'] = []
         if 'archive' not in userData: userData['archive'] = []
-        if 'upgrades' not in userData: userData['upgrades'] = {"atk": 0, "hp": 0, "evasion": 0}
+        if 'upgrades' not in userData: userData['upgrades'] = {"upgrades_atk": 0, "upgrades_hp": 0, "upgrades_evasion": 0}
             
         defaults = {
             "level": 1, "exp": 0, "maxExp": 100, "hp": 100, "maxHp": 100,
-            "attack": 10, "defense": 0, "currentLocation": "janitor_room",
+            "attack": 10, "defense": 0, "currentLocation": "central_control_room",
             "inventory": [], "archive": [], "unlocked_places": [],
-            "upgrades": {"atk": 0, "hp": 0, "evasion": 0},
+            "upgrades": {"upgrades_atk": 0, "upgrades_hp": 0, "upgrades_evasion": 0},
             "equipment": {"weapon": None, "armor": None}, "logs": [],
             "status": "normal", "combatData": None
         }
@@ -61,7 +61,7 @@ class GameEngine:
             if key not in userData: userData[key] = val
         
         if userData['currentLocation'] not in self.locations:
-             userData['currentLocation'] = "janitor_room"
+             userData['currentLocation'] = "central_control_room"
         return userData
 
     def getTotalStats(self, userData):
@@ -107,6 +107,7 @@ class GameEngine:
         userData = self.validateUserData(userData)
         if actionType == "useItem": return self.processItemUsage(userData, target)
         if actionType == "discardItem": return self.processItemDiscard(userData, target)
+        if actionType == "unequipItem": return self.processItemUnequip(userData, target)
 
         if actionType == "upgrade":
             stat = target
@@ -117,20 +118,21 @@ class GameEngine:
                 userData['heart_fragments'] -= cost
                 userData['upgrades'][stat] = lvl + 1
                 
-                if stat == 'hp':
+                msg_stat = ""
+                
+                if stat == 'upgrades_hp':
                     userData['maxHp'] += 5
                     userData['hp'] += 5
                     msg_stat = self.getMsg('info', 'upgrades_mhp')
 
-                elif stat == 'atk':
+                elif stat == 'upgrades_atk':
                     userData['attack'] += 1
                     msg_stat = self.getMsg('info', 'upgrades_atk')
 
-                elif stat == 'evasion':
+                elif stat == 'upgrades_evasion':
                     msg_stat = self.getMsg('info', 'upgrades_ivd')
                     
                 self.addLog(userData, self.getMsg('info', 'upgrade_success', stat=msg_stat))
-                
             else:
                 self.addLog(userData, self.getMsg('error', 'no_fragment', count=cost))
             return self.getGameResponse(userData)
@@ -165,7 +167,7 @@ class GameEngine:
                     else:
                         if requiredKey in userData['inventory']:
                             userData['unlocked_places'].append(target)
-                            userData['inventory'].remove(requiredKey)
+                            # [수정됨] 중요 아이템(키)은 사용 후 소멸되지 않고 영구 보존됨
                             message += self.getMsg('info', 'unlock_door', keyName=self.items[requiredKey]['name'])
                             can_enter = True
                         else:
@@ -204,12 +206,20 @@ class GameEngine:
                                 event_happened = True
                                 break
                 if not event_happened and random.random() < currentLocData.get('itemChance', 0):
-                    valid_items = [k for k, v in self.items.items() if v['type'] != 'currency']
-                    weights = [self.items[k].get('dropRate', 1.0) for k in valid_items]
-                    foundItemKey = random.choices(valid_items, weights=weights, k=1)[0]
-                    userData['inventory'].append(foundItemKey)
-                    message = self.getMsg('search', 'item_found', name=self.items[foundItemKey]['name'])
-                    event_happened = True
+                    # [수정됨] 이미 보유 중인 important 아이템은 드롭 풀에서 영구 제외 (계정당 1회 제한)
+                    valid_items = []
+                    for k, v in self.items.items():
+                        if v.get('type') == 'currency': continue
+                        if v.get('type') == 'important' and k in userData.get('inventory', []): continue
+                        valid_items.append(k)
+                    
+                    if valid_items:
+                        weights = [self.items[k].get('dropRate', 1.0) for k in valid_items]
+                        foundItemKey = random.choices(valid_items, weights=weights, k=1)[0]
+                        userData['inventory'].append(foundItemKey)
+                        message = self.getMsg('search', 'item_found', name=self.items[foundItemKey]['name'])
+                        event_happened = True
+                
                 if not event_happened: message = self.getMsg('search', 'empty')
 
         self.addLog(userData, message)
@@ -233,12 +243,27 @@ class GameEngine:
                 if currentWeapon: userData['inventory'].append(currentWeapon)
                 userData['equipment']['weapon'], msg = itemKey, self.getMsg('item', 'equip_weapon', name=item['name'], power=item['power'])
                 userData['inventory'].remove(itemKey)
-        elif item['type'] == 'key': msg = self.getMsg('info', 'key_desc', name=item['name'])
+        elif item['type'] == 'important': 
+            msg = self.getMsg('info', 'important_desc', name=item['name'])
+        
         self.addLog(userData, msg)
         return self.getGameResponse(userData)
 
+    def processItemUnequip(self, userData, itemKey):
+        if userData['equipment'].get('weapon') == itemKey:
+            userData['equipment']['weapon'] = None
+            userData['inventory'].append(itemKey)
+            msg = self.getMsg('item', 'unequip', name=self.items[itemKey]['name'])
+            self.addLog(userData, msg)
+        return self.getGameResponse(userData)
+
+    # [수정됨] 중요 아이템(important)은 백엔드에서도 버릴 수 없도록 차단
     def processItemDiscard(self, userData, itemKey):
         if itemKey in userData['inventory']:
+            if self.items[itemKey].get('type') == 'important':
+                self.addLog(userData, self.getMsg('error', 'cannot_discard'))
+                return self.getGameResponse(userData)
+                
             msg = self.getMsg('item', 'discard', name=self.items[itemKey]['name'])
             userData['inventory'].remove(itemKey)
             self.addLog(userData, msg)
@@ -268,7 +293,7 @@ class GameEngine:
                 message += self.getMsg('combat', 'enemy_dead', name=enemy['name'], exp=exp) + self.getMsg('combat', 'fragment_drop', count=frag)
                 self.checkLevelUp(userData)
             else:
-                evasion_rate = userData.get('upgrades', {}).get('evasion', 0) * 0.001
+                evasion_rate = userData.get('upgrades', {}).get('upgrades_evasion', 0) * 0.001
                 if random.random() < evasion_rate:
                     message += self.getMsg('combat', 'player_evade')
                 else:

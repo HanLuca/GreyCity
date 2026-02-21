@@ -4,7 +4,7 @@
         "type": "weapon",
         "power": 1,
         "dropRate": 0,
-        "description": "당신의 두 주먹입니다. 믿을 건 자신뿐입니다."
+        "description": "당신의 두 주먹입니다.\n믿을 건 자신뿐입니다."
     },
     "rusty_knife": {
         "name": "녹슨 식칼",
@@ -32,7 +32,7 @@
         "type": "weapon",
         "power": 15,
         "dropRate": 0.03,
-        "description": "경찰용 진압 장비입니다. 고전압 전류가 흐릅니다."
+        "description": "경찰용 진압 장비입니다.\n고전압 전류가 흐릅니다."
     },
     "revolver": {
         "name": "단검",
@@ -46,39 +46,69 @@
         "type": "consumable",
         "heal": 10,
         "dropRate": 0.2,
-        "description": "방사능 정수 필터를 거치지 않은 물입니다. 목만 축이세요."
+        "description": "방사능 정수 필터를 거치지 않은 물입니다."
     },
     "canned_beans": {
         "name": "콩 통조림",
         "type": "consumable",
         "heal": 30,
         "dropRate": 0.15,
-        "description": "유통기한이 지워졌지만 냄새는 괜찮아 보입니다. 훌륭한 단백질 공급원입니다."
+        "description": "유통기한이 지워졌지만 냄새는 괜찮아 보입니다.\n훌륭한 단백질 공급원입니다."
     },
     "antibiotics": {
         "name": "항생제",
         "type": "consumable",
         "heal": 50,
         "dropRate": 0.05,
-        "description": "귀한 의약품입니다. 감염된 상처를 치료하고 체력을 대폭 회복합니다."
+        "description": "귀한 의약품입니다.\n감염된 상처를 치료하고 체력을 대폭 회복합니다."
     },
     "first_aid_kit": {
         "name": "구급약",
         "type": "consumable",
         "heal": 80,
         "dropRate": 0.02,
-        "description": "전문적인 응급 처치 키트입니다. 기절 상태에서 즉시 소생할 수 있습니다."
+        "description": "전문적인 응급 처치 키트입니다.\n기절 상태에서 즉시 소생할 수 있습니다."
     },
     "heart_fragment": {
         "name": "HEART PIECE",
         "type": "currency",
         "dropRate": 0.1,
-        "description": "변이체들의 심장에서 추출한 붉은 결정체입니다. 생명 유지 장치의 동력원으로 쓰입니다."
+        "description": "변이체들의 심장에서 추출한 붉은 결정체입니다.\n생명 유지 장치의 동력원으로 쓰입니다."
     },
     "admin_card": {
         "name": "관리자 ID 카드",
-        "type": "key",
+        "type": "important",
         "dropRate": 0.01,
-        "description": "지하 통제구역의 출입 카드입니다. [LEVEL 5] 보안 등급이 적혀있습니다."
+        "description": ""
+    },
+    "master_keycard": {
+        "name": "마스터 키카드",
+        "type": "important",
+        "dropRate": 1,
+        "description": ""
+    },
+    "security_card_1": {
+        "name": "첫 번째 보안 키카드",
+        "type": "important",
+        "dropRate": 0.005,
+        "description": ""
+    },
+    "security_card_2": {
+        "name": "두 번째 보안 키카드",
+        "type": "important",
+        "dropRate": 0.005,
+        "description": ""
+    },
+    "security_card_3": {
+        "name": "세 번째 보안 키카드",
+        "type": "important",
+        "dropRate": 0.005,
+        "description": ""
+    },
+    "security_card_4": {
+        "name": "네 번째 보안 키카드",
+        "type": "important",
+        "dropRate": 0.005,
+        "description": ""
     }
 }
