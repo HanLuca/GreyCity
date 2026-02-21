@@ -441,8 +441,8 @@ export class UIManager {
                         let gradeText = `Lv.${enemy.grade || 1}`;
                         let gradeColor = "#aaa";
                         if (enemy.grade >= 3) gradeColor = "#ff9e80";
-                        if (enemy.grade >= 4) { gradeText = "BOSS"; gradeColor = "#ff5555"; }
-                        if (enemy.grade >= 5) { gradeText = "ABYSS"; gradeColor = "#bd00ff"; }
+                        if (enemy.grade >= 4) { gradeColor = "#ff5555"; }
+                        if (enemy.grade >= 5) { gradeColor = "#bd00ff"; }
 
                         html += `<div style="border: 1px solid ${gradeColor}; background: rgba(0,0,0,0.3); color: #ddd; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
                                     <span style="color: ${gradeColor}; margin-right: 4px;">[ ${gradeText} ]</span> ${enemy.name}

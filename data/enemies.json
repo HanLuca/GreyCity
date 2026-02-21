@@ -72,7 +72,7 @@
         "grade": 3
     },
     "juggernaut": {
-        "name": "강화 감염자 (Mid Boss)",
+        "name": "강화 감염자",
         "hp": 800,
         "maxHp": 800,
         "attack": 150,
@@ -80,7 +80,7 @@
         "grade": 4
     },
     "bio_weapon_alpha": {
-        "name": "생체 병기 알파 (Area Boss)",
+        "name": "생체 병기 알파",
         "hp": 1500,
         "maxHp": 1500,
         "attack": 250,
@@ -88,7 +88,7 @@
         "grade": 5
     },
     "patient_zero": {
-        "name": "최초 감염자 (Final Boss)",
+        "name": "최초 감염자",
         "hp": 3500,
         "maxHp": 3500,
         "attack": 500,
