@@ -27,27 +27,67 @@
             background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
         }
 
-        .loginContainer {
-            width: 400px;
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
-            padding: 2px;
+        /* 1단계: 가로로 뻗어나가는 래퍼 */
+        .anim-wrapper {
             position: relative;
+            width: 0;
+            animation: expandHorizontal 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* 장식용 코너 */
+        /* 2단계: 위아래로 펼쳐지는 메인 컨테이너 */
+        .loginContainer {
+            width: 100%;
+            background: var(--panel-bg);
+            border: 1px solid var(--neon-blue); /* 처음엔 네온 선처럼 보임 */
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+            padding: 2px;
+            box-sizing: border-box;
+
+            max-height: 4px; /* 초기엔 얇은 선 형태 */
+            overflow: hidden; /* 내부 텍스트 튀어나옴 방지 */
+            animation: expandVertical 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+        }
+
+        /* 애니메이션 키프레임 */
+        @keyframes expandHorizontal {
+            0% { width: 0; opacity: 0; }
+            100% { width: 400px; opacity: 1; }
+        }
+
+        @keyframes expandVertical {
+            0% { max-height: 4px; border-color: var(--neon-blue); }
+            100% { 
+                max-height: 600px; 
+                border-color: var(--border-color); /* 완전히 열리면 기존 테두리색으로 복귀 */
+            }
+        }
+
+        /* 장식용 코너 (상하로 펼쳐질 때 나타남) */
         .corner {
             position: absolute;
             width: 10px;
             height: 10px;
             border: 2px solid var(--neon-blue);
-            transition: 0.3s;
+            opacity: 0;
+            animation: fadeIn 0.2s ease 0.4s forwards; /* 위아래로 열릴 때 등장 */
         }
+        
         .tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
         .tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
         .bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
         .br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+        /* 내부 콘텐츠 페이드인 */
+        .header, .content {
+            opacity: 0;
+            animation: fadeIn 0.5s ease 0.8s forwards; /* 다 열린 후 내용이 보임 */
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        /* ----- 이 아래는 기존 스타일 100% 동일 ----- */
 
         .header {
             background: #000;
@@ -174,43 +214,47 @@
 </head>
 <body>
 
-    <div class="loginContainer">
+    <div class="anim-wrapper">
+        
+        <div class="loginContainer">
+            <div class="header">
+                <h1>GREY CITY</h1>
+                <div style="font-size: 10px; color: #666; margin-top: 5px;">ACCESS TERMINAL v2.0</div>
+            </div>
+
+            <div class="content">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('login')">LOGIN</button>
+                    <button class="tab" onclick="switchTab('register')">REGISTER</button>
+                </div>
+
+                <div id="loginForm">
+                    <input type="text" id="l_id" placeholder="생존자 ID" autocomplete="off">
+                    <input type="password" id="l_pw" placeholder="암호" autocomplete="off">
+                    <button class="btn" onclick="localLogin()">SYSTEM ACCESS</button>
+                </div>
+
+                <div id="registerForm" class="hidden">
+                    <input type="text" id="r_id" placeholder="등록할 ID" autocomplete="off">
+                    <input type="password" id="r_pw" placeholder="등록할 암호" autocomplete="off">
+                    <button class="btn" style="border-color:var(--neon-purple); color:var(--neon-purple)" onclick="localRegister()">NEW REGISTRATION</button>
+                </div>
+
+                <div id="statusMsg" class="msg"></div>
+
+                <div class="divider">OR EXTERNAL LINK</div>
+
+                <button class="btn discord-btn" onclick="location.href='/login/discord'">
+                    Access via Discord
+                </button>
+            </div>
+        </div>
+
         <div class="corner tl"></div>
         <div class="corner tr"></div>
         <div class="corner bl"></div>
         <div class="corner br"></div>
 
-        <div class="header">
-            <h1>GREY CITY</h1>
-            <div style="font-size: 10px; color: #666; margin-top: 5px;">ACCESS TERMINAL v2.0</div>
-        </div>
-
-        <div class="content">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab('login')">LOGIN</button>
-                <button class="tab" onclick="switchTab('register')">REGISTER</button>
-            </div>
-
-            <div id="loginForm">
-                <input type="text" id="l_id" placeholder="생존자 ID" autocomplete="off">
-                <input type="password" id="l_pw" placeholder="암호" autocomplete="off">
-                <button class="btn" onclick="localLogin()">SYSTEM ACCESS</button>
-            </div>
-
-            <div id="registerForm" class="hidden">
-                <input type="text" id="r_id" placeholder="등록할 ID" autocomplete="off">
-                <input type="password" id="r_pw" placeholder="등록할 암호" autocomplete="off">
-                <button class="btn" style="border-color:var(--neon-purple); color:var(--neon-purple)" onclick="localRegister()">NEW REGISTRATION</button>
-            </div>
-
-            <div id="statusMsg" class="msg"></div>
-
-            <div class="divider">OR EXTERNAL LINK</div>
-
-            <button class="btn discord-btn" onclick="location.href='/login/discord'">
-                Access via Discord
-            </button>
-        </div>
     </div>
 
     <script>

@@ -28,6 +28,11 @@ class FirebaseManager:
     def setUserData(self, userId, data):
         ref = db.reference(f'users/{userId}')
         ref.set(data)
+        
+    # [신규] 유저 게임 데이터 완전히 삭제
+    def deleteUserData(self, userId):
+        ref = db.reference(f'users/{userId}')
+        ref.delete()
 
     # --- [신규] 인증 관련 메서드 ---
 
@@ -45,3 +50,8 @@ class FirebaseManager:
             "password": passwordHash,
             "userId": userId
         })
+
+    # [신규] 회원 탈퇴 시 Auth 계정 정보 완전 삭제
+    def deleteAuthData(self, username):
+        ref = db.reference(f'user_auth/{username}')
+        ref.delete()

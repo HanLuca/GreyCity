@@ -119,6 +119,44 @@ def logout():
     return redirect(url_for('gameBP.index'))
 
 
+# --- [신규] 계정 관리 API ---
+
+@gameBP.route('/api/reset_account', methods=['POST'])
+def reset_account():
+    if 'user_id' not in session:
+        return jsonify({"success": False, "error": "로그인이 필요합니다."}), 401
+    
+    userId = session['user_id']
+    username = session.get('username', 'Unknown')
+    
+    # 새로운 초기 데이터를 생성하고 덮어씌움 (완전 초기화)
+    new_data = gameEngine.initNewPlayer()
+    new_data['username'] = username
+    fbManager.setUserData(userId, new_data)
+    
+    return jsonify({"success": True})
+
+@gameBP.route('/api/delete_account', methods=['POST'])
+def delete_account():
+    if 'user_id' not in session:
+        return jsonify({"success": False, "error": "로그인이 필요합니다."}), 401
+    
+    userId = session['user_id']
+    username = session.get('username')
+    
+    # 1. 인게임 플레이 데이터 삭제
+    fbManager.deleteUserData(userId)
+    
+    # 2. 자체 회원가입 시 생성된 Auth 데이터 삭제 (디스코드 유저는 없을 수 있으므로 예외처리 방지)
+    if username:
+        fbManager.deleteAuthData(username)
+        
+    # 3. 세션 완전 초기화
+    session.clear()
+    
+    return jsonify({"success": True})
+
+
 # --- [게임 로직 API] ---
 
 @gameBP.route('/api/loadGame', methods=['POST'])
