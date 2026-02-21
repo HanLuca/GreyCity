@@ -33,7 +33,7 @@
             "<br>⭐ <b><span style='color:#ffd700'>[ITEM]</span></b> {name} : 중요한 아이템입니다. 특정 상황에서 자동으로 사용됩니다."
         ],
         "unlock_door": [
-            "<br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> {keyName} 승인. 해당 구역의 보안이 영구적으로 해제되었습니다."
+            "<br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> {keyName} 승인.<br>🔓 <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 해당 구역의 보안이 영구적으로 해제되었습니다.<br>"
         ],
         "upgrade_success": [
             "<br>🫀 <b><span style='color:#ff0080'>[UPGRADE]</span></b> 신체 개조 완료. {stat}"

@@ -145,7 +145,7 @@
         "requiresKey": "security_card_1",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
         "spawnRate": 1.2,
-        "connectedTo": ["3f_hidden_laboratory_2", "3f_hidden_admin_area"],
+        "connectedTo": ["3f_hidden_admin_area", "3f_hidden_laboratory_2"],
         "coordinates": {"x": 9, "y": 8},
         "searchable": true,
         "itemChance": 0.8
@@ -157,7 +157,7 @@
         "requiresKey": "security_card_2",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
         "spawnRate": 1.5,
-        "connectedTo": ["3f_hidden_isolation_ward", "3f_hidden_laboratory_1"],
+        "connectedTo": ["3f_hidden_laboratory_1", "3f_hidden_isolation_ward"],
         "coordinates": {"x": 10, "y": 8},
         "searchable": true,
         "itemChance": 0.8
@@ -169,7 +169,7 @@
         "requiresKey": "security_card_3",
         "spawnList": ["flesh_beast", "armored_infected", "chemical_mutant", "juggernaut"],
         "spawnRate": 2,
-        "connectedTo": ["3f_hidden_archive", "3f_hidden_laboratory_2"],
+        "connectedTo": ["3f_hidden_laboratory_2", "3f_hidden_archive"],
         "coordinates": {"x": 11, "y": 8},
         "searchable": true,
         "itemChance": 0.8
