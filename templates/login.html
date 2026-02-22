@@ -210,6 +210,24 @@
         .success { color: #00ff00; }
         
         .hidden { display: none; }
+
+        /* =========================================
+           [모바일 로그인 화면 반응형 최적화]
+        ========================================= */
+        @media screen and (max-width: 480px) {
+            @keyframes expandHorizontal {
+                0% { width: 0; opacity: 0; }
+                100% { width: 90vw; opacity: 1; } /* 모바일에서는 화면 너비의 90%까지만 확장 */
+            }
+            
+            @keyframes expandVertical {
+                0% { max-height: 4px; border-color: var(--neon-blue); }
+                100% { 
+                    max-height: 80vh; 
+                    border-color: var(--border-color); 
+                }
+            }
+        }
     </style>
 </head>
 <body>
@@ -342,6 +360,14 @@
                 msgEl.className = "msg error";
             }
         }
+
+        // 엔터키 지원
+        document.getElementById('l_pw').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') localLogin();
+        });
+        document.getElementById('r_pw').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') localRegister();
+        });
     </script>
 </body>
 </html>

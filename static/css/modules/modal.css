@@ -36,3 +36,22 @@
 #settingsModal .modal-content { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
 #locationModal .modal-content { border-color: #555; }
 #archiveModal .modal-content { border-color: var(--accent-cyan); }
+
+
+/* =========================================
+   [모바일 반응형 모달 최적화]
+========================================= */
+@media screen and (max-width: 768px) {
+    .modal-content {
+        width: 90% !important; /* 화면 가로폭의 90% 사용 */
+        max-width: none !important;
+        margin: 5vh auto !important;
+        max-height: 90vh; /* 화면보다 길어지면 내부 스크롤 작동 */
+        overflow-y: auto !important;
+    }
+    
+    /* 아이템 모달의 여백 예외처리 유지 */
+    #itemModal .modal-content {
+        padding: 0 !important;
+    }
+}
