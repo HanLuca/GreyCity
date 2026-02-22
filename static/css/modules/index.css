@@ -15,7 +15,7 @@
     margin: 5% auto; 
     padding: 25px; 
     border: 1px solid var(--accent-cyan);
-    width: 85%; max-width: 420px;
+    width: 85%; max-width: 500px;
     box-shadow: 0 0 25px rgba(0,229,255,0.15);
     color: #eee;
     position: relative;
