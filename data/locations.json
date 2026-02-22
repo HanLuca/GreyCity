@@ -18,7 +18,7 @@
         "dangerLevel": "SAFE",
         "spawnList": [],
         "spawnRate": 0,
-        "connectedTo": ["1f_west_passage", "1f_east_passage"],
+        "connectedTo": ["1f_west_passage", "1f_east_passage", "electrical_room"],
         "coordinates": {"x": 10, "y": 10},
         "searchable": true,
         "itemChance": 0
