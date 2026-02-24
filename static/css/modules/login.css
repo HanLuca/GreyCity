@@ -1,0 +1,267 @@
+/* =========================================
+   GREY CITY ACCESS TERMINAL STYLES
+========================================= */
+
+/* 로그인 화면 전용 네온 컬러 변수 안전하게 내장 */
+:root {
+    --neon-blue: #00e5ff;
+    --neon-purple: #bd00ff;
+}
+
+/* =========================================
+   1. 컨테이너 및 부팅 애니메이션
+========================================= */
+.anim-wrapper {
+    position: relative;
+    width: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: bootHorizontal 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.loginContainer {
+    position: relative; /* 기역자 코너가 컨테이너에 붙도록 기준점 설정 */
+    width: 100%;
+    background: #111;
+    border: 2px solid var(--neon-blue);
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
+    padding: 2px;
+    box-sizing: border-box;
+    max-height: 2px;
+    overflow: hidden;
+    animation: bootVertical 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
+}
+
+@keyframes bootHorizontal {
+    0% { width: 0; opacity: 0; }
+    100% { width: 400px; opacity: 1; }
+}
+
+@keyframes bootVertical {
+    0% { max-height: 2px; border-width: 2px 0; border-color: var(--neon-blue); }
+    100% { max-height: 850px; border-width: 1px; border-color: #333; box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); }
+}
+
+.content-wrapper {
+    opacity: 0;
+    animation: fadeIn 0.4s ease 0.8s forwards;
+}
+
+@keyframes fadeIn {
+    to { opacity: 1; }
+}
+
+/* =========================================
+   2. 4방향 기역자(코너) 장식
+========================================= */
+.corner {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--neon-blue);
+    transition: 0.3s;
+    opacity: 0;
+    animation: fadeIn 0.3s ease 0.8s forwards;
+    z-index: 10;
+}
+.tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+/* =========================================
+   3. 헤더 및 네온 텍스트
+========================================= */
+.header {
+    background: #000;
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--neon-blue);
+    letter-spacing: 2px;
+    animation: neonPulse 2s infinite alternate;
+}
+
+@keyframes neonPulse {
+    0% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue); }
+    100% { text-shadow: 0 0 2px var(--neon-blue), 0 0 5px rgba(0,229,255,0.5); }
+}
+
+.sub-title { font-size: 10px; color: #666; margin-top: 5px; }
+
+/* =========================================
+   4. 폼 레이아웃 (탭 및 슬라이더)
+========================================= */
+.content { padding: 0 20px 20px 20px; }
+
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+
+.tab {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #666;
+    padding: 10px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.tab.active {
+    color: var(--neon-blue);
+    border-bottom: 2px solid var(--neon-blue);
+    text-shadow: 0 0 5px rgba(0,229,255,0.5);
+}
+
+.form-slider {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.form-slider-track {
+    display: flex;
+    width: 200%;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.form-slide {
+    width: 50%;
+    flex-shrink: 0;
+    padding: 2px;
+    box-sizing: border-box;
+}
+
+/* =========================================
+   5. 인풋 및 기본 버튼
+========================================= */
+input {
+    width: 100%;
+    background: #000;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-family: inherit;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus {
+    border-color: var(--neon-blue);
+    box-shadow: inset 0 0 5px rgba(0, 229, 255, 0.2);
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--neon-blue);
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--neon-blue);
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: var(--neon-blue);
+    color: #000;
+    box-shadow: 0 0 15px var(--neon-blue);
+}
+
+#btnRegisterSubmit:hover {
+    background: var(--neon-purple) !important;
+    color: #fff !important;
+    box-shadow: 0 0 15px var(--neon-purple) !important;
+}
+
+/* =========================================
+   6. 보안 이메일 영역 (보라색 네온 효과)
+========================================= */
+.security-box { margin-top: 15px; padding-top: 12px; border-top: 1px dashed #333; }
+.security-badge { font-size: 10px; color: var(--neon-purple); text-align: left; margin-bottom: 8px; font-weight: bold; display: flex; align-items: center; gap: 5px; letter-spacing: 1px; }
+
+.email-group { display: flex; gap: 5px; margin-bottom: 10px; }
+.email-group input { margin-bottom: 0; flex: 2; }
+
+.btn-code {
+    flex: 1;
+    margin-top: 0;
+    padding: 0;
+    font-size: 11px;
+    background: rgba(189, 0, 255, 0.1);
+    border-color: var(--neon-purple);
+    color: var(--neon-purple);
+    letter-spacing: 1px;
+}
+
+.btn-code:hover {
+    background: var(--neon-purple);
+    color: #fff;
+    box-shadow: 0 0 15px var(--neon-purple);
+}
+
+.code-input {
+    border-color: var(--neon-purple) !important;
+    color: var(--neon-purple) !important;
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 8px;
+    font-size: 18px;
+    background: rgba(189, 0, 255, 0.05) !important;
+    animation: pulseBorder 1.5s infinite alternate;
+}
+
+.code-input::placeholder { letter-spacing: 2px; font-size: 12px; font-weight: normal; color: rgba(189, 0, 255, 0.4); }
+.code-input:focus { box-shadow: inset 0 0 10px rgba(189, 0, 255, 0.3) !important; animation: none; }
+
+@keyframes pulseBorder {
+    0% { border-color: rgba(189, 0, 255, 0.3); box-shadow: 0 0 5px rgba(189,0,255,0.1); }
+    100% { border-color: rgba(189, 0, 255, 1); box-shadow: 0 0 15px rgba(189,0,255,0.4); }
+}
+
+.fade-in-down { animation: fadeInDown 0.4s ease forwards; }
+@keyframes fadeInDown { 0% { opacity: 0; transform: translateY(-10px); } 100% { opacity: 1; transform: translateY(0); } }
+
+/* =========================================
+   7. 외부 링크 및 메시지
+========================================= */
+.divider { text-align: center; margin: 20px 0; color: #444; font-size: 12px; position: relative; }
+.divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #222; }
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+
+.discord-btn { background: rgba(88, 101, 242, 0.1); border: 1px solid #5865F2; color: #5865F2; }
+.discord-btn:hover { background: #5865F2; color: white; box-shadow: 0 0 15px rgba(88, 101, 242, 0.5); }
+
+.msg { text-align: center; font-size: 12px; margin-top: 10px; min-height: 15px; }
+.error { color: #ff5555; }
+.success { color: var(--neon-blue); }
+.hidden { display: none; }
+#externalLoginSection { transition: opacity 0.3s ease; }
+
+/* =========================================
+   8. 모바일 반응형
+========================================= */
+@media screen and (max-width: 480px) {
+    @keyframes expandHorizontal { 0% { width: 0; opacity: 0; } 100% { width: 90vw; opacity: 1; } }
+    @keyframes bootHorizontal { 0% { width: 0; opacity: 0; } 100% { width: 90vw; opacity: 1; } }
+    @keyframes expandVertical { 0% { max-height: 4px; border-color: var(--neon-blue); } 100% { max-height: 90vh; border-color: #333; } }
+    @keyframes bootVertical { 0% { max-height: 4px; border-color: var(--neon-blue); } 100% { max-height: 90vh; border-color: #333; } }
+}

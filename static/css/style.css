@@ -1,8 +1,42 @@
-@import url('modules/variables.css');
-@import url('modules/layout.css');
-@import url('modules/components.css');
-@import url('modules/inventory.css');
-@import url('modules/index.css');
-@import url('modules/modal.css');
+/* [원본 유지] 게임 전용 변수 */
+:root {
+    --bg-color: #0d0d0d;
+    --panel-bg: #1a1a1a;
+    --text-primary: #cccccc;
+    --text-secondary: #888888;
+    --accent-cyan: #00e5ff;
+    --accent-red: #ff2a2a;
+    --accent-green: #00ff00;
+    --border-color: #333333;
+    --grid-gap: 4px;
+    --node-size: 40px;
+}
 
-@import url('files/login.css');
+/* [원본 유지] 텍스트 드래그 및 기본 스크롤바 숨김 */
+* {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+*::-webkit-scrollbar {
+    display: none;
+}
+
+/* [해결] 바디를 100vh로 잡고 중앙 정렬하여 쏠림 현상 완벽 방지 */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Courier New', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}

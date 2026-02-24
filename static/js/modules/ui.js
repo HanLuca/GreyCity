@@ -446,7 +446,12 @@ export class UIManager {
         this.els.modalLocName.innerText = isLocked ? "???" : locationData.name;
         this.els.modalLocCoord.innerText = `X:${locationData.coordinates.x} Y:${locationData.coordinates.y}`;
         
+        // [추가됨] 상단 포인트 바 엘리먼트 획득 및 기본 색상 지정
+        const topAccent = document.getElementById('locModalTopAccent');
+        let themeColor = '#555';
+
         if (isLocked) {
+            themeColor = '#ff2a2a'; // 잠김 구역은 붉은색
             this.els.modalLocStatus.innerHTML = `[ LOCKED ]`;
             this.els.modalLocStatus.className = 'status-badge badge-danger';
             this.els.modalLocDesc.innerText = "접근 권한이 없는 구역입니다.\n보안 해제가 필요합니다.";
@@ -460,13 +465,17 @@ export class UIManager {
         } else {
             const level = locationData.dangerLevel || "NORMAL";
             
+            // 등급별 테마 컬러 지정
             if (level === "SAFE") {
+                themeColor = '#4caf50';
                 this.els.modalLocStatus.innerHTML = `[ SAFE ]`;
                 this.els.modalLocStatus.className = 'status-badge badge-safe';
             } else if (level === "NORMAL") {
+                themeColor = '#00e5ff';
                 this.els.modalLocStatus.innerHTML = `[ NORMAL ]`;
                 this.els.modalLocStatus.className = 'status-badge badge-normal';
             } else {
+                themeColor = '#ff2a2a';
                 this.els.modalLocStatus.innerHTML = `[ DANGER ]`;
                 this.els.modalLocStatus.className = 'status-badge badge-danger';
             }
@@ -507,6 +516,13 @@ export class UIManager {
             this.els.modalLocInfo.innerHTML = html;
         }
 
+        // [추가됨] 테마 색상을 상단 바와 모달 테두리에 실시간 적용
+        if(topAccent) {
+            topAccent.style.background = themeColor;
+            topAccent.style.boxShadow = `0 0 10px ${themeColor}`;
+        }
+        modal.querySelector('.modal-content').style.borderColor = themeColor;
+
         window.openModalAnimation('locationModal');
     }
 
@@ -514,20 +530,20 @@ export class UIManager {
         if (!this.els.archiveList) return;
         this.els.archiveList.innerHTML = '';
         if (!archiveData || archiveData.length === 0) {
-            this.els.archiveList.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">수집된 기록이 없습니다.<br><br>탐색을 통해 단서를 찾아보세요.</div>';
+            this.els.archiveList.innerHTML = '<div class="emptyMsg">수집된 기록이 없습니다.<br><br>탐색을 통해 단서를 찾아보세요.</div>';
             return;
         }
 
         [...archiveData].reverse().forEach(note => {
             const div = document.createElement('div');
-            div.className = 'note-item';
-            div.style.borderLeft = "4px solid var(--accent-cyan)";
+            // 클래스 하나만 부여하면 index.css 의 디자인이 적용됩니다.
+            div.className = 'note-item'; 
             div.innerHTML = `
-                <div class="note-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="note-title">
                     <span>📜 ${note.title}</span>
-                    <small style="font-size:10px; color:#555;">ARCHIVED</small>
+                    <small>ARCHIVED</small>
                 </div>
-                <div class="note-content" style="margin-top:10px; color:#ccc; font-style: italic;">"${note.content}"</div>
+                <div class="note-content">"${note.content}"</div>
             `;
             this.els.archiveList.appendChild(div);
         });

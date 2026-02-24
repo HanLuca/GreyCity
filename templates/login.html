@@ -4,373 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GREY CITY: ACCESS</title>
-    <style>
-        :root {
-            --bg-color: #050505;
-            --panel-bg: #111;
-            --border-color: #333;
-            --neon-blue: #00e5ff;
-            --neon-purple: #bd00ff;
-            --text-color: #ccc;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Courier New', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
-        }
-
-        /* CRT 모니터 스캔라인 효과 */
-        body::after {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px);
-            pointer-events: none;
-            z-index: 999;
-        }
-
-        /* 부팅 애니메이션 래퍼 */
-        .anim-wrapper {
-            position: relative;
-            width: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: bootHorizontal 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        .loginContainer {
-            width: 100%;
-            background: var(--panel-bg);
-            border: 2px solid var(--neon-blue);
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
-            padding: 2px;
-            box-sizing: border-box;
-
-            max-height: 2px;
-            overflow: hidden;
-            animation: bootVertical 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
-        }
-
-        @keyframes bootHorizontal {
-            0% { width: 0; opacity: 0; }
-            100% { width: 400px; opacity: 1; }
-        }
-
-        @keyframes bootVertical {
-            0% { max-height: 2px; border-width: 2px 0; border-color: var(--neon-blue); }
-            100% { 
-                max-height: 850px; /* 버튼 짤림 방지를 위해 850px로 넉넉하게 확장 */
-                border-width: 1px; 
-                border-color: var(--border-color); 
-                box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); 
-            }
-        }
-
-        /* 내부 콘텐츠 페이드인 */
-        .content-wrapper {
-            opacity: 0;
-            animation: fadeIn 0.4s ease 0.8s forwards;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        /* 장식용 코너 */
-        .corner {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border: 2px solid var(--neon-blue);
-            transition: 0.3s;
-            opacity: 0;
-            animation: fadeIn 0.3s ease 0.8s forwards;
-        }
-        .tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-        .tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
-        .bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
-        .br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
-
-        .header {
-            background: #000;
-            padding: 15px;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 24px;
-            color: var(--neon-blue);
-            letter-spacing: 2px;
-            animation: neonPulse 2s infinite alternate;
-        }
-
-        @keyframes neonPulse {
-            0% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue); }
-            100% { text-shadow: 0 0 2px var(--neon-blue), 0 0 5px rgba(0,229,255,0.5); }
-        }
-
-        .content {
-            padding: 0 20px 20px 20px;
-        }
-
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #333;
-        }
-
-        .tab {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #666;
-            padding: 10px;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: bold;
-            transition: 0.2s;
-        }
-
-        .tab.active {
-            color: var(--neon-blue);
-            border-bottom: 2px solid var(--neon-blue);
-            text-shadow: 0 0 5px rgba(0,229,255,0.5);
-        }
-
-        /* 폼 슬라이더 레이아웃 (동적 높이 트랜지션 추가) */
-        .form-slider {
-            width: 100%;
-            overflow: hidden; 
-            position: relative;
-            transition: height 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* 내용물에 맞춰 높이가 부드럽게 줄어들거나 늘어남 */
-        }
-
-        .form-slider-track {
-            display: flex;
-            width: 200%; 
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
-        .form-slide {
-            width: 50%; 
-            flex-shrink: 0;
-            padding: 2px; 
-            box-sizing: border-box;
-        }
-
-        input {
-            width: 100%;
-            background: #000;
-            border: 1px solid #333;
-            color: #fff;
-            padding: 12px;
-            margin-bottom: 10px;
-            box-sizing: border-box;
-            font-family: inherit;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        input:focus {
-            border-color: var(--neon-blue);
-            box-shadow: inset 0 0 5px rgba(0, 229, 255, 0.2);
-        }
-
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--neon-blue);
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--neon-blue);
-            font-weight: bold;
-            cursor: pointer;
-            font-family: inherit;
-            margin-top: 10px;
-            transition: 0.3s;
-        }
-
-        .btn:hover {
-            background: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 15px var(--neon-blue);
-        }
-
-        /* 고퀄리티 이메일 인증 스타일 */
-        .security-badge {
-            font-size: 10px;
-            color: var(--neon-purple);
-            text-align: left;
-            margin-bottom: 8px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            letter-spacing: 1px;
-        }
-
-        .email-group {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-
-        .email-group input {
-            margin-bottom: 0;
-            flex: 2;
-        }
-
-        .btn-code {
-            flex: 1;
-            margin-top: 0;
-            padding: 0;
-            font-size: 11px;
-            background: rgba(189, 0, 255, 0.1);
-            border-color: var(--neon-purple);
-            color: var(--neon-purple);
-            letter-spacing: 1px;
-        }
-
-        .btn-code:hover {
-            background: var(--neon-purple);
-            color: #fff;
-            box-shadow: 0 0 15px var(--neon-purple);
-        }
-
-        .code-input {
-            border-color: var(--neon-purple) !important;
-            color: var(--neon-purple) !important;
-            text-align: center;
-            font-weight: bold;
-            letter-spacing: 8px;
-            font-size: 18px;
-            background: rgba(189, 0, 255, 0.05) !important;
-            animation: pulseBorder 1.5s infinite alternate;
-        }
-
-        .code-input::placeholder {
-            letter-spacing: 2px;
-            font-size: 12px;
-            font-weight: normal;
-            color: rgba(189, 0, 255, 0.4);
-        }
-
-        .code-input:focus {
-            box-shadow: inset 0 0 10px rgba(189, 0, 255, 0.3) !important;
-            animation: none; 
-        }
-
-        @keyframes pulseBorder {
-            0% { border-color: rgba(189, 0, 255, 0.3); box-shadow: 0 0 5px rgba(189,0,255,0.1); }
-            100% { border-color: rgba(189, 0, 255, 1); box-shadow: 0 0 15px rgba(189,0,255,0.4); }
-        }
-
-        .fade-in-down {
-            animation: fadeInDown 0.4s ease forwards;
-        }
-
-        @keyframes fadeInDown {
-            0% { opacity: 0; transform: translateY(-10px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        .divider {
-            text-align: center;
-            margin: 20px 0;
-            color: #444;
-            font-size: 12px;
-            position: relative;
-        }
-
-        .divider::before, .divider::after {
-            content: "";
-            position: absolute;
-            top: 50%;
-            width: 40%;
-            height: 1px;
-            background: #222;
-        }
-        .divider::before { left: 0; }
-        .divider::after { right: 0; }
-
-        .discord-btn {
-            background: rgba(88, 101, 242, 0.1);
-            border: 1px solid #5865F2;
-            color: #5865F2;
-        }
-        .discord-btn:hover {
-            background: #5865F2;
-            color: white;
-            box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
-        }
-
-        .msg {
-            text-align: center;
-            font-size: 12px;
-            margin-top: 10px;
-            min-height: 15px;
-        }
-        .error { color: #ff5555; }
-        .success { color: var(--neon-blue); }
-        
-        .hidden { display: none; }
-
-        /* 외부 로그인 섹션 전환 처리 */
-        #externalLoginSection {
-            transition: opacity 0.3s ease;
-        }
-
-        @media screen and (max-width: 480px) {
-            @keyframes expandHorizontal {
-                0% { width: 0; opacity: 0; }
-                100% { width: 90vw; opacity: 1; }
-            }
-            @keyframes bootHorizontal {
-                0% { width: 0; opacity: 0; }
-                100% { width: 90vw; opacity: 1; }
-            }
-            @keyframes expandVertical {
-                0% { max-height: 4px; border-color: var(--neon-blue); }
-                100% { max-height: 90vh; border-color: var(--border-color); }
-            }
-            @keyframes bootVertical {
-                0% { max-height: 4px; border-color: var(--neon-blue); }
-                100% { max-height: 90vh; border-color: var(--border-color); }
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modules/login.css') }}">
 </head>
 <body>
-
     <div class="anim-wrapper">
         <div class="loginContainer">
-            
-            <div class="corner tl"></div>
-            <div class="corner tr"></div>
-            <div class="corner bl"></div>
-            <div class="corner br"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
 
             <div class="content-wrapper">
                 <div class="header">
                     <h1>GREY CITY</h1>
-                    <div style="font-size: 10px; color: #666; margin-top: 5px;">ACCESS TERMINAL v2.0</div>
+                    <div class="sub-title">ACCESS TERMINAL v2.0</div>
                 </div>
 
                 <div class="content">
                     <div class="tabs">
-                        <button class="tab active" onclick="switchTab('login')">LOGIN</button>
-                        <button class="tab" onclick="switchTab('register')">REGISTER</button>
+                        <button class="tab active" id="tabLoginBtn">LOGIN</button>
+                        <button class="tab" id="tabRegisterBtn">REGISTER</button>
                     </div>
 
                     <div class="form-slider">
@@ -379,26 +31,25 @@
                             <div id="loginForm" class="form-slide">
                                 <input type="text" id="l_id" placeholder="SURVIVAL ID" autocomplete="off">
                                 <input type="password" id="l_pw" placeholder="SURVIVAL PASSWORD" autocomplete="off">
-                                <button class="btn" onclick="localLogin()">SYSTEM ACCESS</button>
+                                <button class="btn" id="btnLoginSubmit">SYSTEM ACCESS</button>
                             </div>
 
                             <div id="registerForm" class="form-slide">
                                 <input type="text" id="r_id" placeholder="NEW ID" autocomplete="off">
                                 <input type="password" id="r_pw" placeholder="NEW PASSWORD" autocomplete="off">
                                 
-                                <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #333;">
+                                <div class="security-box">
                                     <div class="security-badge">🔒 SECURITY VERIFICATION</div>
                                     <div class="email-group">
                                         <input type="email" id="r_email" placeholder="NEW EMAIL" autocomplete="off">
-                                        <button class="btn btn-code" id="btnSendCode" onclick="sendVerificationCode()">[ SEND ]</button>
+                                        <button class="btn btn-code" id="btnSendCode">[ SEND ]</button>
                                     </div>
-                                    
-                                    <div id="codeWrapper" style="display: none; margin-bottom: 10px;">
+                                    <div id="codeWrapper" class="hidden" style="margin-bottom: 10px; display: none;">
                                         <input type="text" id="r_code" class="code-input" placeholder="ACCESS CODE" autocomplete="off" maxlength="6">
                                     </div>
                                 </div>
                                 
-                                <button class="btn" style="border-color:var(--neon-purple); color:var(--neon-purple)" onclick="localRegister()">NEW REGISTRATION</button>
+                                <button class="btn" id="btnRegisterSubmit" style="border-color:var(--neon-purple); color:var(--neon-purple)">NEW REGISTRATION</button>
                             </div>
 
                         </div>
@@ -408,199 +59,13 @@
 
                     <div id="externalLoginSection">
                         <div class="divider">OR EXTERNAL LINK</div>
-                        <button class="btn discord-btn" onclick="location.href='/login/discord'">
-                            Access via Discord
-                        </button>
+                        <button class="btn discord-btn" id="btnDiscordLogin">Access via Discord</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <script>
-        // 초기 로딩 시 폼 슬라이더 높이 고정 (애니메이션 준비용)
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => updateSliderHeight('login'), 100);
-        });
-
-        // 활성화된 폼에 맞춰 슬라이더 높이를 딱 맞게 조절해주는 함수
-        function updateSliderHeight(mode) {
-            const slider = document.querySelector('.form-slider');
-            const activeForm = document.getElementById(mode === 'login' ? 'loginForm' : 'registerForm');
-            if(activeForm) {
-                slider.style.height = activeForm.offsetHeight + 'px';
-            }
-        }
-
-        function switchTab(mode) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('statusMsg').innerText = '';
-            
-            const track = document.getElementById('formTrack');
-            const externalSection = document.getElementById('externalLoginSection');
-            
-            if (mode === 'login') {
-                document.querySelector('.tab:nth-child(1)').classList.add('active');
-                track.style.transform = 'translateX(0)';
-                externalSection.style.display = 'block';
-            } else {
-                document.querySelector('.tab:nth-child(2)').classList.add('active');
-                track.style.transform = 'translateX(-50%)';
-                externalSection.style.display = 'none';
-            }
-
-            // 탭 변경 시 해당 탭 컨텐츠의 크기에 맞춰 부모 높이 스르륵 조절
-            setTimeout(() => updateSliderHeight(mode), 10);
-        }
-
-        async function localLogin() {
-            const id = document.getElementById('l_id').value;
-            const pw = document.getElementById('l_pw').value;
-            const msgEl = document.getElementById('statusMsg');
-
-            if (!id || !pw) {
-                msgEl.innerText = "ID와 암호를 입력하십시오.";
-                msgEl.className = "msg error";
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/login_local', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username: id, password: pw})
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    msgEl.innerText = "접속 승인. 시스템 연결 중...";
-                    msgEl.className = "msg success";
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    msgEl.innerText = "오류: " + data.msg;
-                    msgEl.className = "msg error";
-                }
-            } catch (e) {
-                console.error(e);
-                msgEl.innerText = "네트워크 통신 오류.";
-                msgEl.className = "msg error";
-            }
-        }
-
-        async function sendVerificationCode() {
-            const email = document.getElementById('r_email').value.trim();
-            const msgEl = document.getElementById('statusMsg');
-            const btnSend = document.getElementById('btnSendCode');
-
-            if (!email) {
-                msgEl.innerText = "이메일 주소를 입력하십시오.";
-                msgEl.className = "msg error";
-                return;
-            }
-
-            msgEl.innerText = "보안 서버와 통신 중... (코드 발송)";
-            msgEl.className = "msg";
-            btnSend.innerText = "[ WAITING ]";
-            btnSend.style.pointerEvents = "none";
-
-            try {
-                const res = await fetch('/api/send_code', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({email: email})
-                });
-                const data = await res.json();
-
-                btnSend.innerText = "[ RESEND ]";
-                btnSend.style.pointerEvents = "auto";
-
-                if (data.success) {
-                    msgEl.innerText = data.msg;
-                    msgEl.className = "msg success";
-                    
-                    const codeWrapper = document.getElementById('codeWrapper');
-                    if(codeWrapper.style.display === 'none') {
-                        codeWrapper.style.display = 'block';
-                        codeWrapper.classList.add('fade-in-down');
-                        
-                        // 인증 코드 입력칸이 나타났으니 슬라이더 높이를 그에 맞춰서 다시 늘려줌
-                        setTimeout(() => updateSliderHeight('register'), 10);
-                    }
-                } else {
-                    msgEl.innerText = data.msg;
-                    msgEl.className = "msg error";
-                }
-            } catch (e) {
-                btnSend.innerText = "[ SEND ]";
-                btnSend.style.pointerEvents = "auto";
-                msgEl.innerText = "네트워크 통신 오류.";
-                msgEl.className = "msg error";
-            }
-        }
-
-        async function localRegister() {
-            const id = document.getElementById('r_id').value.trim();
-            const pw = document.getElementById('r_pw').value.trim();
-            const email = document.getElementById('r_email').value.trim();
-            const code = document.getElementById('r_code').value.trim();
-            const msgEl = document.getElementById('statusMsg');
-            const codeWrapper = document.getElementById('codeWrapper');
-
-            if (!id || !pw || !email) {
-                msgEl.innerText = "모든 등록 정보를 입력하십시오.";
-                msgEl.className = "msg error";
-                return;
-            }
-
-            if (codeWrapper.style.display === 'block' && !code) {
-                msgEl.innerText = "수신된 보안 코드를 정확히 입력하십시오.";
-                msgEl.className = "msg error";
-                return;
-            }
-
-            try {
-                const res = await fetch('/api/register', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username: id, password: pw, email: email, code: code})
-                });
-                const data = await res.json();
-
-                if (data.success) {
-                    msgEl.innerText = "등록 완료. 시스템 접근을 승인합니다.";
-                    msgEl.className = "msg success";
-                    
-                    document.getElementById('r_id').value = '';
-                    document.getElementById('r_pw').value = '';
-                    document.getElementById('r_email').value = '';
-                    document.getElementById('r_code').value = '';
-                    codeWrapper.style.display = 'none';
-                    codeWrapper.classList.remove('fade-in-down');
-                    document.getElementById('btnSendCode').innerText = "[ SEND ]";
-                    
-                    // 등록 폼 원상 복귀 후 높이 재조절
-                    setTimeout(() => updateSliderHeight('register'), 10);
-                    setTimeout(() => switchTab('login'), 1500);
-                } else {
-                    msgEl.innerText = "등록 거부됨: " + data.msg;
-                    msgEl.className = "msg error";
-                }
-            } catch (e) {
-                console.error(e);
-                msgEl.innerText = "네트워크 통신 오류.";
-                msgEl.className = "msg error";
-            }
-        }
-
-        document.getElementById('l_pw').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') localLogin();
-        });
-        document.getElementById('r_pw').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') localRegister();
-        });
-        document.getElementById('r_code').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') localRegister();
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modules/login.js') }}"></script>
 </body>
 </html>
