@@ -20,7 +20,7 @@ def index():
     return render_template('index.html', username=session.get('username'))
 
 # ==========================================
-# [신규] 이메일 인증 코드 발송 API
+# 이메일 인증 코드 발송 API
 # ==========================================
 @gameBP.route('/api/send_code', methods=['POST'])
 def send_code():
@@ -40,7 +40,7 @@ def send_code():
     # SMTP 설정이 되어있는 경우 실제 이메일 발송
     if sender_email and sender_password:
         try:
-            msg = MIMEText(Config.SendEmail(code), 'html', 'utf-8')
+            msg = MIMEText(Config.SendEmail, 'html', 'utf-8')
             msg['Subject'] = "GREY CITY: ACCESS CODE"
             msg['From'] = sender_email
             msg['To'] = email
@@ -62,7 +62,7 @@ def send_code():
         return jsonify({"success": True, "msg": "[TEST 모드] 서버 콘솔 창에서 보안 코드를 확인하십시오."})
 
 # ==========================================
-# [수정됨] 회원가입 API (이메일 인증 체크)
+# 회원가입 API (이메일 인증 체크 및 DB 저장)
 # ==========================================
 @gameBP.route('/api/register', methods=['POST'])
 def register_local():
@@ -91,6 +91,10 @@ def register_local():
 
     userData = gameEngine.initNewPlayer()
     userData['username'] = username
+    
+    # [수정됨] 유저 데이터에 이메일 정보 추가 저장
+    userData['email'] = email 
+    
     fbManager.setUserData(new_user_id, userData)
 
     # 가입 성공 시 세션에서 코드 파기
