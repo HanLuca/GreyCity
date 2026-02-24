@@ -27,67 +27,78 @@
             background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
         }
 
-        /* 1단계: 가로로 뻗어나가는 래퍼 */
+        /* CRT 모니터 스캔라인 효과 */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* 부팅 애니메이션 래퍼 */
         .anim-wrapper {
             position: relative;
             width: 0;
-            animation: expandHorizontal 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: bootHorizontal 0.35s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* 2단계: 위아래로 펼쳐지는 메인 컨테이너 */
         .loginContainer {
             width: 100%;
             background: var(--panel-bg);
-            border: 1px solid var(--neon-blue); /* 처음엔 네온 선처럼 보임 */
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
             padding: 2px;
             box-sizing: border-box;
 
-            max-height: 4px; /* 초기엔 얇은 선 형태 */
-            overflow: hidden; /* 내부 텍스트 튀어나옴 방지 */
-            animation: expandVertical 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.4s forwards;
+            max-height: 2px;
+            overflow: hidden;
+            animation: bootVertical 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s forwards;
         }
 
-        /* 애니메이션 키프레임 */
-        @keyframes expandHorizontal {
+        @keyframes bootHorizontal {
             0% { width: 0; opacity: 0; }
             100% { width: 400px; opacity: 1; }
         }
 
-        @keyframes expandVertical {
-            0% { max-height: 4px; border-color: var(--neon-blue); }
+        @keyframes bootVertical {
+            0% { max-height: 2px; border-width: 2px 0; border-color: var(--neon-blue); }
             100% { 
                 max-height: 600px; 
-                border-color: var(--border-color); /* 완전히 열리면 기존 테두리색으로 복귀 */
+                border-width: 1px; 
+                border-color: var(--border-color); 
+                box-shadow: 0 0 20px rgba(0, 229, 255, 0.1); 
             }
         }
 
-        /* 장식용 코너 (상하로 펼쳐질 때 나타남) */
-        .corner {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border: 2px solid var(--neon-blue);
-            opacity: 0;
-            animation: fadeIn 0.2s ease 0.4s forwards; /* 위아래로 열릴 때 등장 */
-        }
-        
-        .tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
-        .tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
-        .bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
-        .br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
-
         /* 내부 콘텐츠 페이드인 */
-        .header, .content {
+        .content-wrapper {
             opacity: 0;
-            animation: fadeIn 0.5s ease 0.8s forwards; /* 다 열린 후 내용이 보임 */
+            animation: fadeIn 0.4s ease 0.8s forwards;
         }
 
         @keyframes fadeIn {
             to { opacity: 1; }
         }
 
-        /* ----- 이 아래는 기존 스타일 100% 동일 ----- */
+        /* 장식용 코너 */
+        .corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid var(--neon-blue);
+            transition: 0.3s;
+            opacity: 0;
+            animation: fadeIn 0.3s ease 0.8s forwards;
+        }
+        .tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+        .tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+        .bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+        .br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 
         .header {
             background: #000;
@@ -101,15 +112,19 @@
             margin: 0;
             font-size: 24px;
             color: var(--neon-blue);
-            text-shadow: 0 0 5px var(--neon-blue);
             letter-spacing: 2px;
+            animation: neonPulse 2s infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            0% { text-shadow: 0 0 5px var(--neon-blue), 0 0 10px var(--neon-blue); }
+            100% { text-shadow: 0 0 2px var(--neon-blue), 0 0 5px rgba(0,229,255,0.5); }
         }
 
         .content {
             padding: 0 20px 20px 20px;
         }
 
-        /* 탭 버튼 */
         .tabs {
             display: flex;
             margin-bottom: 20px;
@@ -131,9 +146,29 @@
         .tab.active {
             color: var(--neon-blue);
             border-bottom: 2px solid var(--neon-blue);
+            text-shadow: 0 0 5px rgba(0,229,255,0.5);
         }
 
-        /* 폼 스타일 */
+        /* 폼 슬라이더 레이아웃 */
+        .form-slider {
+            width: 100%;
+            overflow: hidden; 
+            position: relative;
+        }
+
+        .form-slider-track {
+            display: flex;
+            width: 200%; 
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .form-slide {
+            width: 50%; 
+            flex-shrink: 0;
+            padding: 2px; 
+            box-sizing: border-box;
+        }
+
         input {
             width: 100%;
             background: #000;
@@ -144,11 +179,12 @@
             box-sizing: border-box;
             font-family: inherit;
             outline: none;
+            transition: 0.3s;
         }
 
         input:focus {
             border-color: var(--neon-blue);
-            box-shadow: 0 0 5px rgba(0, 229, 255, 0.2);
+            box-shadow: inset 0 0 5px rgba(0, 229, 255, 0.2);
         }
 
         .btn {
@@ -161,13 +197,94 @@
             cursor: pointer;
             font-family: inherit;
             margin-top: 10px;
-            transition: 0.2s;
+            transition: 0.3s;
         }
 
         .btn:hover {
             background: var(--neon-blue);
             color: #000;
             box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        /* =========================================
+           [추가] 고퀄리티 이메일 인증 스타일
+        ========================================= */
+        .security-badge {
+            font-size: 10px;
+            color: var(--neon-purple);
+            text-align: left;
+            margin-bottom: 8px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            letter-spacing: 1px;
+        }
+
+        .email-group {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .email-group input {
+            margin-bottom: 0;
+            flex: 2;
+        }
+
+        .btn-code {
+            flex: 1;
+            margin-top: 0;
+            padding: 0;
+            font-size: 11px;
+            background: rgba(189, 0, 255, 0.1);
+            border-color: var(--neon-purple);
+            color: var(--neon-purple);
+            letter-spacing: 1px;
+        }
+
+        .btn-code:hover {
+            background: var(--neon-purple);
+            color: #fff;
+            box-shadow: 0 0 15px var(--neon-purple);
+        }
+
+        /* 수신 코드 입력란 전용 맥박(Pulse) 효과 */
+        .code-input {
+            border-color: var(--neon-purple) !important;
+            color: var(--neon-purple) !important;
+            text-align: center;
+            font-weight: bold;
+            letter-spacing: 8px;
+            font-size: 18px;
+            background: rgba(189, 0, 255, 0.05) !important;
+            animation: pulseBorder 1.5s infinite alternate;
+        }
+
+        .code-input::placeholder {
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: normal;
+            color: rgba(189, 0, 255, 0.4);
+        }
+
+        .code-input:focus {
+            box-shadow: inset 0 0 10px rgba(189, 0, 255, 0.3) !important;
+            animation: none; /* 포커스 시 깜빡임 멈춤 */
+        }
+
+        @keyframes pulseBorder {
+            0% { border-color: rgba(189, 0, 255, 0.3); box-shadow: 0 0 5px rgba(189,0,255,0.1); }
+            100% { border-color: rgba(189, 0, 255, 1); box-shadow: 0 0 15px rgba(189,0,255,0.4); }
+        }
+
+        .fade-in-down {
+            animation: fadeInDown 0.4s ease forwards;
+        }
+
+        @keyframes fadeInDown {
+            0% { opacity: 0; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
 
         .divider {
@@ -190,14 +307,14 @@
         .divider::after { right: 0; }
 
         .discord-btn {
-            background: #5865F2;
+            background: rgba(88, 101, 242, 0.1);
             border: 1px solid #5865F2;
-            color: white;
+            color: #5865F2;
         }
         .discord-btn:hover {
-            background: #4752C4;
+            background: #5865F2;
             color: white;
-            box-shadow: 0 0 15px #5865F2;
+            box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
         }
 
         .msg {
@@ -207,25 +324,26 @@
             min-height: 15px;
         }
         .error { color: #ff5555; }
-        .success { color: #00ff00; }
+        .success { color: var(--neon-blue); }
         
         .hidden { display: none; }
 
-        /* =========================================
-           [모바일 로그인 화면 반응형 최적화]
-        ========================================= */
         @media screen and (max-width: 480px) {
             @keyframes expandHorizontal {
                 0% { width: 0; opacity: 0; }
-                100% { width: 90vw; opacity: 1; } /* 모바일에서는 화면 너비의 90%까지만 확장 */
+                100% { width: 90vw; opacity: 1; }
             }
-            
+            @keyframes bootHorizontal {
+                0% { width: 0; opacity: 0; }
+                100% { width: 90vw; opacity: 1; }
+            }
             @keyframes expandVertical {
                 0% { max-height: 4px; border-color: var(--neon-blue); }
-                100% { 
-                    max-height: 80vh; 
-                    border-color: var(--border-color); 
-                }
+                100% { max-height: 85vh; border-color: var(--border-color); }
+            }
+            @keyframes bootVertical {
+                0% { max-height: 4px; border-color: var(--neon-blue); }
+                100% { max-height: 85vh; border-color: var(--border-color); }
             }
         }
     </style>
@@ -233,46 +351,66 @@
 <body>
 
     <div class="anim-wrapper">
-        
         <div class="loginContainer">
-            <div class="header">
-                <h1>GREY CITY</h1>
-                <div style="font-size: 10px; color: #666; margin-top: 5px;">ACCESS TERMINAL v2.0</div>
-            </div>
+            
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
 
-            <div class="content">
-                <div class="tabs">
-                    <button class="tab active" onclick="switchTab('login')">LOGIN</button>
-                    <button class="tab" onclick="switchTab('register')">REGISTER</button>
+            <div class="content-wrapper">
+                <div class="header">
+                    <h1>GREY CITY</h1>
+                    <div style="font-size: 10px; color: #666; margin-top: 5px;">ACCESS TERMINAL v2.0</div>
                 </div>
 
-                <div id="loginForm">
-                    <input type="text" id="l_id" placeholder="생존자 ID" autocomplete="off">
-                    <input type="password" id="l_pw" placeholder="암호" autocomplete="off">
-                    <button class="btn" onclick="localLogin()">SYSTEM ACCESS</button>
+                <div class="content">
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('login')">LOGIN</button>
+                        <button class="tab" onclick="switchTab('register')">REGISTER</button>
+                    </div>
+
+                    <div class="form-slider">
+                        <div class="form-slider-track" id="formTrack">
+                            
+                            <div id="loginForm" class="form-slide">
+                                <input type="text" id="l_id" placeholder="생존자 ID" autocomplete="off">
+                                <input type="password" id="l_pw" placeholder="암호" autocomplete="off">
+                                <button class="btn" onclick="localLogin()">SYSTEM ACCESS</button>
+                            </div>
+
+                            <div id="registerForm" class="form-slide">
+                                <input type="text" id="r_id" placeholder="등록할 ID" autocomplete="off">
+                                <input type="password" id="r_pw" placeholder="등록할 암호" autocomplete="off">
+                                
+                                <div style="margin-top: 15px; padding-top: 12px; border-top: 1px dashed #333;">
+                                    <div class="security-badge">🔒 SECURITY VERIFICATION</div>
+                                    <div class="email-group">
+                                        <input type="email" id="r_email" placeholder="수신용 이메일" autocomplete="off">
+                                        <button class="btn btn-code" id="btnSendCode" onclick="sendVerificationCode()">[ SEND ]</button>
+                                    </div>
+                                    
+                                    <div id="codeWrapper" style="display: none; margin-bottom: 10px;">
+                                        <input type="text" id="r_code" class="code-input" placeholder="수신 코드 6자리" autocomplete="off" maxlength="6">
+                                    </div>
+                                </div>
+                                
+                                <button class="btn" style="border-color:var(--neon-purple); color:var(--neon-purple)" onclick="localRegister()">NEW REGISTRATION</button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="statusMsg" class="msg"></div>
+
+                    <div class="divider">OR EXTERNAL LINK</div>
+
+                    <button class="btn discord-btn" onclick="location.href='/login/discord'">
+                        Access via Discord
+                    </button>
                 </div>
-
-                <div id="registerForm" class="hidden">
-                    <input type="text" id="r_id" placeholder="등록할 ID" autocomplete="off">
-                    <input type="password" id="r_pw" placeholder="등록할 암호" autocomplete="off">
-                    <button class="btn" style="border-color:var(--neon-purple); color:var(--neon-purple)" onclick="localRegister()">NEW REGISTRATION</button>
-                </div>
-
-                <div id="statusMsg" class="msg"></div>
-
-                <div class="divider">OR EXTERNAL LINK</div>
-
-                <button class="btn discord-btn" onclick="location.href='/login/discord'">
-                    Access via Discord
-                </button>
             </div>
         </div>
-
-        <div class="corner tl"></div>
-        <div class="corner tr"></div>
-        <div class="corner bl"></div>
-        <div class="corner br"></div>
-
     </div>
 
     <script>
@@ -280,14 +418,14 @@
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById('statusMsg').innerText = '';
             
+            const track = document.getElementById('formTrack');
+            
             if (mode === 'login') {
                 document.querySelector('.tab:nth-child(1)').classList.add('active');
-                document.getElementById('loginForm').classList.remove('hidden');
-                document.getElementById('registerForm').classList.add('hidden');
+                track.style.transform = 'translateX(0)';
             } else {
                 document.querySelector('.tab:nth-child(2)').classList.add('active');
-                document.getElementById('loginForm').classList.add('hidden');
-                document.getElementById('registerForm').classList.remove('hidden');
+                track.style.transform = 'translateX(-50%)';
             }
         }
 
@@ -325,13 +463,72 @@
             }
         }
 
-        async function localRegister() {
-            const id = document.getElementById('r_id').value;
-            const pw = document.getElementById('r_pw').value;
+        async function sendVerificationCode() {
+            const email = document.getElementById('r_email').value.trim();
             const msgEl = document.getElementById('statusMsg');
+            const btnSend = document.getElementById('btnSendCode');
 
-            if (!id || !pw) {
-                msgEl.innerText = "등록 정보를 입력하십시오.";
+            if (!email) {
+                msgEl.innerText = "이메일 주소를 입력하십시오.";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            // 전송 중 UI 반응
+            msgEl.innerText = "보안 서버와 통신 중... (코드 발송)";
+            msgEl.className = "msg";
+            btnSend.innerText = "[ WAITING... ]";
+            btnSend.style.pointerEvents = "none";
+
+            try {
+                const res = await fetch('/api/send_code', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email: email})
+                });
+                const data = await res.json();
+
+                btnSend.innerText = "[ RESEND ]";
+                btnSend.style.pointerEvents = "auto";
+
+                if (data.success) {
+                    msgEl.innerText = data.msg;
+                    msgEl.className = "msg success";
+                    
+                    // 입력창이 없었다면 페이드다운 애니메이션과 함께 렌더링
+                    const codeWrapper = document.getElementById('codeWrapper');
+                    if(codeWrapper.style.display === 'none') {
+                        codeWrapper.style.display = 'block';
+                        codeWrapper.classList.add('fade-in-down');
+                    }
+                } else {
+                    msgEl.innerText = data.msg;
+                    msgEl.className = "msg error";
+                }
+            } catch (e) {
+                btnSend.innerText = "[ SEND ]";
+                btnSend.style.pointerEvents = "auto";
+                msgEl.innerText = "네트워크 통신 오류.";
+                msgEl.className = "msg error";
+            }
+        }
+
+        async function localRegister() {
+            const id = document.getElementById('r_id').value.trim();
+            const pw = document.getElementById('r_pw').value.trim();
+            const email = document.getElementById('r_email').value.trim();
+            const code = document.getElementById('r_code').value.trim();
+            const msgEl = document.getElementById('statusMsg');
+            const codeWrapper = document.getElementById('codeWrapper');
+
+            if (!id || !pw || !email) {
+                msgEl.innerText = "모든 등록 정보를 입력하십시오.";
+                msgEl.className = "msg error";
+                return;
+            }
+
+            if (codeWrapper.style.display === 'block' && !code) {
+                msgEl.innerText = "수신된 보안 코드를 정확히 입력하십시오.";
                 msgEl.className = "msg error";
                 return;
             }
@@ -340,18 +537,27 @@
                 const res = await fetch('/api/register', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({username: id, password: pw})
+                    body: JSON.stringify({username: id, password: pw, email: email, code: code})
                 });
                 const data = await res.json();
 
                 if (data.success) {
-                    msgEl.innerText = "등록 완료. 로그인 탭으로 이동하십시오.";
+                    msgEl.innerText = "등록 완료. 시스템 접근을 승인합니다.";
                     msgEl.className = "msg success";
+                    
+                    // 폼 초기화
                     document.getElementById('r_id').value = '';
                     document.getElementById('r_pw').value = '';
+                    document.getElementById('r_email').value = '';
+                    document.getElementById('r_code').value = '';
+                    codeWrapper.style.display = 'none';
+                    codeWrapper.classList.remove('fade-in-down');
+                    document.getElementById('btnSendCode').innerText = "[ SEND ]";
+                    
+                    // 성공 후 자동으로 로그인 탭으로 스르륵 전환
                     setTimeout(() => switchTab('login'), 1500);
                 } else {
-                    msgEl.innerText = "등록 실패: " + data.msg;
+                    msgEl.innerText = "등록 거부됨: " + data.msg;
                     msgEl.className = "msg error";
                 }
             } catch (e) {
@@ -366,6 +572,9 @@
             if (e.key === 'Enter') localLogin();
         });
         document.getElementById('r_pw').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') localRegister();
+        });
+        document.getElementById('r_code').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') localRegister();
         });
     </script>

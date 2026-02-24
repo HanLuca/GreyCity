@@ -5,12 +5,13 @@ from src.gameEngine import GameEngine
 from config import Config
 import requests
 import random
+import string
+import smtplib
+from email.mime.text import MIMEText
 
 gameBP = Blueprint('gameBP', __name__)
 fbManager = FirebaseManager()
 gameEngine = GameEngine()
-
-# --- [인증 및 세션 관리] ---
 
 @gameBP.route('/')
 def index():
@@ -18,59 +19,104 @@ def index():
         return render_template('login.html')
     return render_template('index.html', username=session.get('username'))
 
-# [신규] 자체 회원가입 API
+# ==========================================
+# [신규] 이메일 인증 코드 발송 API
+# ==========================================
+@gameBP.route('/api/send_code', methods=['POST'])
+def send_code():
+    data = request.json
+    email = data.get('email')
+    if not email:
+        return jsonify({"success": False, "msg": "이메일을 입력하십시오."})
+
+    # 6자리 영문+숫자 랜덤 코드 생성
+    code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    session['verification_code'] = code
+    session['verification_email'] = email
+
+    sender_email = getattr(Config, 'SMTP_EMAIL', None)
+    sender_password = getattr(Config, 'SMTP_PASSWORD', None)
+
+    # SMTP 설정이 되어있는 경우 실제 이메일 발송
+    if sender_email and sender_password:
+        try:
+            msg = MIMEText(f"[GREY CITY]\n접근을 위한 보안 코드입니다.\n\nCODE: [ {code} ]\n\n시스템에 코드를 입력하여 등록을 완료하십시오.")
+            msg['Subject'] = "GREY CITY: ACCESS CODE"
+            msg['From'] = sender_email
+            msg['To'] = email
+
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, email, msg.as_string())
+            server.quit()
+            return jsonify({"success": True, "msg": "보안 코드가 전송되었습니다. 이메일을 확인하십시오."})
+        except Exception as e:
+            print(f"Email error: {e}")
+            return jsonify({"success": False, "msg": "이메일 발송 실패. 시스템 관리자에게 문의하십시오."})
+    else:
+        # 이메일 설정이 없으면 터미널 콘솔에만 출력 (개발 테스트용)
+        print(f"\n======================================")
+        print(f">>> [TEST MODE] {email} 로 발송된 코드: {code}")
+        print(f"======================================\n")
+        return jsonify({"success": True, "msg": "[TEST 모드] 서버 콘솔 창에서 보안 코드를 확인하십시오."})
+
+# ==========================================
+# [수정됨] 회원가입 API (이메일 인증 체크)
+# ==========================================
 @gameBP.route('/api/register', methods=['POST'])
 def register_local():
     data = request.json
     username = data.get('username')
     password = data.get('password')
+    email = data.get('email')
+    code = data.get('code')
 
-    if not username or not password:
-        return jsonify({"success": False, "msg": "아이디와 비밀번호를 입력하세요."})
+    if not username or not password or not email or not code:
+        return jsonify({"success": False, "msg": "모든 정보를 입력 및 인증하십시오."})
 
-    # 1. 중복 아이디 체크
+    # 인증 코드 검증
+    if session.get('verification_code') != code or session.get('verification_email') != email:
+        return jsonify({"success": False, "msg": "보안 코드가 일치하지 않거나 만료되었습니다."})
+
+    # 아이디 중복 검사
     if fbManager.getAuthData(username):
-        return jsonify({"success": False, "msg": "이미 존재하는 생존자 코드(ID)입니다."})
+        return jsonify({"success": False, "msg": "이미 존재하는 생존자 ID입니다."})
 
-    # 2. 고유 ID 생성 (gc- + 18자리 숫자)
-    # 10^17 ~ 10^18-1 범위의 랜덤 숫자
     random_num = random.randrange(10**17, 10**18)
     new_user_id = f"gc-{random_num}"
 
-    # 3. 비밀번호 해싱 및 Auth 저장
     pw_hash = generate_password_hash(password)
     fbManager.registerUserAuth(username, pw_hash, new_user_id)
 
-    # 4. 초기 게임 데이터 생성 및 저장
     userData = gameEngine.initNewPlayer()
     userData['username'] = username
     fbManager.setUserData(new_user_id, userData)
 
+    # 가입 성공 시 세션에서 코드 파기
+    session.pop('verification_code', None)
+    session.pop('verification_email', None)
+
     return jsonify({"success": True, "msg": "등록 완료. 접근 승인."})
 
-# [신규] 자체 로그인 API
 @gameBP.route('/api/login_local', methods=['POST'])
 def login_local():
     data = request.json
     username = data.get('username')
     password = data.get('password')
 
-    # 1. Auth 데이터 조회
     auth_data = fbManager.getAuthData(username)
     
     if not auth_data:
         return jsonify({"success": False, "msg": "존재하지 않는 생존자입니다."})
 
-    # 2. 비밀번호 검증
     if check_password_hash(auth_data['password'], password):
-        # 로그인 성공 -> 세션 설정
         session['user_id'] = auth_data['userId']
         session['username'] = username
         return jsonify({"success": True})
     else:
         return jsonify({"success": False, "msg": "암호 코드가 일치하지 않습니다."})
 
-# [기존] 디스코드 로그인 리다이렉트
 @gameBP.route('/login/discord')
 def login_discord():
     discord_auth_url = (
@@ -82,7 +128,6 @@ def login_discord():
     )
     return redirect(discord_auth_url)
 
-# [기존] 디스코드 콜백
 @gameBP.route('/callback')
 def callback():
     code = request.args.get('code')
@@ -105,7 +150,6 @@ def callback():
         user_res = requests.get(f"{Config.DISCORD_API_BASE_URL}/users/@me", headers={'Authorization': f"Bearer {access_token}"})
         user_data = user_res.json()
         
-        # 디스코드는 숫자 ID를 그대로 사용
         session['user_id'] = user_data['id']
         session['username'] = user_data['username']
 
@@ -118,47 +162,6 @@ def logout():
     session.clear()
     return redirect(url_for('gameBP.index'))
 
-
-# --- [신규] 계정 관리 API ---
-
-@gameBP.route('/api/reset_account', methods=['POST'])
-def reset_account():
-    if 'user_id' not in session:
-        return jsonify({"success": False, "error": "로그인이 필요합니다."}), 401
-    
-    userId = session['user_id']
-    username = session.get('username', 'Unknown')
-    
-    # 새로운 초기 데이터를 생성하고 덮어씌움 (완전 초기화)
-    new_data = gameEngine.initNewPlayer()
-    new_data['username'] = username
-    fbManager.setUserData(userId, new_data)
-    
-    return jsonify({"success": True})
-
-@gameBP.route('/api/delete_account', methods=['POST'])
-def delete_account():
-    if 'user_id' not in session:
-        return jsonify({"success": False, "error": "로그인이 필요합니다."}), 401
-    
-    userId = session['user_id']
-    username = session.get('username')
-    
-    # 1. 인게임 플레이 데이터 삭제
-    fbManager.deleteUserData(userId)
-    
-    # 2. 자체 회원가입 시 생성된 Auth 데이터 삭제 (디스코드 유저는 없을 수 있으므로 예외처리 방지)
-    if username:
-        fbManager.deleteAuthData(username)
-        
-    # 3. 세션 완전 초기화
-    session.clear()
-    
-    return jsonify({"success": True})
-
-
-# --- [게임 로직 API] ---
-
 @gameBP.route('/api/loadGame', methods=['POST'])
 def loadGame():
     if 'user_id' not in session:
@@ -168,7 +171,6 @@ def loadGame():
     userData = fbManager.getUserData(userId)
     
     if not userData:
-        # (디스코드 유저의 경우 여기서 최초 생성될 수 있음)
         userData = gameEngine.initNewPlayer()
         userData['username'] = session.get('username', 'Unknown')
         fbManager.setUserData(userId, userData)
