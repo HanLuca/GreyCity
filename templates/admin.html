@@ -4,50 +4,239 @@
     <meta charset="UTF-8">
     <title>GREY CITY: OVERSEER SYSTEM</title>
     <style>
-        :root { --bg: #050505; --panel: #111; --border: #333; --neon-red: #ff2a2a; --neon-cyan: #00e5ff; }
-        body { background: var(--bg); color: #ccc; font-family: 'Courier New', monospace; margin: 0; padding: 20px; display: flex; height: 100vh; box-sizing: border-box; }
+        :root { 
+            --bg: #050505; 
+            --panel: #111; 
+            --border: #333; 
+            --neon-red: #ff2a2a; 
+            --neon-cyan: #00e5ff; 
+            --neon-purple: #bd00ff;
+        }
         
-        .header { position: absolute; top: 20px; left: 20px; font-size: 20px; color: var(--neon-red); font-weight: bold; text-shadow: 0 0 10px rgba(255,42,42,0.5); }
-        .back-btn { position: absolute; top: 20px; right: 20px; background: #222; border: 1px solid #444; color: #fff; padding: 5px 15px; cursor: pointer; }
+        body { 
+            background: var(--bg); 
+            color: #ccc; 
+            font-family: 'Courier New', monospace; 
+            margin: 0; 
+            padding: 20px; 
+            display: flex; 
+            height: 100vh; 
+            box-sizing: border-box; 
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+        }
+
+        /* CRT 모니터 스캔라인 효과 */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+            pointer-events: none;
+            z-index: 999;
+        }
         
-        .dashboard { display: flex; width: 100%; margin-top: 40px; gap: 20px; height: calc(100% - 40px); }
+        .header-container {
+            position: absolute;
+            top: 20px; left: 20px;
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .header { 
+            font-size: 22px; 
+            color: var(--neon-red); 
+            font-weight: bold; 
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255,42,42,0.5); 
+        }
         
-        .user-list { flex: 1; background: var(--panel); border: 1px solid var(--border); overflow-y: auto; padding: 10px; }
-        .user-item { padding: 10px; border-bottom: 1px solid #222; cursor: pointer; transition: 0.2s; }
-        .user-item:hover { background: rgba(0,229,255,0.1); border-color: var(--neon-cyan); }
-        .user-item.active { background: rgba(255,42,42,0.1); border-left: 3px solid var(--neon-red); color: #fff; }
+        .sub-header {
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .back-btn { 
+            position: absolute; 
+            top: 20px; right: 20px; 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid #444; 
+            color: #aaa; 
+            padding: 8px 20px; 
+            cursor: pointer; 
+            font-family: inherit;
+            font-weight: bold;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .back-btn:hover { background: #fff; color: #000; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
         
-        .editor-panel { flex: 2; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--border); padding: 15px; }
-        .editor-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
-        textarea { flex: 1; background: #000; color: #00e5ff; border: 1px solid #333; font-family: inherit; padding: 10px; resize: none; outline: none; }
+        .dashboard { 
+            display: flex; 
+            width: 100%; 
+            margin-top: 50px; 
+            gap: 20px; 
+            height: calc(100% - 50px); 
+            z-index: 5;
+        }
         
-        .btn-group { margin-top: 10px; display: flex; gap: 10px; }
-        button { padding: 10px; font-weight: bold; cursor: pointer; font-family: inherit; }
-        .btn-save { flex: 2; background: rgba(0,229,255,0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); }
-        .btn-save:hover { background: var(--neon-cyan); color: #000; }
-        .btn-delete { flex: 1; background: rgba(255,42,42,0.1); border: 1px solid var(--neon-red); color: var(--neon-red); }
-        .btn-delete:hover { background: var(--neon-red); color: #000; }
+        /* 왼쪽 유저 리스트 패널 */
+        .list-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .search-container {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            background: #0a0a0a;
+        }
+
+        .search-box {
+            width: 100%;
+            background: #000;
+            border: 1px solid #444;
+            color: var(--neon-cyan);
+            padding: 10px;
+            font-family: inherit;
+            box-sizing: border-box;
+            outline: none;
+            transition: 0.3s;
+        }
+        .search-box:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: inset 0 0 5px rgba(0, 229, 255, 0.2);
+        }
+        .search-box::placeholder {
+            color: #555;
+        }
+
+        .list-info {
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .user-list { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 10px; 
+        }
+        
+        /* 스크롤바 디자인 */
+        .user-list::-webkit-scrollbar, textarea::-webkit-scrollbar { width: 6px; }
+        .user-list::-webkit-scrollbar-track, textarea::-webkit-scrollbar-track { background: #0a0a0a; }
+        .user-list::-webkit-scrollbar-thumb, textarea::-webkit-scrollbar-thumb { background: #333; }
+        .user-list::-webkit-scrollbar-thumb:hover, textarea::-webkit-scrollbar-thumb:hover { background: var(--neon-cyan); }
+
+        .user-item { 
+            padding: 12px; 
+            border: 1px solid #222; 
+            background: #0d0d0d;
+            margin-bottom: 8px;
+            cursor: pointer; 
+            transition: 0.2s; 
+            border-radius: 4px;
+        }
+        .user-item:hover { 
+            background: rgba(0,229,255,0.05); 
+            border-color: #008899; 
+        }
+        .user-item.active { 
+            background: rgba(255,42,42,0.05); 
+            border-color: var(--neon-red);
+            box-shadow: inset 0 0 10px rgba(255,42,42,0.1);
+        }
+
+        .user-item-name { color: #fff; font-weight: bold; font-size: 14px; margin-bottom: 4px; display: flex; justify-content: space-between; }
+        .user-item-email { font-size: 11px; color: var(--neon-purple); margin-bottom: 6px; word-break: break-all; }
+        .user-item-stats { font-size: 11px; color: #888; }
+        
+        /* 오른쪽 데이터 에디터 패널 */
+        .editor-panel { 
+            flex: 2; 
+            display: flex; 
+            flex-direction: column; 
+            background: var(--panel); 
+            border: 1px solid var(--border); 
+            padding: 20px; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.8);
+        }
+        
+        .editor-header { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 15px; 
+            align-items: flex-end; 
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 10px;
+        }
+        #editorTitle { font-size: 16px; color: #fff; font-weight: bold; letter-spacing: 1px; }
+        
+        textarea { 
+            flex: 1; 
+            background: #050505; 
+            color: #00e5ff; 
+            border: 1px solid #333; 
+            font-family: inherit; 
+            font-size: 13px;
+            padding: 15px; 
+            resize: none; 
+            outline: none; 
+            border-radius: 4px;
+            line-height: 1.5;
+        }
+        textarea:focus { border-color: #555; }
+        textarea:disabled { color: #555; }
+        
+        .btn-group { margin-top: 15px; display: flex; gap: 15px; }
+        button { padding: 12px; font-weight: bold; cursor: pointer; font-family: inherit; border-radius: 4px; letter-spacing: 1px; transition: 0.2s; }
+        button:disabled { opacity: 0.3; cursor: not-allowed !important; }
+        
+        .btn-save { flex: 2; background: rgba(0,229,255,0.05); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); }
+        .btn-save:hover:not(:disabled) { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px var(--neon-cyan); }
+        
+        .btn-delete { flex: 1; background: rgba(255,42,42,0.05); border: 1px solid var(--neon-red); color: var(--neon-red); }
+        .btn-delete:hover:not(:disabled) { background: var(--neon-red); color: #000; box-shadow: 0 0 15px var(--neon-red); }
     </style>
 </head>
 <body>
 
-    <div class="header">SYS-ADMIN OVERSEER v1.0</div>
+    <div class="header-container">
+        <div class="header">SYS-ADMIN OVERSEER</div>
+        <div class="sub-header">SECURITY LEVEL: OMEGA | AUTHORIZED ACCESS ONLY</div>
+    </div>
+    
     <button class="back-btn" onclick="location.href='/'">RETURN TO GAME</button>
 
     <div class="dashboard">
-        <div class="user-list" id="userList">
-            <div style="text-align:center; margin-top:20px;">로딩 중...</div>
+        <div class="list-panel">
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-box" placeholder="Search ID, Name, Email..." autocomplete="off">
+                <div class="list-info" id="userCountInfo">Loading users...</div>
+            </div>
+            <div class="user-list" id="userList">
+                <div style="text-align:center; margin-top:30px; color:#555;">SYSTEM INITIATING...</div>
+            </div>
         </div>
         
         <div class="editor-panel">
             <div class="editor-header">
-                <span id="editorTitle">유저를 선택하십시오.</span>
-                <span id="statusMsg" style="font-size:12px; color:var(--neon-cyan);"></span>
+                <span id="editorTitle">대상을 선택하십시오.</span>
+                <span id="statusMsg" style="font-size:12px; color:var(--neon-cyan);">WAITING...</span>
             </div>
-            <textarea id="jsonEditor" disabled placeholder="데이터가 여기에 표시됩니다..."></textarea>
+            <textarea id="jsonEditor" disabled spellcheck="false" placeholder="데이터가 여기에 표시됩니다..."></textarea>
             <div class="btn-group">
-                <button class="btn-save" id="btnSave" disabled onclick="saveUserData()">💾 데이터 강제 덮어쓰기</button>
-                <button class="btn-delete" id="btnDelete" disabled onclick="deleteUser()">☠️ 유저 영구 밴</button>
+                <button class="btn-save" id="btnSave" disabled onclick="saveUserData()">[ 💾 FORCE OVERWRITE ]</button>
+                <button class="btn-delete" id="btnDelete" disabled onclick="deleteUser()">[ ☠️ PURGE USER ]</button>
             </div>
         </div>
     </div>
@@ -56,78 +245,143 @@
         let allUsers = {};
         let currentUserId = null;
 
+        // 초기 데이터 로드
         async function fetchUsers() {
             try {
                 const res = await fetch('/api/admin/users');
                 allUsers = await res.json();
                 renderUserList();
-            } catch(e) { console.error(e); }
-        }
-
-        function renderUserList() {
-            const list = document.getElementById('userList');
-            list.innerHTML = '';
-            for (const [userId, data] of Object.entries(allUsers)) {
-                const div = document.createElement('div');
-                div.className = 'user-item';
-                div.innerHTML = `<strong>${data.username || 'Unknown'}</strong> <br><span style="font-size:11px; color:#666;">Lv.${data.level || 1} | HP: ${data.hp || 0}/${data.maxHp || 0}</span>`;
-                div.onclick = () => selectUser(userId, div);
-                list.appendChild(div);
+            } catch(e) { 
+                console.error(e); 
+                document.getElementById('userCountInfo').innerText = "Database connection failed.";
             }
         }
 
+        // 유저 리스트 렌더링 (검색 필터 적용)
+        function renderUserList(filterText = '') {
+            const list = document.getElementById('userList');
+            list.innerHTML = '';
+            
+            const lowerFilter = filterText.toLowerCase();
+            let count = 0;
+
+            for (const [userId, data] of Object.entries(allUsers)) {
+                const username = (data.username || 'Unknown').toLowerCase();
+                const email = (data.email || 'No Email Registered').toLowerCase();
+                const uid = userId.toLowerCase();
+
+                // 검색 조건 (ID, 닉네임, 이메일 중 하나라도 포함되면 렌더링)
+                if (username.includes(lowerFilter) || email.includes(lowerFilter) || uid.includes(lowerFilter)) {
+                    count++;
+                    const div = document.createElement('div');
+                    div.className = 'user-item';
+                    if (userId === currentUserId) div.classList.add('active');
+
+                    div.innerHTML = `
+                        <div class="user-item-name">
+                            <span>${data.username || 'Unknown'}</span>
+                            <span style="font-size:10px; color:#555;">Lv.${data.level || 1}</span>
+                        </div>
+                        <div class="user-item-email">✉️ ${data.email || 'No Email'}</div>
+                        <div class="user-item-stats">
+                            ID: ${userId} <br>
+                            HP: <span style="color:var(--neon-red)">${data.hp || 0}</span> / ${data.maxHp || 0} | 🫀: ${data.heart_fragments || 0}
+                        </div>
+                    `;
+                    div.onclick = () => selectUser(userId, div);
+                    list.appendChild(div);
+                }
+            }
+
+            document.getElementById('userCountInfo').innerText = `TOTAL: ${count} USERS FOUND`;
+            
+            if (count === 0) {
+                list.innerHTML = `<div style="text-align:center; margin-top:30px; color:#555;">검색 결과가 없습니다.</div>`;
+            }
+        }
+
+        // 검색 이벤트 리스너
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            renderUserList(e.target.value);
+        });
+
+        // 유저 선택
         function selectUser(userId, el) {
             document.querySelectorAll('.user-item').forEach(d => d.classList.remove('active'));
             el.classList.add('active');
             
             currentUserId = userId;
-            document.getElementById('editorTitle').innerText = `TARGET : ${allUsers[userId].username} (${userId})`;
+            document.getElementById('editorTitle').innerText = `TARGET : ${allUsers[userId].username}`;
             
-            // JSON 예쁘게 포맷팅해서 텍스트에리어에 삽입
+            // JSON 포맷팅 (들여쓰기 4칸)
             const editor = document.getElementById('jsonEditor');
             editor.value = JSON.stringify(allUsers[userId], null, 4);
             editor.disabled = false;
             
             document.getElementById('btnSave').disabled = false;
             document.getElementById('btnDelete').disabled = false;
-            document.getElementById('statusMsg').innerText = "";
+            document.getElementById('statusMsg').innerText = "READY TO MODIFY";
+            document.getElementById('statusMsg').style.color = "var(--neon-cyan)";
         }
 
+        // 데이터 저장 (덮어쓰기)
         async function saveUserData() {
             if(!currentUserId) return;
             try {
                 const newData = JSON.parse(document.getElementById('jsonEditor').value);
+                
+                document.getElementById('statusMsg').innerText = "UPDATING...";
+                document.getElementById('statusMsg').style.color = "#fff";
+
                 const res = await fetch(`/api/admin/user/${currentUserId}`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(newData)
                 });
                 const result = await res.json();
+                
                 if(result.success) {
-                    document.getElementById('statusMsg').innerText = "업데이트 완료!";
+                    document.getElementById('statusMsg').innerText = "UPDATE SUCCESSFUL!";
+                    document.getElementById('statusMsg').style.color = "var(--neon-cyan)";
                     allUsers[currentUserId] = newData; // 로컬 캐시 업데이트
-                    renderUserList(); // 리스트 갱신
+                    renderUserList(document.getElementById('searchInput').value); // 현재 검색어 유지하며 리스트 갱신
                 }
             } catch(e) {
+                document.getElementById('statusMsg').innerText = "JSON FORMAT ERROR";
+                document.getElementById('statusMsg').style.color = "var(--neon-red)";
                 alert("JSON 형식이 잘못되었습니다. 쉼표(,)나 괄호를 확인하세요.");
             }
         }
 
+        // 유저 삭제 (밴)
         async function deleteUser() {
             if(!currentUserId) return;
-            if(confirm("정말 이 유저를 시스템에서 영구적으로 삭제하시겠습니까? (복구 불가)")) {
+            if(confirm("⚠️ 경고: 이 유저를 시스템에서 영구적으로 삭제하시겠습니까?\n이 작업은 즉시 실행되며 복구할 수 없습니다.")) {
+                
+                document.getElementById('statusMsg').innerText = "PURGING USER...";
+                document.getElementById('statusMsg').style.color = "var(--neon-red)";
+
                 const res = await fetch(`/api/admin/user/${currentUserId}`, { method: 'DELETE' });
                 const result = await res.json();
+                
                 if(result.success) {
-                    alert("삭제되었습니다.");
+                    alert("대상이 시스템에서 영구 삭제되었습니다.");
                     document.getElementById('jsonEditor').value = '';
+                    document.getElementById('jsonEditor').disabled = true;
+                    document.getElementById('btnSave').disabled = true;
+                    document.getElementById('btnDelete').disabled = true;
+                    document.getElementById('editorTitle').innerText = '대상을 선택하십시오.';
+                    document.getElementById('statusMsg').innerText = "WAITING...";
                     currentUserId = null;
-                    fetchUsers(); // 리스트 새로고침
+                    
+                    fetchUsers(); // DB 새로고침
+                } else {
+                    document.getElementById('statusMsg').innerText = "PURGE FAILED";
                 }
             }
         }
 
-        // 초기 로드
+        // 시작 시 데이터 로드
         fetchUsers();
     </script>
 </body>
