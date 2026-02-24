@@ -40,7 +40,7 @@ def send_code():
     # SMTP 설정이 되어있는 경우 실제 이메일 발송
     if sender_email and sender_password:
         try:
-            msg = MIMEText(Config.SendEmail, 'html', 'utf-8')
+            msg = MIMEText(Config.SendEmail(code), 'html', 'utf-8')
             msg['Subject'] = "GREY CITY: ACCESS CODE"
             msg['From'] = sender_email
             msg['To'] = email
@@ -197,3 +197,41 @@ def handleAction():
     
     fbManager.updateUserData(userId, responsePayload['userData'])
     return jsonify(responsePayload)
+
+# ==========================================
+# [신규] 관리자(ADMIN) 패널 전용 라우트
+# ==========================================
+
+def is_admin():
+    """현재 세션 유저가 관리자인지 확인"""
+    return session.get('username') in getattr(Config, 'ADMIN_ACCOUNTS', [])
+
+@gameBP.route('/admin')
+def admin_panel():
+    if not is_admin():
+        return "⚠️ ACCESS DENIED : SECURITY LEVEL OMEGA REQUIRED.", 403
+    return render_template('admin.html', username=session.get('username'))
+
+@gameBP.route('/api/admin/users', methods=['GET'])
+def admin_get_users():
+    if not is_admin():
+        return jsonify({"error": "Unauthorized"}), 403
+    return jsonify(fbManager.getAllUsers())
+
+@gameBP.route('/api/admin/user/<user_id>', methods=['POST'])
+def admin_update_user(user_id):
+    if not is_admin():
+        return jsonify({"error": "Unauthorized"}), 403
+    
+    new_data = request.json
+    # Firebase 데이터 덮어쓰기
+    fbManager.setUserData(user_id, new_data)
+    return jsonify({"success": True, "msg": "유저 데이터가 업데이트되었습니다."})
+
+@gameBP.route('/api/admin/user/<user_id>', methods=['DELETE'])
+def admin_delete_user(user_id):
+    if not is_admin():
+        return jsonify({"error": "Unauthorized"}), 403
+    
+    success = fbManager.deleteUserComplete(user_id)
+    return jsonify({"success": success})

@@ -55,3 +55,30 @@ class FirebaseManager:
     def deleteAuthData(self, username):
         ref = db.reference(f'user_auth/{username}')
         ref.delete()
+
+# [추가] 모든 유저 데이터 가져오기
+    def getAllUsers(self):
+        try:
+            users_ref = db.reference('users')
+            return users_ref.get() or {}
+        except Exception as e:
+            print(f"GetAllUsers Error: {e}")
+            return {}
+
+    # [추가] 특정 유저 완전 삭제
+    def deleteUserComplete(self, user_id):
+        try:
+            # 1. users 테이블에서 삭제
+            db.reference(f'users/{user_id}').delete()
+            
+            # 2. auth 테이블에서 해당 user_id를 가진 계정 찾아 삭제
+            auth_ref = db.reference('auth')
+            all_auth = auth_ref.get() or {}
+            for username, data in all_auth.items():
+                if data.get('userId') == user_id:
+                    db.reference(f'auth/{username}').delete()
+                    break
+            return True
+        except Exception as e:
+            print(f"Delete User Error: {e}")
+            return False

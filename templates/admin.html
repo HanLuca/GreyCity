@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>GREY CITY: OVERSEER SYSTEM</title>
+    <style>
+        :root { --bg: #050505; --panel: #111; --border: #333; --neon-red: #ff2a2a; --neon-cyan: #00e5ff; }
+        body { background: var(--bg); color: #ccc; font-family: 'Courier New', monospace; margin: 0; padding: 20px; display: flex; height: 100vh; box-sizing: border-box; }
+        
+        .header { position: absolute; top: 20px; left: 20px; font-size: 20px; color: var(--neon-red); font-weight: bold; text-shadow: 0 0 10px rgba(255,42,42,0.5); }
+        .back-btn { position: absolute; top: 20px; right: 20px; background: #222; border: 1px solid #444; color: #fff; padding: 5px 15px; cursor: pointer; }
+        
+        .dashboard { display: flex; width: 100%; margin-top: 40px; gap: 20px; height: calc(100% - 40px); }
+        
+        .user-list { flex: 1; background: var(--panel); border: 1px solid var(--border); overflow-y: auto; padding: 10px; }
+        .user-item { padding: 10px; border-bottom: 1px solid #222; cursor: pointer; transition: 0.2s; }
+        .user-item:hover { background: rgba(0,229,255,0.1); border-color: var(--neon-cyan); }
+        .user-item.active { background: rgba(255,42,42,0.1); border-left: 3px solid var(--neon-red); color: #fff; }
+        
+        .editor-panel { flex: 2; display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--border); padding: 15px; }
+        .editor-header { display: flex; justify-content: space-between; margin-bottom: 10px; align-items: center; }
+        textarea { flex: 1; background: #000; color: #00e5ff; border: 1px solid #333; font-family: inherit; padding: 10px; resize: none; outline: none; }
+        
+        .btn-group { margin-top: 10px; display: flex; gap: 10px; }
+        button { padding: 10px; font-weight: bold; cursor: pointer; font-family: inherit; }
+        .btn-save { flex: 2; background: rgba(0,229,255,0.1); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); }
+        .btn-save:hover { background: var(--neon-cyan); color: #000; }
+        .btn-delete { flex: 1; background: rgba(255,42,42,0.1); border: 1px solid var(--neon-red); color: var(--neon-red); }
+        .btn-delete:hover { background: var(--neon-red); color: #000; }
+    </style>
+</head>
+<body>
+
+    <div class="header">SYS-ADMIN OVERSEER v1.0</div>
+    <button class="back-btn" onclick="location.href='/'">RETURN TO GAME</button>
+
+    <div class="dashboard">
+        <div class="user-list" id="userList">
+            <div style="text-align:center; margin-top:20px;">로딩 중...</div>
+        </div>
+        
+        <div class="editor-panel">
+            <div class="editor-header">
+                <span id="editorTitle">유저를 선택하십시오.</span>
+                <span id="statusMsg" style="font-size:12px; color:var(--neon-cyan);"></span>
+            </div>
+            <textarea id="jsonEditor" disabled placeholder="데이터가 여기에 표시됩니다..."></textarea>
+            <div class="btn-group">
+                <button class="btn-save" id="btnSave" disabled onclick="saveUserData()">💾 데이터 강제 덮어쓰기</button>
+                <button class="btn-delete" id="btnDelete" disabled onclick="deleteUser()">☠️ 유저 영구 밴</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allUsers = {};
+        let currentUserId = null;
+
+        async function fetchUsers() {
+            try {
+                const res = await fetch('/api/admin/users');
+                allUsers = await res.json();
+                renderUserList();
+            } catch(e) { console.error(e); }
+        }
+
+        function renderUserList() {
+            const list = document.getElementById('userList');
+            list.innerHTML = '';
+            for (const [userId, data] of Object.entries(allUsers)) {
+                const div = document.createElement('div');
+                div.className = 'user-item';
+                div.innerHTML = `<strong>${data.username || 'Unknown'}</strong> <br><span style="font-size:11px; color:#666;">Lv.${data.level || 1} | HP: ${data.hp || 0}/${data.maxHp || 0}</span>`;
+                div.onclick = () => selectUser(userId, div);
+                list.appendChild(div);
+            }
+        }
+
+        function selectUser(userId, el) {
+            document.querySelectorAll('.user-item').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+            
+            currentUserId = userId;
+            document.getElementById('editorTitle').innerText = `TARGET : ${allUsers[userId].username} (${userId})`;
+            
+            // JSON 예쁘게 포맷팅해서 텍스트에리어에 삽입
+            const editor = document.getElementById('jsonEditor');
+            editor.value = JSON.stringify(allUsers[userId], null, 4);
+            editor.disabled = false;
+            
+            document.getElementById('btnSave').disabled = false;
+            document.getElementById('btnDelete').disabled = false;
+            document.getElementById('statusMsg').innerText = "";
+        }
+
+        async function saveUserData() {
+            if(!currentUserId) return;
+            try {
+                const newData = JSON.parse(document.getElementById('jsonEditor').value);
+                const res = await fetch(`/api/admin/user/${currentUserId}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(newData)
+                });
+                const result = await res.json();
+                if(result.success) {
+                    document.getElementById('statusMsg').innerText = "업데이트 완료!";
+                    allUsers[currentUserId] = newData; // 로컬 캐시 업데이트
+                    renderUserList(); // 리스트 갱신
+                }
+            } catch(e) {
+                alert("JSON 형식이 잘못되었습니다. 쉼표(,)나 괄호를 확인하세요.");
+            }
+        }
+
+        async function deleteUser() {
+            if(!currentUserId) return;
+            if(confirm("정말 이 유저를 시스템에서 영구적으로 삭제하시겠습니까? (복구 불가)")) {
+                const res = await fetch(`/api/admin/user/${currentUserId}`, { method: 'DELETE' });
+                const result = await res.json();
+                if(result.success) {
+                    alert("삭제되었습니다.");
+                    document.getElementById('jsonEditor').value = '';
+                    currentUserId = null;
+                    fetchUsers(); // 리스트 새로고침
+                }
+            }
+        }
+
+        // 초기 로드
+        fetchUsers();
+    </script>
+</body>
+</html>
