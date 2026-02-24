@@ -446,7 +446,7 @@ export class UIManager {
         this.els.modalLocName.innerText = isLocked ? "???" : locationData.name;
         this.els.modalLocCoord.innerText = `X:${locationData.coordinates.x} Y:${locationData.coordinates.y}`;
         
-        // [추가됨] 상단 포인트 바 엘리먼트 획득 및 기본 색상 지정
+        // 상단 포인트 바 엘리먼트 획득 및 기본 색상 지정
         const topAccent = document.getElementById('locModalTopAccent');
         let themeColor = '#555';
 
@@ -516,7 +516,7 @@ export class UIManager {
             this.els.modalLocInfo.innerHTML = html;
         }
 
-        // [추가됨] 테마 색상을 상단 바와 모달 테두리에 실시간 적용
+        // 테마 색상을 상단 바와 모달 테두리에 실시간 적용
         if(topAccent) {
             topAccent.style.background = themeColor;
             topAccent.style.boxShadow = `0 0 10px ${themeColor}`;

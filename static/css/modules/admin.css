@@ -69,7 +69,7 @@ textarea {
     border-radius: 6px; 
     box-shadow: inset 0 0 15px rgba(0,0,0,0.9);
     
-    /* [추가됨] 줄바꿈 방지 및 가로 스크롤 자동 생성 */
+    /* 줄바꿈 방지 및 가로 스크롤 자동 생성 */
     white-space: pre; 
     overflow-wrap: normal; 
     overflow-x: auto; 

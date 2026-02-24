@@ -21,7 +21,7 @@
 }
 
 .loginContainer {
-    position: relative; /* 기역자 코너가 컨테이너에 붙도록 기준점 설정 */
+    position: relative;
     width: 100%;
     background: #111;
     border: 2px solid var(--neon-blue);

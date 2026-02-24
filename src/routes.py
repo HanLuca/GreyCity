@@ -17,6 +17,7 @@ gameEngine = GameEngine()
 def index():
     if 'user_id' not in session:
         return render_template('login.html')
+    
     return render_template('index.html', username=session.get('username'))
 
 # ==========================================
@@ -26,6 +27,7 @@ def index():
 def send_code():
     data = request.json
     email = data.get('email')
+
     if not email:
         return jsonify({"success": False, "msg": "이메일을 입력하십시오."})
 
@@ -51,6 +53,7 @@ def send_code():
             server.sendmail(sender_email, email, msg.as_string())
             server.quit()
             return jsonify({"success": True, "msg": "보안 코드가 전송되었습니다. 이메일을 확인하십시오."})
+        
         except Exception as e:
             print(f"Email error: {e}")
             return jsonify({"success": False, "msg": "이메일 발송 실패. 시스템 관리자에게 문의하십시오."})
@@ -118,6 +121,7 @@ def login_local():
         session['user_id'] = auth_data['userId']
         session['username'] = username
         return jsonify({"success": True})
+    
     else:
         return jsonify({"success": False, "msg": "암호 코드가 일치하지 않습니다."})
 
@@ -130,6 +134,7 @@ def login_discord():
         f"&response_type=code"
         f"&scope=identify"
     )
+    
     return redirect(discord_auth_url)
 
 @gameBP.route('/callback')
@@ -144,6 +149,7 @@ def callback():
         'code': code,
         'redirect_uri': Config.DISCORD_REDIRECT_URI
     }
+
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     
     try:
@@ -158,12 +164,14 @@ def callback():
         session['username'] = user_data['username']
 
         return redirect(url_for('gameBP.index'))
+    
     except Exception as e:
         return f"Login Error: {str(e)}"
 
 @gameBP.route('/logout')
 def logout():
     session.clear()
+
     return redirect(url_for('gameBP.index'))
 
 @gameBP.route('/api/loadGame', methods=['POST'])
@@ -180,6 +188,7 @@ def loadGame():
         fbManager.setUserData(userId, userData)
     
     responsePayload = gameEngine.getGameResponse(userData)
+
     return jsonify(responsePayload)
 
 @gameBP.route('/api/action', methods=['POST'])
@@ -196,26 +205,28 @@ def handleAction():
     responsePayload = gameEngine.processAction(currentUserData, actionType, target)
     
     fbManager.updateUserData(userId, responsePayload['userData'])
+
     return jsonify(responsePayload)
 
 # ==========================================
-# [신규] 관리자(ADMIN) 패널 전용 라우트
+# 관리자(ADMIN) 패널 전용 라우트
 # ==========================================
 
 def is_admin():
-    """현재 세션 유저가 관리자인지 확인"""
     return session.get('username') in getattr(Config, 'ADMIN_ACCOUNTS', [])
 
 @gameBP.route('/admin')
 def admin_panel():
     if not is_admin():
         return "⚠️ ACCESS DENIED : SECURITY LEVEL OMEGA REQUIRED.", 403
+    
     return render_template('admin.html', username=session.get('username'))
 
 @gameBP.route('/api/admin/users', methods=['GET'])
 def admin_get_users():
     if not is_admin():
         return jsonify({"error": "Unauthorized"}), 403
+    
     return jsonify(fbManager.getAllUsers())
 
 @gameBP.route('/api/admin/user/<user_id>', methods=['POST'])
@@ -223,9 +234,9 @@ def admin_update_user(user_id):
     if not is_admin():
         return jsonify({"error": "Unauthorized"}), 403
     
-    new_data = request.json
-    # Firebase 데이터 덮어쓰기
+    new_data = request.is_json
     fbManager.setUserData(user_id, new_data)
+
     return jsonify({"success": True, "msg": "유저 데이터가 업데이트되었습니다."})
 
 @gameBP.route('/api/admin/user/<user_id>', methods=['DELETE'])
@@ -234,4 +245,5 @@ def admin_delete_user(user_id):
         return jsonify({"error": "Unauthorized"}), 403
     
     success = fbManager.deleteUserComplete(user_id)
+    
     return jsonify({"success": success})

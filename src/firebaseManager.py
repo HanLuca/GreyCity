@@ -14,27 +14,27 @@ class FirebaseManager:
             })
             print(">>> Firebase Connected")
 
-    # [기존] 유저 데이터 가져오기
+    # 유저 데이터 가져오기
     def getUserData(self, userId):
         ref = db.reference(f'users/{userId}')
         return ref.get()
 
-    # [기존] 유저 데이터 업데이트
+    # 유저 데이터 업데이트
     def updateUserData(self, userId, data):
         ref = db.reference(f'users/{userId}')
         ref.update(data)
 
-    # [기존] 유저 데이터 덮어쓰기
+    # 유저 데이터 덮어쓰기
     def setUserData(self, userId, data):
         ref = db.reference(f'users/{userId}')
         ref.set(data)
         
-    # [신규] 유저 게임 데이터 완전히 삭제
+    # 유저 게임 데이터 완전히 삭제
     def deleteUserData(self, userId):
         ref = db.reference(f'users/{userId}')
         ref.delete()
 
-    # --- [신규] 인증 관련 메서드 ---
+    # --- 인증 관련 메서드 ---
 
     # 아이디 중복 확인 및 비밀번호 검증을 위해 Auth 데이터 가져오기
     def getAuthData(self, username):
@@ -51,12 +51,12 @@ class FirebaseManager:
             "userId": userId
         })
 
-    # [신규] 회원 탈퇴 시 Auth 계정 정보 완전 삭제
+    # 회원 탈퇴 시 Auth 계정 정보 완전 삭제
     def deleteAuthData(self, username):
         ref = db.reference(f'user_auth/{username}')
         ref.delete()
 
-# [추가] 모든 유저 데이터 가져오기
+    # 모든 유저 데이터 가져오기
     def getAllUsers(self):
         try:
             users_ref = db.reference('users')
@@ -65,7 +65,7 @@ class FirebaseManager:
             print(f"GetAllUsers Error: {e}")
             return {}
 
-    # [추가] 특정 유저 완전 삭제
+    # 특정 유저 완전 삭제
     def deleteUserComplete(self, user_id):
         try:
             # 1. users 테이블에서 삭제

@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // [추가됨] 통신 대기 중 출력할 로딩 메시지
+        // 통신 대기 중 출력할 로딩 메시지
         msgEl.innerText = "사용자 정보를 확인 중...";
         msgEl.className = "msg";
 
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // [추가됨] 통신 대기 중 출력할 로딩 메시지
+        // 통신 대기 중 출력할 로딩 메시지
         msgEl.innerText = "시스템에 생존자 정보를 등록 중...";
         msgEl.className = "msg";
 
