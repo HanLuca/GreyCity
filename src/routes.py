@@ -40,7 +40,7 @@ def send_code():
     # SMTP 설정이 되어있는 경우 실제 이메일 발송
     if sender_email and sender_password:
         try:
-            msg = MIMEText(f"[GREY CITY]\n접근을 위한 보안 코드입니다.\n\nCODE: [ {code} ]\n\n시스템에 코드를 입력하여 등록을 완료하십시오.")
+            msg = MIMEText(Config.SendEmail(code), 'html', 'utf-8')
             msg['Subject'] = "GREY CITY: ACCESS CODE"
             msg['From'] = sender_email
             msg['To'] = email
