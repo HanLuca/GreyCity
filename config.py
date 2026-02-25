@@ -11,7 +11,7 @@ class Config:
     # Discord OAuth2 설정 (개발자 포털에서 복사한 값 넣기)
     DISCORD_CLIENT_ID = '1473345135227174943'
     DISCORD_CLIENT_SECRET = 'UZjZBDPldIjdZrGCCEcic91jffpHrIrG'
-    DISCORD_REDIRECT_URI = 'https://greycity-1.onrender.com/callback' # 'http://127.0.0.1:5000/callback'
+    DISCORD_REDIRECT_URI = 'http://127.0.0.1:5000/callback'     # 'https://greycity-1.onrender.com/callback' # 'http://127.0.0.1:5000/callback'
     DISCORD_API_BASE_URL = 'https://discord.com/api'
 
     SMTP_EMAIL = 'devsion2025@gmail.com'
