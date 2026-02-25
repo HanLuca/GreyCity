@@ -110,7 +110,7 @@ def login_local():
     # 🚨 정지된 계정인지 확인 (로그인 차단)
     if userData and userData.get('banned_until', 0) > time.time():
         remain = int((userData['banned_until'] - time.time()) / 86400) + 1
-        return jsonify({"success": False, "msg": f"시스템 접근이 차단되었습니다. (정지 해제까지 약 {remain}일)"})
+        return jsonify({"success": False, "msg": f"<br>시스템 접근이 차단되었습니다. (정지 해제까지 약 {remain}일)"})
 
     if check_password_hash(auth_data['password'], password):
         # 로그인 성공 시 혹시 남아있는 강제 로그아웃 플래그 해제

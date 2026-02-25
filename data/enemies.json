@@ -1,88 +1,88 @@
 {
     "mutated_rat": {
         "name": "돌연변이 쥐",
-        "hp": 30,
-        "maxHp": 30,
+        "hp": 20,
+        "maxHp": 20,
         "attack": 5,
         "exp": 10,
         "grade": 1
     },
     "infected_roach": {
         "name": "거대 감염 바퀴",
-        "hp": 20,
-        "maxHp": 20,
+        "hp": 25,
+        "maxHp": 25,
         "attack": 8,
         "exp": 12,
         "grade": 1
     },
     "wild_dog": {
         "name": "피굶은 들개",
-        "hp": 45,
-        "maxHp": 45,
-        "attack": 15,
-        "exp": 22,
+        "hp": 30,
+        "maxHp": 30,
+        "attack": 11,
+        "exp": 14,
         "grade": 1
     },
     "crazed_survivor": {
         "name": "미쳐버린 생존자",
-        "hp": 60,
-        "maxHp": 60,
-        "attack": 18,
-        "exp": 30,
+        "hp": 40,
+        "maxHp": 40,
+        "attack": 15,
+        "exp": 16,
         "grade": 2
     },
     "toxic_crawler": {
         "name": "독성 크롤러",
-        "hp": 80,
-        "maxHp": 80,
-        "attack": 25,
-        "exp": 45,
+        "hp": 50,
+        "maxHp": 50,
+        "attack": 18,
+        "exp": 20,
         "grade": 2
     },
     "security_bot": {
         "name": "오작동 보안 로봇",
-        "hp": 100,
-        "maxHp": 100,
-        "attack": 35,
-        "exp": 60,
+        "hp": 60,
+        "maxHp": 60,
+        "attack": 20,
+        "exp": 23,
         "grade": 2
     },
     "flesh_beast": {
         "name": "살점 괴수",
-        "hp": 150,
-        "maxHp": 150,
-        "attack": 50,
-        "exp": 90,
+        "hp": 100,
+        "maxHp": 100,
+        "attack": 30,
+        "exp": 40,
         "grade": 3
     },
     "armored_infected": {
         "name": "진압복 감염자",
-        "hp": 200,
-        "maxHp": 200,
-        "attack": 45,
-        "exp": 110,
+        "hp": 150,
+        "maxHp": 150,
+        "attack": 50,
+        "exp": 50,
         "grade": 3
     },
     "chemical_mutant": {
         "name": "화학물 변이체",
         "hp": 300,
         "maxHp": 300,
-        "attack": 80,
+        "attack": 100,
         "exp": 180,
-        "grade": 3
+        "grade": 4
     },
     "juggernaut": {
         "name": "강화 감염자",
-        "hp": 800,
-        "maxHp": 800,
+        "hp": 500,
+        "maxHp": 500,
         "attack": 150,
-        "exp": 500,
+        "exp": 200,
         "grade": 4
     },
     "bio_weapon_alpha": {
         "name": "생체 병기 알파",
-        "hp": 1500,
-        "maxHp": 1500,
+        "hp": 1000,
+        "maxHp": 1000,
         "attack": 250,
         "exp": 1200,
         "grade": 5
@@ -91,8 +91,8 @@
         "name": "최초 감염자",
         "hp": 3500,
         "maxHp": 3500,
-        "attack": 500,
-        "exp": 5000,
+        "attack": 300,
+        "exp": 1500,
         "grade": 5
     }
 }

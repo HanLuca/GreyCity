@@ -41,20 +41,40 @@ export class UIManager {
             upgradeModal: document.getElementById('upgradeModal'),
             upgradeList: document.getElementById('upgradeList')
         };
+
+        this.currentInvCategory = 'all';
+        this.latestData = null;
+        this.latestActionCallback = null;
+
+        document.querySelectorAll('.inv-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                document.querySelectorAll('.inv-tab').forEach(t => t.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                this.currentInvCategory = target.dataset.category;
+                
+                if (this.latestData) {
+                    this.renderInventory(this.latestData.userData, this.latestData.itemData, this.latestActionCallback, this.latestData.allLocations);
+                }
+            });
+        });
     }
 
     update(data, actionCallback) {
+        this.latestData = data;
+        this.latestActionCallback = actionCallback;
+
         const { userData, stats, locationInfo, connectedLocations, allLocations, itemData, enemyData, archiveData } = data;
 
         if (userData.status === 'combat') {
-             this.els.locName.innerHTML = `<span style="color:#ff2a2a">⚠ [ BATTLE ] ${userData.combatData.name}</span>`;
-             this.els.hpVal.style.color = "#ff2a2a";
+             this.els.locName.innerHTML = `<span class="status-combat-text">⚠ [ BATTLE ] ${userData.combatData.name}</span>`;
+             this.els.hpVal.className = "text-danger";
         } else if (userData.status === 'dead') {
              this.els.locName.innerText = "⚠ SYSTEM CRITICAL (FAINTED)";
-             this.els.hpVal.style.color = "#888";
+             this.els.hpVal.className = "text-muted";
         } else {
              this.els.locName.innerText = locationInfo.name;
-             this.els.hpVal.style.color = "var(--accent-red)";
+             this.els.hpVal.className = "text-accent-red";
         }
         
         this.els.hpVal.innerText = userData.hp;
@@ -262,32 +282,50 @@ export class UIManager {
         this.els.invList.innerHTML = '';
         const allItems = [...userData.inventory];
         
-        if (allItems.length === 0 && !userData.equipment.weapon) {
-            this.els.invList.innerHTML = '<div class="emptyMsg">가방이 비었습니다.</div>';
-            return;
-        }
+        let filteredItems = [];
+        let showEquipped = false;
 
         if (userData.equipment.weapon) {
             const wpnKey = userData.equipment.weapon;
             const baseKey = wpnKey.split(':')[0];
             const item = itemData[baseKey];
-            if (item) {
-                const lvl = (userData.weapon_levels && userData.weapon_levels[wpnKey]) ? userData.weapon_levels[wpnKey] : 0;
-                const lvlStr = lvl > 0 ? ` <span style="color:#ff2a2a; font-weight:bold;">+${lvl}</span>` : '';
-                
-                const el = document.createElement('div');
-                el.className = 'invItem';
-                el.innerHTML = `<span><span style="color:#ff9e80; font-size:10px; margin-right:6px;">■</span>${item.name}${lvlStr}</span> <span class="equipped" style="font-size:10px; padding:2px 5px; border:1px solid #ff9e80; color:#ff9e80; border-radius:3px;">EQUIPPED</span>`;
-                el.onclick = () => this.openItemModal(item, wpnKey, callback, true, allLocations, userData, itemData); 
-                this.els.invList.appendChild(el);
+            if (item && (this.currentInvCategory === 'all' || this.currentInvCategory === 'weapon')) {
+                showEquipped = true;
             }
         }
 
         allItems.forEach(itemKey => {
             const baseKey = itemKey.split(':')[0];
             const item = itemData[baseKey];
-            if(!item) return;
+            if (item) {
+                if (this.currentInvCategory === 'all' || item.type === this.currentInvCategory) {
+                    filteredItems.push({ key: itemKey, data: item });
+                }
+            }
+        });
 
+        if (filteredItems.length === 0 && !showEquipped) {
+            this.els.invList.innerHTML = '<div class="emptyMsg">해당 분류의 아이템이 없습니다.</div>';
+            return;
+        }
+
+        if (showEquipped) {
+            const wpnKey = userData.equipment.weapon;
+            const baseKey = wpnKey.split(':')[0];
+            const item = itemData[baseKey];
+            const lvl = (userData.weapon_levels && userData.weapon_levels[wpnKey]) ? userData.weapon_levels[wpnKey] : 0;
+            const lvlStr = lvl > 0 ? ` <span style="color:#ff2a2a; font-weight:bold;">+${lvl}</span>` : '';
+            
+            const el = document.createElement('div');
+            el.className = 'invItem';
+            el.innerHTML = `<span><span style="color:#ff9e80; font-size:10px; margin-right:6px;">■</span>${item.name}${lvlStr}</span> <span class="equipped" style="font-size:10px; padding:2px 5px; border:1px solid #ff9e80; color:#ff9e80; border-radius:3px;">EQUIPPED</span>`;
+            el.onclick = () => this.openItemModal(item, wpnKey, callback, true, allLocations, userData, itemData); 
+            this.els.invList.appendChild(el);
+        }
+
+        filteredItems.forEach(filtered => {
+            const itemKey = filtered.key;
+            const item = filtered.data;
             const el = document.createElement('div');
             el.className = 'invItem';
             
@@ -538,15 +576,15 @@ export class UIManager {
         let themeColor = '#555';
 
         if (isLocked) {
-            themeColor = '#ff2a2a';
+            themeColor = '#ffd700';
             this.els.modalLocStatus.innerHTML = `[ LOCKED ]`;
-            this.els.modalLocStatus.className = 'status-badge badge-danger';
+            this.els.modalLocStatus.className = 'status-badge badge-locked';
             this.els.modalLocDesc.innerText = "접근 권한이 없는 구역입니다.\n보안 해제가 필요합니다.";
             this.els.modalLocInfo.innerHTML = `
-                <div style="text-align:center; padding:30px; color:#666;">
-                    <div style="font-size:40px; margin-bottom:10px;">🔒</div>
+                <div class="locked-info-container">
+                    <div class="locked-icon">🔒</div>
                     <div><b>[보안 등급 미달]</b></div>
-                    <div style="font-size:12px; margin-top:5px;">해당 구역의 데이터에 접근할 수 없습니다.</div>
+                    <div class="locked-subtext">해당 구역의 데이터에 접근할 수 없습니다.</div>
                 </div>
             `;
         } else {
@@ -570,32 +608,32 @@ export class UIManager {
 
             let html = "";
             if (level !== "SAFE" && locationData.spawnList && locationData.spawnList.length > 0 && enemyData) {
-                html += `<div class="loc-section"><div class="loc-label">DETECTED THREATS</div><div style="display:flex; flex-wrap:wrap; gap:8px;">`;
+                html += `<div class="loc-section"><div class="loc-label">DETECTED THREATS</div><div class="threat-list">`;
                 locationData.spawnList.forEach(enemyId => {
                     const enemy = enemyData[enemyId];
                     if (enemy) {
                         let gradeText = `Lv.${enemy.grade || 1}`;
-                        let gradeColor = "#aaa";
-                        if (enemy.grade >= 3) gradeColor = "#ff9e80";
-                        if (enemy.grade >= 4) { gradeColor = "#ff5555"; }
-                        if (enemy.grade >= 5) { gradeColor = "#bd00ff"; }
+                        let gradeClass = "grade-1";
+                        if (enemy.grade >= 3) gradeClass = "grade-3";
+                        if (enemy.grade >= 4) gradeClass = "grade-4";
+                        if (enemy.grade >= 5) gradeClass = "grade-5";
 
-                        html += `<div style="border: 1px solid ${gradeColor}; background: rgba(0,0,0,0.3); color: #ddd; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
-                                    <span style="color: ${gradeColor}; margin-right: 4px;">[ ${gradeText} ]</span> ${enemy.name}
+                        html += `<div class="threat-item ${gradeClass}">
+                                    <span class="threat-grade">[ ${gradeText} ]</span> ${enemy.name}
                                  </div>`;
                     }
                 });
                 html += `</div></div>`;
             } else if (level !== "SAFE") {
-                 html += `<div class="loc-section"><div class="loc-label">THREATS</div><div style="color:#666; font-size:13px;">감지된 생명체가 없습니다.</div></div>`;
+                 html += `<div class="loc-section"><div class="loc-label">THREATS</div><div class="threat-empty">감지된 생명체가 없습니다.</div></div>`;
             }
 
             html += `<div class="loc-section"><div class="loc-label">SEARCH INTEL</div>`;
             if (locationData.itemChance > 0 && locationData.searchable) {
                 const chance = Math.round(locationData.itemChance * 100);
-                html += `<div class="loot-info"><span style="color:#bbb; font-size:13px;">아이템 발견 확률</span><span class="loot-rate" style="color:#00e5ff; font-weight:bold;">${chance}%</span></div>`;
+                html += `<div class="loot-info"><span class="loot-label">아이템 발견 확률</span><span class="loot-rate">${chance}%</span></div>`;
             } else {
-                html += `<div style="color:#666; font-size:13px; padding:5px 0;">[ 탐색 불가능 지역 ]</div>`;
+                html += `<div class="loot-empty">[ 탐색 불가능 지역 ]</div>`;
             }
             html += `</div>`;
 
@@ -615,20 +653,19 @@ export class UIManager {
         if (!this.els.archiveList) return;
         this.els.archiveList.innerHTML = '';
         if (!archiveData || archiveData.length === 0) {
-            this.els.archiveList.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">수집된 기록이 없습니다.<br><br>탐색을 통해 단서를 찾아보세요.</div>';
+            this.els.archiveList.innerHTML = '<div class="archive-empty">수집된 기록이 없습니다.<br><br>탐색을 통해 단서를 찾아보세요.</div>';
             return;
         }
 
         [...archiveData].reverse().forEach(note => {
             const div = document.createElement('div');
             div.className = 'note-item';
-            div.style.borderLeft = "4px solid var(--accent-cyan)";
             div.innerHTML = `
-                <div class="note-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="note-title">
                     <span>📜 ${note.title}</span>
-                    <small style="font-size:10px; color:#555;">ARCHIVED</small>
+                    <small>ARCHIVED</small>
                 </div>
-                <div class="note-content" style="margin-top:10px; color:#ccc; font-style: italic;">"${note.content}"</div>
+                <div class="note-content">"${note.content}"</div>
             `;
             this.els.archiveList.appendChild(div);
         });
@@ -643,7 +680,7 @@ export class UIManager {
         Object.keys(allLocations).forEach(key => {
             const loc = allLocations[key];
             if (loc.coordinates) {
-                const isLocked = loc.requiresKey && !(userData.unlocked_places || []).includes(key);
+                const isLocked = loc.requiresKey && (!(userData.unlocked_places || []).includes(key));
                 
                 const node = document.createElement('div');
                 node.className = 'mapNode';

@@ -1,7 +1,7 @@
 {
     "system": {
         "welcome": [
-            "<span style='color:#888;'>🖥️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 7구역 생존자 네트워크에 접속했습니다. 환영합니다.</span>"
+            "<span style='color:#888;'>🖥️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 생존자 네트워크 접속 완료.</span>"
         ],
         "revive": [
             "<br>🖥️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 응급 소생 프로토콜 가동. <span style='color:#4caf50; font-weight:bold;'>[ HP +50 ]</span>"
