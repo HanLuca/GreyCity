@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import uuid
 
 class GameEngine:
     def __init__(self):
@@ -24,6 +25,9 @@ class GameEngine:
             return template.format(**kwargs)
         except Exception:
             return str(key)
+
+    def getBaseKey(self, itemKey):
+        return itemKey.split(':')[0] if itemKey else None
 
     def initNewPlayer(self):
         welcome_msg = self.getMsg('system', 'welcome')
@@ -62,6 +66,28 @@ class GameEngine:
         }
         for key, val in defaults.items():
             if key not in userData: userData[key] = val
+
+        new_inv = []
+        for itemKey in userData.get('inventory', []):
+            if ':' not in itemKey and itemKey in self.items and self.items[itemKey]['type'] == 'weapon':
+                unique_id = uuid.uuid4().hex[:8]
+                new_key = f"{itemKey}:{unique_id}"
+                new_inv.append(new_key)
+                if itemKey in userData.get('weapon_levels', {}):
+                    lvl = userData['weapon_levels'].pop(itemKey)
+                    userData['weapon_levels'][new_key] = lvl
+            else:
+                new_inv.append(itemKey)
+        userData['inventory'] = new_inv
+
+        eq_wpn = userData.get('equipment', {}).get('weapon')
+        if eq_wpn and ':' not in eq_wpn and eq_wpn in self.items:
+            unique_id = uuid.uuid4().hex[:8]
+            new_key = f"{eq_wpn}:{unique_id}"
+            userData['equipment']['weapon'] = new_key
+            if eq_wpn in userData.get('weapon_levels', {}):
+                lvl = userData['weapon_levels'].pop(eq_wpn)
+                userData['weapon_levels'][new_key] = lvl
         
         if userData['currentLocation'] not in self.locations:
              userData['currentLocation'] = "central_control_room"
@@ -70,10 +96,12 @@ class GameEngine:
     def getTotalStats(self, userData):
         totalAtk = userData.get('attack', 10)
         weaponId = userData['equipment'].get('weapon')
-        if weaponId and weaponId in self.items:
-            base_power = self.items[weaponId].get('power', 0)
-            upgrade_bonus = userData.get('weapon_levels', {}).get(weaponId, 0) * 2
-            totalAtk += base_power + upgrade_bonus
+        if weaponId:
+            baseId = self.getBaseKey(weaponId)
+            if baseId in self.items:
+                base_power = self.items[baseId].get('power', 0)
+                upgrade_bonus = userData.get('weapon_levels', {}).get(weaponId, 0) * 2
+                totalAtk += base_power + upgrade_bonus
         return {"attack": totalAtk}
 
     def checkLevelUp(self, userData):
@@ -115,27 +143,47 @@ class GameEngine:
         if actionType == "discardItem": return self.processItemDiscard(userData, target)
         if actionType == "unequipItem": return self.processItemUnequip(userData, target)
 
+        if actionType == "disassembleWeapon":
+            if target in userData['inventory']:
+                base_key = self.getBaseKey(target)
+                if base_key in self.items and self.items[base_key]['type'] == 'weapon':
+                    userData['inventory'].remove(target)
+                    materials = [k for k, v in self.items.items() if v.get('type') == 'material']
+                    if not materials:
+                        materials = ['scrap_metal']
+                    get_mat = random.choice(materials)
+                    userData['inventory'].append(get_mat)
+                    
+                    if target in userData['weapon_levels']:
+                        del userData['weapon_levels'][target]
+                        
+                    msg = self.getMsg('item', 'disassemble_weapon', weaponName=self.items[base_key]['name'], matName=self.items[get_mat]['name'])
+                    self.addLog(userData, msg)
+            return self.getGameResponse(userData)
+
         if actionType == "upgradeWeapon":
             weaponId = target
-            if weaponId in self.items and self.items[weaponId]['type'] == 'weapon':
+            base_key = self.getBaseKey(weaponId)
+            if base_key in self.items and self.items[base_key]['type'] == 'weapon':
                 lvl = userData['weapon_levels'].get(weaponId, 0)
                 mat_needed = (lvl + 1) * 2
                 frag_needed = (lvl + 1) * 5
                 
-                materials_in_inv = [item for item in userData['inventory'] if self.items.get(item, {}).get('type') == 'material']
+                materials_in_inv = [item for item in userData['inventory'] if self.items.get(self.getBaseKey(item), {}).get('type') == 'material']
                 
                 if len(materials_in_inv) >= mat_needed and userData['heart_fragments'] >= frag_needed:
                     userData['heart_fragments'] -= frag_needed
                     for _ in range(mat_needed):
                         for item in userData['inventory']:
-                            if self.items.get(item, {}).get('type') == 'material':
+                            if self.items.get(self.getBaseKey(item), {}).get('type') == 'material':
                                 userData['inventory'].remove(item)
                                 break
                                 
                     userData['weapon_levels'][weaponId] = lvl + 1
-                    self.addLog(userData, f"[{self.items[weaponId]['name']}] 장비가 +{lvl+1} 단계로 개조되었습니다.")
+                    msg = self.getMsg('item', 'upgrade_weapon', weaponName=self.items[base_key]['name'], level=lvl+1)
+                    self.addLog(userData, msg)
                 else:
-                    self.addLog(userData, "개조에 필요한 자원이 부족합니다.")
+                    self.addLog(userData, self.getMsg('error', 'upgrade_fail'))
             return self.getGameResponse(userData)
 
         if actionType == "upgrade":
@@ -166,25 +214,21 @@ class GameEngine:
         if userData['status'] == 'dead':
             if actionType == 'revive':
                 required_fragments = userData['level'] * 5
-                
                 if target == 'fragment':
                     if userData['heart_fragments'] >= required_fragments:
                         userData['heart_fragments'] -= required_fragments
                         self.executeRevive(userData)
                     else: self.addLog(userData, self.getMsg('error', 'no_fragment', count=required_fragments))
-                
                 elif target == 'kit':
                     if 'first_aid_kit' in userData['inventory']:
                         userData['inventory'].remove('first_aid_kit')
                         self.executeRevive(userData)
                     else: self.addLog(userData, self.getMsg('error', 'no_kit'))
-                
                 elif target == 'reset':
                     if int(userData.get('heart_fragments', 0)) < required_fragments and 'first_aid_kit' not in userData.get('inventory', []):
                         self.executeResetRevive(userData)
                     else:
                         self.addLog(userData, self.getMsg('error', 'cannot_reset'))
-
             return self.getGameResponse(userData)
 
         if userData['status'] == 'combat': return self.processCombat(userData, actionType, target)
@@ -242,22 +286,24 @@ class GameEngine:
                 if not event_happened and random.random() < currentLocData.get('itemChance', 0):
                     valid_items = []
                     current_loc = userData['currentLocation']
-                    
                     for k, v in self.items.items():
                         if v.get('type') == 'currency': continue
                         if v.get('type') == 'important' and k in userData.get('inventory', []): continue
-                        
                         drop_locs = v.get('dropLocation', [])
-                        if drop_locs and current_loc not in drop_locs:
-                            continue
-                            
+                        if drop_locs and current_loc not in drop_locs: continue
                         valid_items.append(k)
                     
                     if valid_items:
                         weights = [self.items[k].get('dropRate', 1.0) for k in valid_items]
                         if sum(weights) > 0:
                             foundItemKey = random.choices(valid_items, weights=weights, k=1)[0]
-                            userData['inventory'].append(foundItemKey)
+                            if self.items[foundItemKey].get('type') == 'weapon':
+                                unique_id = uuid.uuid4().hex[:8]
+                                insert_key = f"{foundItemKey}:{unique_id}"
+                            else:
+                                insert_key = foundItemKey
+                                
+                            userData['inventory'].append(insert_key)
                             message = self.getMsg('search', 'item_found', name=self.items[foundItemKey]['name'])
                             event_happened = True
                 
@@ -268,8 +314,10 @@ class GameEngine:
 
     def processItemUsage(self, userData, itemKey):
         if itemKey not in userData['inventory']: return self.getGameResponse(userData)
-        item, msg = self.items[itemKey], ""
-        if itemKey == 'first_aid_kit':
+        base_key = self.getBaseKey(itemKey)
+        item, msg = self.items[base_key], ""
+        
+        if base_key == 'first_aid_kit':
              userData['hp'] = min(userData['hp'] + item.get('heal', 80), userData['maxHp'])
              userData['inventory'].remove(itemKey)
              msg = self.getMsg('item', 'use_first_aid', heal=item.get('heal', 80))
@@ -294,17 +342,19 @@ class GameEngine:
         if userData['equipment'].get('weapon') == itemKey:
             userData['equipment']['weapon'] = None
             userData['inventory'].append(itemKey)
-            msg = self.getMsg('item', 'unequip', name=self.items[itemKey]['name'])
+            base_key = self.getBaseKey(itemKey)
+            msg = self.getMsg('item', 'unequip', name=self.items[base_key]['name'])
             self.addLog(userData, msg)
         return self.getGameResponse(userData)
 
     def processItemDiscard(self, userData, itemKey):
         if itemKey in userData['inventory']:
-            if self.items[itemKey].get('type') == 'important':
+            base_key = self.getBaseKey(itemKey)
+            if self.items[base_key].get('type') == 'important':
                 self.addLog(userData, self.getMsg('error', 'cannot_discard'))
                 return self.getGameResponse(userData)
                 
-            msg = self.getMsg('item', 'discard', name=self.items[itemKey]['name'])
+            msg = self.getMsg('item', 'discard', name=self.items[base_key]['name'])
             userData['inventory'].remove(itemKey)
             self.addLog(userData, msg)
         return self.getGameResponse(userData)

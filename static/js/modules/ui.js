@@ -269,19 +269,23 @@ export class UIManager {
 
         if (userData.equipment.weapon) {
             const wpnKey = userData.equipment.weapon;
-            const item = itemData[wpnKey];
-            const lvl = (userData.weapon_levels && userData.weapon_levels[wpnKey]) ? userData.weapon_levels[wpnKey] : 0;
-            const lvlStr = lvl > 0 ? ` <span style="color:#ff2a2a; font-weight:bold;">+${lvl}</span>` : '';
-            
-            const el = document.createElement('div');
-            el.className = 'invItem';
-            el.innerHTML = `<span><span style="color:#ff9e80; font-size:10px; margin-right:6px;">■</span>${item.name}${lvlStr}</span> <span class="equipped" style="font-size:10px; padding:2px 5px; border:1px solid #ff9e80; color:#ff9e80; border-radius:3px;">EQUIPPED</span>`;
-            el.onclick = () => this.openItemModal(item, wpnKey, callback, true, allLocations, userData, itemData); 
-            this.els.invList.appendChild(el);
+            const baseKey = wpnKey.split(':')[0];
+            const item = itemData[baseKey];
+            if (item) {
+                const lvl = (userData.weapon_levels && userData.weapon_levels[wpnKey]) ? userData.weapon_levels[wpnKey] : 0;
+                const lvlStr = lvl > 0 ? ` <span style="color:#ff2a2a; font-weight:bold;">+${lvl}</span>` : '';
+                
+                const el = document.createElement('div');
+                el.className = 'invItem';
+                el.innerHTML = `<span><span style="color:#ff9e80; font-size:10px; margin-right:6px;">■</span>${item.name}${lvlStr}</span> <span class="equipped" style="font-size:10px; padding:2px 5px; border:1px solid #ff9e80; color:#ff9e80; border-radius:3px;">EQUIPPED</span>`;
+                el.onclick = () => this.openItemModal(item, wpnKey, callback, true, allLocations, userData, itemData); 
+                this.els.invList.appendChild(el);
+            }
         }
 
         allItems.forEach(itemKey => {
-            const item = itemData[itemKey];
+            const baseKey = itemKey.split(':')[0];
+            const item = itemData[baseKey];
             if(!item) return;
 
             const el = document.createElement('div');
@@ -436,9 +440,9 @@ export class UIManager {
             this.els.modalBtnDiscard.onmouseout = () => { this.els.modalBtnDiscard.style.background = 'rgba(255, 85, 85, 0.05)'; };
             this.els.modalBtnDiscard.onclick = () => {
                 if (isEquipped) {
-                    alert("장착 중인 무기는 버릴 수 없습니다. 먼저 장착을 해제해주세요.");
+                    alert("장착 중인 장비는 버릴 수 없습니다. 먼저 장착을 해제해주세요.");
                 } else {
-                    if (confirm(`정말 [${item.name}]을(를) 폐기하시겠습니까?`)) {
+                    if (confirm(`정말 [${item.name}] 장비를 폐기하시겠습니까?`)) {
                         callback('discardItem', itemKey);
                         window.closeModalAnimation(modal);
                     }
@@ -447,14 +451,32 @@ export class UIManager {
         }
 
         const upgradeContainer = document.getElementById('modalUpgradeSection');
+        const btnDisassemble = document.getElementById('modalBtnDisassemble');
+
         if (item.type === 'weapon') {
-            if(upgradeContainer) upgradeContainer.style.display = 'block';
+            if(upgradeContainer) upgradeContainer.classList.remove('hidden');
+            if(btnDisassemble) {
+                btnDisassemble.classList.remove('hidden');
+                btnDisassemble.onclick = () => {
+                    if (isEquipped) {
+                        alert("장착 중인 장비는 분해할 수 없습니다. 먼저 장착을 해제해주세요.");
+                    } else {
+                        if (confirm(`정말 [${item.name}] 장비를 분해하시겠습니까?\n랜덤한 재료 아이템을 획득합니다.`)) {
+                            callback('disassembleWeapon', itemKey);
+                            window.closeModalAnimation(modal);
+                        }
+                    }
+                };
+            }
             
             const lvl = (userData.weapon_levels && userData.weapon_levels[itemKey]) ? userData.weapon_levels[itemKey] : 0;
             const matNeeded = (lvl + 1) * 2;
             const fragNeeded = (lvl + 1) * 5;
             
-            const matCount = userData.inventory.filter(i => itemData[i] && itemData[i].type === 'material').length;
+            const matCount = userData.inventory.filter(i => {
+                const bKey = i.split(':')[0];
+                return itemData[bKey] && itemData[bKey].type === 'material';
+            }).length;
             const fragCount = userData.heart_fragments || 0;
             const canUpgrade = matCount >= matNeeded && fragCount >= fragNeeded;
             
@@ -487,7 +509,8 @@ export class UIManager {
                 };
             }
         } else {
-            if(upgradeContainer) upgradeContainer.style.display = 'none';
+            if(upgradeContainer) upgradeContainer.classList.add('hidden');
+            if(btnDisassemble) btnDisassemble.classList.add('hidden');
         }
 
         this.els.modalBtnUse.onclick = () => {

@@ -171,3 +171,10 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 .modal-btn-use { flex: 2; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 4px; transition: 0.2s; cursor: pointer;}
 .modal-btn-discard { flex: 1; padding: 12px; font-size: 14px; background: rgba(255, 85, 85, 0.05); border: 1px solid rgba(255, 85, 85, 0.3); color: #ff5555; font-weight: bold; transition: 0.2s; border-radius: 4px; cursor: pointer;}
 .hidden { display: none; }
+
+.modal-btn-group { display: flex; gap: 10px; }
+.modal-btn-use { flex: 2; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 4px; transition: 0.2s; cursor: pointer;}
+.modal-btn-disassemble { flex: 1; padding: 12px; font-size: 14px; background: rgba(255, 153, 0, 0.05); border: 1px solid rgba(255, 153, 0, 0.3); color: #ff9900; font-weight: bold; transition: 0.2s; border-radius: 4px; cursor: pointer; }
+.modal-btn-disassemble:hover { background: rgba(255, 153, 0, 0.2); }
+.modal-btn-discard { flex: 1; padding: 12px; font-size: 14px; background: rgba(255, 85, 85, 0.05); border: 1px solid rgba(255, 85, 85, 0.3); color: #ff5555; font-weight: bold; transition: 0.2s; border-radius: 4px; cursor: pointer;}
+.hidden { display: none !important; }

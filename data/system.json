@@ -26,6 +26,9 @@
         ],
         "cannot_reset": [
             "<br>⚠️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 아직 다른 소생 방법이 남아있어 초기화할 수 없습니다."
+        ],
+        "upgrade_fail": [
+            "<br>⚠️ <b><span style='color:#00e5ff'>[SYSTEM]</span></b> 강화에 필요한 자원이 부족합니다."
         ]
     },
     "info": {
@@ -103,6 +106,12 @@
         ],
         "unequip": [
             "<br>🎒 <b><span style='color:#4caf50'>[ITEM]</span></b> {name} 장착 해제."
+        ],
+        "disassemble_weapon": [
+            "<br>🛠️ <b><span style='color:#ff9e80'>[DISASSEMBLE]</span></b> {weaponName} 분해 완료 : [ {matName} ] 획득."
+        ],
+        "upgrade_weapon": [
+            "<br>⚙️ <b><span style='color:#ff9e80'>[UPGRADE]</span></b> {weaponName} 장비 강화 완료. <span style='color:#ff2a2a; font-weight:bold;'>[ +{level} ]</span>"
         ]
     },
     "combat": {
