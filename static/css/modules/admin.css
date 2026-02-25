@@ -123,3 +123,26 @@ button:disabled { opacity: 0.3; cursor: not-allowed !important; }
     textarea { font-size: 13px; padding: 15px; }
     .btn-group { flex-direction: column; gap: 10px; }
 }
+
+/* 버튼 그룹 4개 일렬 배치용 flex */
+.btn-group { margin-top: 20px; display: flex; gap: 15px; flex-wrap: wrap; }
+button { flex: 1; padding: 15px 5px; font-size: 13px; font-weight: bold; cursor: pointer; font-family: inherit; border-radius: 6px; letter-spacing: 1px; transition: 0.2s; white-space: nowrap; }
+button:disabled { opacity: 0.3; cursor: not-allowed !important; }
+
+/* 버튼 색상 디자인 */
+.btn-save { background: rgba(0,229,255,0.05); border: 1px solid #00e5ff; color: #00e5ff; }
+.btn-save:hover:not(:disabled) { background: #00e5ff; color: #000; box-shadow: 0 0 15px #00e5ff; }
+
+/* [신규] 주의를 요하는 주황색 경고 버튼 */
+.btn-warn { background: rgba(255, 153, 0, 0.05); border: 1px solid #ff9900; color: #ff9900; }
+.btn-warn:hover:not(:disabled) { background: #ff9900; color: #000; box-shadow: 0 0 15px #ff9900; }
+
+.btn-delete { background: rgba(255,42,42,0.05); border: 1px solid #ff2a2a; color: #ff2a2a; }
+.btn-delete:hover:not(:disabled) { background: #ff2a2a; color: #000; box-shadow: 0 0 15px #ff2a2a; }
+
+/* 모바일 화면에서는 버튼이 세로로 떨어지도록 */
+@media screen and (max-width: 1024px) {
+    .btn-group { flex-direction: column; gap: 10px; }
+    button { padding: 15px; }
+}
+

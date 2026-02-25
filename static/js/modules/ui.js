@@ -1,6 +1,3 @@
-/**
- * 화면 렌더링을 담당하는 모듈
- */
 export class UIManager {
     constructor() {
         this.els = {
@@ -192,7 +189,6 @@ export class UIManager {
             this.els.btnGroup.appendChild(fragBtn);
             this.els.btnGroup.appendChild(kitBtn);
 
-            // [초기화 소생 로직 복구됨]
             if (fragments < fragCost && !hasKit) {
                 const resetBtn = document.createElement('button');
                 resetBtn.innerHTML = `<b>[ ☠️ 완전 초기화 소생 ]</b><br><span style="font-size:11px; color:#aaa; font-weight:normal;">모든 것을 잃고 부활합니다.</span>`;
@@ -274,10 +270,13 @@ export class UIManager {
         if (userData.equipment.weapon) {
             const wpnKey = userData.equipment.weapon;
             const item = itemData[wpnKey];
+            const lvl = (userData.weapon_levels && userData.weapon_levels[wpnKey]) ? userData.weapon_levels[wpnKey] : 0;
+            const lvlStr = lvl > 0 ? ` <span style="color:#ff2a2a; font-weight:bold;">+${lvl}</span>` : '';
+            
             const el = document.createElement('div');
             el.className = 'invItem';
-            el.innerHTML = `<span><span style="color:#ff9e80; font-size:10px; margin-right:6px;">■</span>${item.name}</span> <span class="equipped" style="font-size:10px; padding:2px 5px; border:1px solid #ff9e80; color:#ff9e80; border-radius:3px;">EQUIPPED</span>`;
-            el.onclick = () => this.openItemModal(item, wpnKey, callback, true, allLocations); 
+            el.innerHTML = `<span><span style="color:#ff9e80; font-size:10px; margin-right:6px;">■</span>${item.name}${lvlStr}</span> <span class="equipped" style="font-size:10px; padding:2px 5px; border:1px solid #ff9e80; color:#ff9e80; border-radius:3px;">EQUIPPED</span>`;
+            el.onclick = () => this.openItemModal(item, wpnKey, callback, true, allLocations, userData, itemData); 
             this.els.invList.appendChild(el);
         }
 
@@ -289,22 +288,28 @@ export class UIManager {
             el.className = 'invItem';
             
             let dotColor = '#555';
-            if (item.type === 'weapon') dotColor = '#ff9e80';
+            let lvlStr = '';
+            
+            if (item.type === 'weapon') {
+                dotColor = '#ff9e80';
+                const lvl = (userData.weapon_levels && userData.weapon_levels[itemKey]) ? userData.weapon_levels[itemKey] : 0;
+                if (lvl > 0) lvlStr = ` <span style="color:#ff2a2a; font-weight:bold;">+${lvl}</span>`;
+            }
             else if (item.type === 'consumable') dotColor = '#4caf50';
             else if (item.type === 'currency') dotColor = '#ff0080';
             else if (item.type === 'important') dotColor = '#ffd700';
+            else if (item.type === 'material') dotColor = '#b0bec5';
 
-            el.innerHTML = `<span><span style="color:${dotColor}; font-size:10px; margin-right:6px;">■</span><span class="name">${item.name}</span></span>`;
+            el.innerHTML = `<span><span style="color:${dotColor}; font-size:10px; margin-right:6px;">■</span><span class="name">${item.name}${lvlStr}</span></span>`;
             
-            el.onclick = () => this.openItemModal(item, itemKey, callback, false, allLocations);
+            el.onclick = () => this.openItemModal(item, itemKey, callback, false, allLocations, userData, itemData);
             this.els.invList.appendChild(el);
         });
     }
 
-    openItemModal(item, itemKey, callback, isEquipped, allLocations) {
+    openItemModal(item, itemKey, callback, isEquipped, allLocations, userData, itemData) {
         const modal = this.els.itemModal;
         
-        this.els.modalItemName.innerText = item.name;
         this.els.modalItemDesc.innerText = item.description || "설명이 없습니다.";
 
         let percent = (item.dropRate || 0) * 100;
@@ -327,11 +332,20 @@ export class UIManager {
         let btnDisabled = false;
         let typeText = 'ITEM';
         let typeColor = '#888';
+        let displayName = item.name;
 
         if (item.type === 'weapon') {
             typeText = 'WEAPON';
             typeColor = '#ff9e80';
-            statHtml = `<span style="color:#ff9e80; font-weight:bold;">[ ATK +${item.power} ]</span>`;
+            const lvl = (userData.weapon_levels && userData.weapon_levels[itemKey]) ? userData.weapon_levels[itemKey] : 0;
+            const bonus = lvl * 2;
+            
+            if (bonus > 0) {
+                displayName += ` +${lvl}`;
+                statHtml = `<span style="color:#ff9e80; font-weight:bold;">[ ATK +${item.power} <span style="color:#ff2a2a">(+${bonus})</span> ]</span>`;
+            } else {
+                statHtml = `<span style="color:#ff9e80; font-weight:bold;">[ ATK +${item.power} ]</span>`;
+            }
             btnText = isEquipped ? "장착 해제" : "장착하기";
         } else if (item.type === 'consumable') {
             typeText = 'CONSUMABLE';
@@ -350,10 +364,17 @@ export class UIManager {
              statHtml = `<span style="color:#ffd700; font-weight:bold;">[ 중요 아이템 ]</span>`;
              btnText = "사용 불가 (자동)";
              btnDisabled = true;
+        } else if (item.type === 'material') {
+             typeText = 'MATERIAL';
+             typeColor = '#b0bec5';
+             statHtml = `<span style="color:#b0bec5; font-weight:bold;">[ 재료 아이템 ]</span>`;
+             btnText = "사용 불가";
+             btnDisabled = true;
         } else {
             statHtml = `<span style="color:#888; font-weight:bold;">[ 특수 효과 없음 ]</span>`;
         }
 
+        this.els.modalItemName.innerText = displayName;
         this.els.modalItemType.innerText = typeText;
         this.els.modalItemType.style.color = typeColor;
         this.els.modalItemType.style.borderColor = typeColor;
@@ -425,6 +446,50 @@ export class UIManager {
             };
         }
 
+        const upgradeContainer = document.getElementById('modalUpgradeSection');
+        if (item.type === 'weapon') {
+            if(upgradeContainer) upgradeContainer.style.display = 'block';
+            
+            const lvl = (userData.weapon_levels && userData.weapon_levels[itemKey]) ? userData.weapon_levels[itemKey] : 0;
+            const matNeeded = (lvl + 1) * 2;
+            const fragNeeded = (lvl + 1) * 5;
+            
+            const matCount = userData.inventory.filter(i => itemData[i] && itemData[i].type === 'material').length;
+            const fragCount = userData.heart_fragments || 0;
+            const canUpgrade = matCount >= matNeeded && fragCount >= fragNeeded;
+            
+            const elMetalVal = document.getElementById('upgMetalVal');
+            if(elMetalVal) {
+                elMetalVal.innerText = `${matCount} / ${matNeeded}`;
+                elMetalVal.style.color = matCount >= matNeeded ? '#4caf50' : '#ff5555';
+            }
+            
+            const elFragVal = document.getElementById('upgFragVal');
+            if(elFragVal) {
+                elFragVal.innerText = `${fragCount} / ${fragNeeded}`;
+                elFragVal.style.color = fragCount >= fragNeeded ? '#4caf50' : '#ff5555';
+            }
+
+            const btnUpgrade = document.getElementById('modalBtnUpgrade');
+            if(btnUpgrade) {
+                btnUpgrade.disabled = !canUpgrade;
+                btnUpgrade.style.opacity = canUpgrade ? 1 : 0.5;
+                btnUpgrade.style.cursor = canUpgrade ? 'pointer' : 'not-allowed';
+                
+                btnUpgrade.onmouseover = canUpgrade ? () => { btnUpgrade.style.background = 'rgba(255, 158, 128, 0.2)'; } : null;
+                btnUpgrade.onmouseout = canUpgrade ? () => { btnUpgrade.style.background = 'rgba(255, 158, 128, 0.1)'; } : null;
+
+                btnUpgrade.onclick = () => {
+                    if(canUpgrade) {
+                        callback('upgradeWeapon', itemKey);
+                        window.closeModalAnimation(modal);
+                    }
+                };
+            }
+        } else {
+            if(upgradeContainer) upgradeContainer.style.display = 'none';
+        }
+
         this.els.modalBtnUse.onclick = () => {
             if (!btnDisabled) {
                 if (isEquipped) {
@@ -446,12 +511,11 @@ export class UIManager {
         this.els.modalLocName.innerText = isLocked ? "???" : locationData.name;
         this.els.modalLocCoord.innerText = `X:${locationData.coordinates.x} Y:${locationData.coordinates.y}`;
         
-        // 상단 포인트 바 엘리먼트 획득 및 기본 색상 지정
         const topAccent = document.getElementById('locModalTopAccent');
         let themeColor = '#555';
 
         if (isLocked) {
-            themeColor = '#ff2a2a'; // 잠김 구역은 붉은색
+            themeColor = '#ff2a2a';
             this.els.modalLocStatus.innerHTML = `[ LOCKED ]`;
             this.els.modalLocStatus.className = 'status-badge badge-danger';
             this.els.modalLocDesc.innerText = "접근 권한이 없는 구역입니다.\n보안 해제가 필요합니다.";
@@ -465,7 +529,6 @@ export class UIManager {
         } else {
             const level = locationData.dangerLevel || "NORMAL";
             
-            // 등급별 테마 컬러 지정
             if (level === "SAFE") {
                 themeColor = '#4caf50';
                 this.els.modalLocStatus.innerHTML = `[ SAFE ]`;
@@ -516,7 +579,6 @@ export class UIManager {
             this.els.modalLocInfo.innerHTML = html;
         }
 
-        // 테마 색상을 상단 바와 모달 테두리에 실시간 적용
         if(topAccent) {
             topAccent.style.background = themeColor;
             topAccent.style.boxShadow = `0 0 10px ${themeColor}`;
@@ -530,20 +592,20 @@ export class UIManager {
         if (!this.els.archiveList) return;
         this.els.archiveList.innerHTML = '';
         if (!archiveData || archiveData.length === 0) {
-            this.els.archiveList.innerHTML = '<div class="emptyMsg">수집된 기록이 없습니다.<br><br>탐색을 통해 단서를 찾아보세요.</div>';
+            this.els.archiveList.innerHTML = '<div style="color:#666; text-align:center; padding:20px;">수집된 기록이 없습니다.<br><br>탐색을 통해 단서를 찾아보세요.</div>';
             return;
         }
 
         [...archiveData].reverse().forEach(note => {
             const div = document.createElement('div');
-            // 클래스 하나만 부여하면 index.css 의 디자인이 적용됩니다.
-            div.className = 'note-item'; 
+            div.className = 'note-item';
+            div.style.borderLeft = "4px solid var(--accent-cyan)";
             div.innerHTML = `
-                <div class="note-title">
+                <div class="note-title" style="display:flex; justify-content:space-between; align-items:center;">
                     <span>📜 ${note.title}</span>
-                    <small>ARCHIVED</small>
+                    <small style="font-size:10px; color:#555;">ARCHIVED</small>
                 </div>
-                <div class="note-content">"${note.content}"</div>
+                <div class="note-content" style="margin-top:10px; color:#ccc; font-style: italic;">"${note.content}"</div>
             `;
             this.els.archiveList.appendChild(div);
         });

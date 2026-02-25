@@ -79,6 +79,27 @@
         "dropLocation": [],
         "description": "전문적인 응급 처치 키트입니다.\n기절 상태에서 즉시 소생할 수 있습니다."
     },
+    "scrap_metal": {
+        "name": "고철 조각",
+        "type": "material",
+        "dropRate": 0.25,
+        "dropLocation": [],
+        "description": "쓸만한 금속 조각입니다.\n장비를 개조하거나 수리할 때 유용합니다."
+    },
+    "sturdy_wood": {
+        "name": "단단한 목재",
+        "type": "material",
+        "dropRate": 0.2,
+        "dropLocation": [],
+        "description": "부러지지 않은 튼튼한 나무판자입니다.\n무기의 손잡이를 보강할 때 쓰입니다."
+    },
+    "electronic_parts": {
+        "name": "전자 부품",
+        "type": "material",
+        "dropRate": 0.1,
+        "dropLocation": ["electrical_room", "2f_shop_3", "3f_hidden_laboratory_1"],
+        "description": "망가진 기계에서 뜯어낸 회로 기판입니다.\n정밀한 개조 작업에 필요합니다."
+    },
     "heart_fragment": {
         "name": "HEART PIECE",
         "type": "currency",

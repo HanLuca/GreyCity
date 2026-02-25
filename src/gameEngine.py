@@ -12,28 +12,21 @@ class GameEngine:
 
     def loadJson(self, fileName):
         path = os.path.join('data', fileName)
-
         if not os.path.exists(path): return {}
-
         with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
 
     def getMsg(self, category, key, **kwargs):
         try:
             msg_list = self.systemMsgs.get(category, {}).get(key, [])
-
             if not msg_list: return str(key)
-
             template = random.choice(msg_list)
-
             return template.format(**kwargs)
-        
         except Exception:
             return str(key)
 
     def initNewPlayer(self):
         welcome_msg = self.getMsg('system', 'welcome')
-
         return {
             "level": 1, "exp": 0, "maxExp": 100,
             "hp": 100, "maxHp": 100,
@@ -44,6 +37,7 @@ class GameEngine:
             "archive": [],
             "unlocked_places": [],
             "upgrades": {"upgrades_atk": 0, "upgrades_hp": 0, "upgrades_evasion": 0},
+            "weapon_levels": {},
             "equipment": {"weapon": None, "armor": None},
             "logs": [welcome_msg],
             "status": "normal",
@@ -55,36 +49,35 @@ class GameEngine:
         if 'unlocked_places' not in userData: userData['unlocked_places'] = []
         if 'archive' not in userData: userData['archive'] = []
         if 'upgrades' not in userData: userData['upgrades'] = {"upgrades_atk": 0, "upgrades_hp": 0, "upgrades_evasion": 0}
+        if 'weapon_levels' not in userData: userData['weapon_levels'] = {}
             
         defaults = {
             "level": 1, "exp": 0, "maxExp": 100, "hp": 100, "maxHp": 100,
             "attack": 10, "defense": 0, "currentLocation": "central_control_room",
             "inventory": [], "archive": [], "unlocked_places": [],
             "upgrades": {"upgrades_atk": 0, "upgrades_hp": 0, "upgrades_evasion": 0},
+            "weapon_levels": {},
             "equipment": {"weapon": None, "armor": None}, "logs": [],
             "status": "normal", "combatData": None
         }
-
         for key, val in defaults.items():
             if key not in userData: userData[key] = val
         
         if userData['currentLocation'] not in self.locations:
-            userData['currentLocation'] = "central_control_room"
-
+             userData['currentLocation'] = "central_control_room"
         return userData
 
     def getTotalStats(self, userData):
         totalAtk = userData.get('attack', 10)
         weaponId = userData['equipment'].get('weapon')
-
         if weaponId and weaponId in self.items:
-            totalAtk += self.items[weaponId].get('power', 0)
-
+            base_power = self.items[weaponId].get('power', 0)
+            upgrade_bonus = userData.get('weapon_levels', {}).get(weaponId, 0) * 2
+            totalAtk += base_power + upgrade_bonus
         return {"attack": totalAtk}
 
     def checkLevelUp(self, userData):
         leveled_up = False
-
         while userData['exp'] >= userData['maxExp']:
             userData['exp'] -= userData['maxExp']
             userData['level'] += 1
@@ -92,12 +85,9 @@ class GameEngine:
             userData['maxHp'] += 10
             userData['hp'] = userData['maxHp']
             userData['attack'] += 2
-
             msg = self.getMsg('system', 'level_up', level=userData['level'])
             self.addLog(userData, msg)
-
             leveled_up = True
-
         return leveled_up
 
     def getGameResponse(self, userData):
@@ -106,7 +96,6 @@ class GameEngine:
         connectedInfo = [{"id": locId, "name": self.locations[locId]['name']} for locId in currentLocData.get('connectedTo', []) if locId in self.locations]
         
         archive_details = []
-
         for note_id in userData.get('archive', []):
             if note_id in self.lore:
                 note = self.lore[note_id]
@@ -121,9 +110,33 @@ class GameEngine:
 
     def processAction(self, userData, actionType, target):
         userData = self.validateUserData(userData)
+        
         if actionType == "useItem": return self.processItemUsage(userData, target)
         if actionType == "discardItem": return self.processItemDiscard(userData, target)
         if actionType == "unequipItem": return self.processItemUnequip(userData, target)
+
+        if actionType == "upgradeWeapon":
+            weaponId = target
+            if weaponId in self.items and self.items[weaponId]['type'] == 'weapon':
+                lvl = userData['weapon_levels'].get(weaponId, 0)
+                mat_needed = (lvl + 1) * 2
+                frag_needed = (lvl + 1) * 5
+                
+                materials_in_inv = [item for item in userData['inventory'] if self.items.get(item, {}).get('type') == 'material']
+                
+                if len(materials_in_inv) >= mat_needed and userData['heart_fragments'] >= frag_needed:
+                    userData['heart_fragments'] -= frag_needed
+                    for _ in range(mat_needed):
+                        for item in userData['inventory']:
+                            if self.items.get(item, {}).get('type') == 'material':
+                                userData['inventory'].remove(item)
+                                break
+                                
+                    userData['weapon_levels'][weaponId] = lvl + 1
+                    self.addLog(userData, f"[{self.items[weaponId]['name']}] 장비가 +{lvl+1} 단계로 개조되었습니다.")
+                else:
+                    self.addLog(userData, "개조에 필요한 자원이 부족합니다.")
+            return self.getGameResponse(userData)
 
         if actionType == "upgrade":
             stat = target
@@ -135,24 +148,19 @@ class GameEngine:
                 userData['upgrades'][stat] = lvl + 1
                 
                 msg_stat = ""
-                
                 if stat == 'upgrades_hp':
                     userData['maxHp'] += 5
                     userData['hp'] += 5
                     msg_stat = self.getMsg('info', 'upgrades_mhp')
-
                 elif stat == 'upgrades_atk':
                     userData['attack'] += 1
                     msg_stat = self.getMsg('info', 'upgrades_atk')
-
                 elif stat == 'upgrades_evasion':
                     msg_stat = self.getMsg('info', 'upgrades_ivd')
                     
                 self.addLog(userData, self.getMsg('info', 'upgrade_success', stat=msg_stat))
-
             else:
                 self.addLog(userData, self.getMsg('error', 'no_fragment', count=cost))
-
             return self.getGameResponse(userData)
 
         if userData['status'] == 'dead':
@@ -163,20 +171,17 @@ class GameEngine:
                     if userData['heart_fragments'] >= required_fragments:
                         userData['heart_fragments'] -= required_fragments
                         self.executeRevive(userData)
-
                     else: self.addLog(userData, self.getMsg('error', 'no_fragment', count=required_fragments))
                 
                 elif target == 'kit':
                     if 'first_aid_kit' in userData['inventory']:
                         userData['inventory'].remove('first_aid_kit')
                         self.executeRevive(userData)
-
                     else: self.addLog(userData, self.getMsg('error', 'no_kit'))
                 
                 elif target == 'reset':
                     if int(userData.get('heart_fragments', 0)) < required_fragments and 'first_aid_kit' not in userData.get('inventory', []):
                         self.executeResetRevive(userData)
-
                     else:
                         self.addLog(userData, self.getMsg('error', 'cannot_reset'))
 
@@ -192,16 +197,13 @@ class GameEngine:
                 newLoc = self.locations[target]
                 can_enter = True
                 requiredKey = newLoc.get('requiresKey')
-
                 if requiredKey:
                     if target in userData['unlocked_places']: can_enter = True
-                    
                     else:
                         if requiredKey in userData['inventory']:
                             userData['unlocked_places'].append(target)
                             message += self.getMsg('info', 'unlock_door', keyName=self.items[requiredKey]['name'])
                             can_enter = True
-
                         else:
                             message = self.getMsg('error', 'locked', keyName=self.items[requiredKey]['name'])
                             can_enter = False
@@ -209,31 +211,26 @@ class GameEngine:
                 if can_enter:
                     userData['currentLocation'] = target
                     message += self.getMsg('move', 'success', name=newLoc['name'])
-
                     if newLoc.get('dangerLevel') != 'SAFE' and 'spawnList' in newLoc:
                         if random.random() < newLoc.get('spawnRate', 0):
                             enemyId = random.choice(newLoc['spawnList'])
                             self.startCombat(userData, enemyId)
                             message += self.getMsg('warning', 'boss_appear', name=self.enemies[enemyId]['name']) if self.enemies[enemyId].get('grade', 1) >= 4 else self.getMsg('combat', 'spawn', name=self.enemies[enemyId]['name'])
-
             else: message = self.getMsg('move', 'fail')
 
         elif actionType == "search":
             if currentLocData.get('searchable', False):
                 event_happened = False
-
                 if not event_happened and random.random() < 0.01:
                     amount = random.randint(1, 3)
                     userData['heart_fragments'] += amount
                     message = self.getMsg('search', 'fragment_found', amount=amount)
                     event_happened = True
-
                 if not event_happened and 'spawnList' in currentLocData and random.random() < 0.2:
                     enemyId = random.choice(currentLocData['spawnList'])
                     self.startCombat(userData, enemyId)
                     message = self.getMsg('search', 'enemy_found', name=self.enemies[enemyId]['name'])
                     event_happened = True
-
                 if not event_happened:
                     for note_id, note in self.lore.items():
                         if note.get('dropLoc') == userData['currentLocation'] and note_id not in userData['archive']:
@@ -242,7 +239,6 @@ class GameEngine:
                                 message = self.getMsg('search', 'note_found', title=note['title'])
                                 event_happened = True
                                 break
-
                 if not event_happened and random.random() < currentLocData.get('itemChance', 0):
                     valid_items = []
                     current_loc = userData['currentLocation']
@@ -252,7 +248,6 @@ class GameEngine:
                         if v.get('type') == 'important' and k in userData.get('inventory', []): continue
                         
                         drop_locs = v.get('dropLocation', [])
-
                         if drop_locs and current_loc not in drop_locs:
                             continue
                             
@@ -260,7 +255,6 @@ class GameEngine:
                     
                     if valid_items:
                         weights = [self.items[k].get('dropRate', 1.0) for k in valid_items]
-
                         if sum(weights) > 0:
                             foundItemKey = random.choices(valid_items, weights=weights, k=1)[0]
                             userData['inventory'].append(foundItemKey)
@@ -270,39 +264,30 @@ class GameEngine:
                 if not event_happened: message = self.getMsg('search', 'empty')
 
         self.addLog(userData, message)
-
         return self.getGameResponse(userData)
 
     def processItemUsage(self, userData, itemKey):
         if itemKey not in userData['inventory']: return self.getGameResponse(userData)
-
         item, msg = self.items[itemKey], ""
-
         if itemKey == 'first_aid_kit':
-            userData['hp'] = min(userData['hp'] + item.get('heal', 80), userData['maxHp'])
-            userData['inventory'].remove(itemKey)
-            msg = self.getMsg('item', 'use_first_aid', heal=item.get('heal', 80))
-
+             userData['hp'] = min(userData['hp'] + item.get('heal', 80), userData['maxHp'])
+             userData['inventory'].remove(itemKey)
+             msg = self.getMsg('item', 'use_first_aid', heal=item.get('heal', 80))
         elif item['type'] == 'consumable':
             userData['hp'] = min(userData['hp'] + item.get('heal', 0), userData['maxHp'])
             userData['inventory'].remove(itemKey)
             msg = self.getMsg('item', 'use_consumable', name=item['name'], heal=item.get('heal', 0))
-
         elif item['type'] == 'weapon':
             currentWeapon = userData['equipment']['weapon']
-
             if currentWeapon == itemKey: msg = self.getMsg('item', 'already_equipped')
-
             else:
                 if currentWeapon: userData['inventory'].append(currentWeapon)
                 userData['equipment']['weapon'], msg = itemKey, self.getMsg('item', 'equip_weapon', name=item['name'], power=item['power'])
                 userData['inventory'].remove(itemKey)
-
         elif item['type'] == 'important': 
             msg = self.getMsg('info', 'important_desc', name=item['name'])
         
         self.addLog(userData, msg)
-
         return self.getGameResponse(userData)
 
     def processItemUnequip(self, userData, itemKey):
@@ -311,7 +296,6 @@ class GameEngine:
             userData['inventory'].append(itemKey)
             msg = self.getMsg('item', 'unequip', name=self.items[itemKey]['name'])
             self.addLog(userData, msg)
-
         return self.getGameResponse(userData)
 
     def processItemDiscard(self, userData, itemKey):
@@ -323,7 +307,6 @@ class GameEngine:
             msg = self.getMsg('item', 'discard', name=self.items[itemKey]['name'])
             userData['inventory'].remove(itemKey)
             self.addLog(userData, msg)
-
         return self.getGameResponse(userData)
 
     def executeRevive(self, userData):
@@ -335,12 +318,10 @@ class GameEngine:
         game_keys = [
             "level", "exp", "maxExp", "hp", "maxHp", "attack", "defense",
             "heart_fragments", "currentLocation", "inventory", "archive", 
-            "unlocked_places", "upgrades", "equipment", "status", "combatData"
+            "unlocked_places", "upgrades", "equipment", "status", "combatData", "weapon_levels"
         ]
-
         for key in game_keys:
             userData[key] = new_data.get(key)
-
         self.addLog(userData, self.getMsg('info', 'reset_revive'))
 
     def startCombat(self, userData, enemyId):
@@ -349,7 +330,6 @@ class GameEngine:
 
     def processCombat(self, userData, actionType, target):
         enemy, message = userData['combatData'], ""
-
         if actionType == "attack":
             dmg = random.randint(int(self.getTotalStats(userData)['attack'] * 0.8), int(self.getTotalStats(userData)['attack'] * 1.2))
             enemy['hp'] -= dmg
@@ -363,13 +343,10 @@ class GameEngine:
                 userData['heart_fragments'] += frag
                 message += self.getMsg('combat', 'enemy_dead', name=enemy['name'], exp=exp) + self.getMsg('combat', 'fragment_drop', count=frag)
                 self.checkLevelUp(userData)
-
             else:
                 evasion_rate = userData.get('upgrades', {}).get('upgrades_evasion', 0) * 0.001
-
                 if random.random() < evasion_rate:
                     message += self.getMsg('combat', 'player_evade')
-
                 else:
                     e_dmg = random.randint(int(enemy['attack'] * 0.8), int(enemy['attack'] * 1.2))
                     userData['hp'] -= e_dmg
@@ -377,14 +354,12 @@ class GameEngine:
                     
         elif actionType == "run":
             if random.random() > 0.4: userData['status'], userData['combatData'], message = 'normal', None, self.getMsg('combat', 'run_success')
-
             else:
                 e_dmg = random.randint(5, 10)
                 userData['hp'] -= e_dmg
                 message = self.getMsg('combat', 'run_fail') + self.getMsg('combat', 'run_fail_dmg', dmg=e_dmg)
                 
         if userData['hp'] <= 0: userData['hp'], userData['status'], message = 0, 'dead', message + self.getMsg('combat', 'player_dead')
-        
         self.addLog(userData, message)
         return self.getGameResponse(userData)
 
