@@ -83,7 +83,7 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 .heart-val { font-size: 18px; color: #ff0080; font-weight: bold; }
 
 .user-card { background: #111; padding: 10px 15px; border-radius: 6px; border: 1px solid #333; margin-top: auto; }
-.user-info-row { display: flex; justify-content: space-between; align-items: flex-end; }
+.user-info-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; }
 .user-name-wrapper { margin: 0; font-weight: bold; color: #888; }
 .user-name { color: var(--accent-cyan); }
 .levelText { font-size: 18px; color: var(--accent-cyan); font-weight: bold; text-shadow: 0 0 5px rgba(0, 229, 255, 0.3); }
