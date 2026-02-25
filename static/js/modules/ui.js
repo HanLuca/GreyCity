@@ -614,6 +614,7 @@ export class UIManager {
                     if (enemy) {
                         let gradeText = `Lv.${enemy.grade || 1}`;
                         let gradeClass = "grade-1";
+                        if (enemy.grade === 2) gradeClass = "grade-2";
                         if (enemy.grade >= 3) gradeClass = "grade-3";
                         if (enemy.grade >= 4) gradeClass = "grade-4";
                         if (enemy.grade >= 5) gradeClass = "grade-5";

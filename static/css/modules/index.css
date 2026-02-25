@@ -210,6 +210,8 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 /* 위협 등급별 컬러 지정 */
 .threat-item.grade-1 { border-color: #aaa; }
 .threat-item.grade-1 .threat-grade { color: #aaa; }
+.threat-item.grade-2 { border-color: #4caf50; }
+.threat-item.grade-2 .threat-grade { color: #4caf50; }
 .threat-item.grade-3 { border-color: #ff9e80; }
 .threat-item.grade-3 .threat-grade { color: #ff9e80; }
 .threat-item.grade-4 { border-color: #ff5555; }
