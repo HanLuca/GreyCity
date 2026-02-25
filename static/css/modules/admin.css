@@ -146,3 +146,5 @@ button:disabled { opacity: 0.3; cursor: not-allowed !important; }
     button { padding: 15px; }
 }
 
+.init-msg { text-align: center; margin-top: 30px; color: #555; }
+.status-msg { font-size: 12px; color: #00e5ff; }

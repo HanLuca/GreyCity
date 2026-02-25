@@ -52,9 +52,9 @@ export class Main {
         }
     }
 
-    // HTML에 흩어져있던 버튼 이벤트들을 자바스크립트로 통합 관리
+// HTML에 흩어져있던 버튼 이벤트들을 자바스크립트로 통합 관리
     bindGlobalEvents() {
-        // 데이터 완전 초기화 로직
+        // [기존] 데이터 완전 초기화 로직
         const btnReset = document.getElementById('btnResetAccount');
         if (btnReset) {
             btnReset.addEventListener('click', () => {
@@ -79,7 +79,6 @@ export class Main {
             });
         }
 
-        // 계정 영구 삭제 로직
         const btnDelete = document.getElementById('btnDeleteAccount');
         if (btnDelete) {
             btnDelete.addEventListener('click', () => {
@@ -103,6 +102,16 @@ export class Main {
                 }
             });
         }
+
+        // 사이드 패널 네비게이션 모달 열기 이벤트 바인딩
+        const btnSettings = document.getElementById('navBtnSettings');
+        if(btnSettings) btnSettings.addEventListener('click', () => window.openModalAnimation('settingsModal'));
+
+        const btnArchive = document.getElementById('navBtnArchive');
+        if(btnArchive) btnArchive.addEventListener('click', () => window.openModalAnimation('archiveModal'));
+
+        const btnUpgrade = document.getElementById('navBtnUpgrade');
+        if(btnUpgrade) btnUpgrade.addEventListener('click', () => window.openModalAnimation('upgradeModal'));
     }
 }
 

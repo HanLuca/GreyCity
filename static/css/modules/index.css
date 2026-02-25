@@ -11,7 +11,7 @@
 .statusBar { padding: 15px; border-bottom: 1px solid var(--border-color); background: #111; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; color: var(--accent-cyan); }
 .panelHeader { display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 10px; letter-spacing: 1px; }
 
-/*  */
+/* */
 .status-header { margin-bottom: 10px; }
 .status-title { color: var(--accent-cyan); font-size: 16px; font-weight: bold; letter-spacing: 1px; }
 
@@ -47,7 +47,7 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 .invItem span.equipped { color: var(--accent-cyan); font-weight: bold; font-size: 10px; border: 1px solid var(--accent-cyan); padding: 1px 5px; border-radius: 3px; }
 .emptyMsg { color: #555; text-align: center; padding-top: 40px; font-size: 12px; font-style: italic; }
 
-/* [해결] STATUS 내용 간격 축소 (margin-top: 0 으로 끌어올림) */
+/* STATUS 내용 */
 .systemInfo { flex: 0 0 auto; margin-top: 0; padding-top: 0; background: #141414; }
 .stat-card { display: flex; flex-direction: column; background: linear-gradient(145deg, #161616 0%, #0d0d0d 100%); border: 1px solid #333; border-radius: 6px; padding: 12px; margin-bottom: 10px; margin-top: 0; }
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -72,7 +72,6 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 .expFill { height: 100%; background: var(--accent-cyan); width: 0%; transition: width 0.3s ease; box-shadow: 0 0 8px var(--accent-cyan); }
 .exp-text { text-align: right; font-size: 11px; color: #aaa; margin-top: 8px; }
 
-/*  */
 .note-item { background: #111; border: 1px solid #333; border-left: 4px solid var(--accent-cyan) !important; padding: 15px; margin-bottom: 12px; border-radius: 4px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
 .note-title { display: flex; justify-content: space-between; align-items: center; font-weight: bold; color: #ddd; margin-bottom: 8px; border-bottom: 1px dashed #333; padding-bottom: 5px; }
 .note-title small { font-size: 10px; color: #555; }
@@ -91,79 +90,84 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 #archiveModal .modal-content { border-color: var(--accent-cyan); }
 #locationModal .modal-content { transition: border-color 0.3s ease; }
 
-/* =========================================
-   Location Modal (맵 정보창) 전용 스타일
-========================================= */
-#locationModal .modal-content { 
-    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s ease, border-color 0.3s ease; 
-}
-
+/* Location Modal 전용 스타일 */
+#locationModal .modal-content { transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s ease, border-color 0.3s ease; }
 .loc-header { margin-bottom: 15px; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; }
 .loc-header-top { display: flex; justify-content: space-between; align-items: flex-start; }
 .loc-title { font-size: 20px; font-weight: bold; color: #fff; letter-spacing: 1px; }
 .loc-meta { margin-top: 8px; display: flex; align-items: center; }
 .loc-coord { color: #aaa; font-size: 12px; background: #222; padding: 2px 6px; border-radius: 3px; border: 1px solid #333; }
-
 .status-badge { margin-left: 10px; font-size: 11px; padding: 3px 8px; border-radius: 3px; font-weight: bold; border: 1px solid; letter-spacing: 1px; }
 .badge-safe { color: #4caf50; border-color: #4caf50; background: rgba(76, 175, 80, 0.1); }
 .badge-normal { color: #00e5ff; border-color: #00e5ff; background: rgba(0, 229, 255, 0.1); }
 .badge-danger { color: #ff2a2a; border-color: #ff2a2a; background: rgba(255, 42, 42, 0.1); }
-
 .loc-desc { margin-top: 15px; font-size: 13px; color: #ccc; line-height: 1.6; padding: 12px; background: #111; border-radius: 4px; word-break: keep-all; }
-
 .loc-section { margin-top: 20px; }
 .loc-label { font-size: 12px; font-weight: bold; color: var(--accent-cyan); margin-bottom: 10px; border-bottom: 1px solid #222; padding-bottom: 5px; letter-spacing: 1px;}
 .loot-info { display: flex; justify-content: space-between; align-items: center; background: #161616; padding: 12px; border-radius: 4px; border: 1px solid #222; }
 .loot-rate { color: #00e5ff; font-weight: bold; font-size: 14px; text-shadow: 0 0 5px rgba(0,229,255,0.3); }
 
-/* =========================================
-   [5. 모바일 반응형 (Media Queries)]
-========================================= */
+/* 모바일 반응형 */
 @media screen and (max-width: 1024px) {
-    /* 바디 스크롤 방지 및 전체 화면 채우기 */
     body { align-items: flex-start; }
-    
-    /* 레이아웃 박스 해제 및 세로 배치 */
-    .layoutWrapper { 
-        width: 100%; 
-        height: 100vh; /* 모바일 화면 꽉 채우기 */
-        flex-direction: column; 
-        border: none; 
-        border-radius: 0; 
-        box-shadow: none; 
-    }
-    
-    /* 위쪽: 메인 텍스트 영역 */
-    .gameContainer { 
-        flex: 1.2; 
-        min-height: 0; 
-        border-right: none; 
-        border-bottom: 2px solid var(--border-color); 
-    }
-    
-    /* 아래쪽: 사이드 패널 (상태, 인벤, 맵) */
-    .sidePanel { 
-        flex: 1; 
-        min-height: 0; 
-        padding: 12px; 
-        gap: 12px; 
-        overflow-y: auto; /* 아래쪽 패널 자체 스크롤 생성 */
-    }
-    
-    /* 모바일에 맞게 세부 요소 축소 */
+    .layoutWrapper { width: 100%; height: 100vh; flex-direction: column; border: none; border-radius: 0; box-shadow: none; }
+    .gameContainer { flex: 1.2; min-height: 0; border-right: none; border-bottom: 2px solid var(--border-color); }
+    .sidePanel { flex: 1; min-height: 0; padding: 12px; gap: 12px; overflow-y: auto; }
     .inventory-section { height: 160px; }
     .mapWrapper { height: 110px; }
-    
-    /* 버튼 터치 영역 최적화 */
     .moveRow button, .actionRow button { padding: 12px; font-size: 14px; }
-    
-    /* 모달(팝업창) 꽉 차게 변경 */
-    .modal-content { 
-        width: 95% !important; 
-        max-width: none !important; 
-        margin: 5vh auto !important; 
-        max-height: 90vh; 
-        overflow-y: auto !important; 
-    }
+    .modal-content { width: 95% !important; max-width: none !important; margin: 5vh auto !important; max-height: 90vh; overflow-y: auto !important; }
     #itemModal .modal-content { padding: 0 !important; }
 }
+
+/* =========================================
+   HTML 추출 모달 & 컴포넌트 클래스 디자인
+========================================= */
+.settings-modal-content { max-width: 500px; }
+.upgrade-modal-content { max-width: 750px; }
+.loc-modal-content { max-width: 400px; padding: 0; overflow: hidden; border-radius: 6px; }
+.item-modal-content { max-width: 380px; padding: 0; background: #0d0d0d; border: 1px solid #333; overflow: hidden; border-radius: 6px; }
+
+.modal-title { margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 20px; }
+.cyan-title { color: var(--accent-cyan); }
+.pink-title { color: #ff0080; }
+
+.settings-list { display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+.settings-label { font-size: 11px; color: #666; font-weight: bold; letter-spacing: 1px; margin-bottom: 2px; }
+.settings-btn { background: #111; border: 1px solid #222; color: #555; padding: 12px 15px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-family: inherit; }
+.settings-desc { font-size: 10px; color: #444; }
+.settings-divider { border: 0; border-top: 1px dashed #333; width: 100%; margin: 15px 0; }
+.btn-reset { width: 100%; display: block; padding: 12px; font-size: 13px; background: rgba(255, 158, 128, 0.05); border: 1px solid rgba(255, 158, 128, 0.3); color: #ff9e80; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+.btn-delete-acc { width: 100%; display: block; padding: 12px; font-size: 13px; background: rgba(255, 42, 42, 0.05); border: 1px solid rgba(255, 42, 42, 0.3); color: #ff2a2a; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+.logout-link { text-decoration: none; }
+.btn-logout { width: 100%; display: block; padding: 14px; font-size: 14px; background: rgba(255, 85, 85, 0.05); border: 1px solid rgba(255, 85, 85, 0.3); color: #ff5555; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.2s; }
+
+.archive-list-container { max-height: 400px; overflow-y: auto; padding-right: 5px; }
+
+.modal-top-accent { height: 4px; width: 100%; background: #555; }
+.modal-inner-padding { padding: 20px; }
+.modal-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.modal-item-type { font-size: 11px; padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px; background: rgba(255,255,255,0.05); border: 1px solid; }
+.close-btn-cross { margin: 0; padding: 0; line-height: 1; }
+.modal-item-name { margin: 0 0 15px 0; color: #fff; font-size: 20px; text-align: left; letter-spacing: 0.5px; }
+.modal-item-stat-wrapper { background: #141414; border: 1px solid #222; border-radius: 6px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5); }
+.modal-item-stat { font-size: 16px; letter-spacing: 0.5px; }
+.modal-item-desc { color: #aaa; font-size: 13px; line-height: 1.6; margin-bottom: 15px; text-align: left; word-break: keep-all; padding: 0 5px; }
+.modal-drop-info { background: #111; border: 1px solid #222; border-radius: 4px; padding: 10px; margin-bottom: 20px; font-size: 12px; color: #888; text-align: left; }
+.modal-drop-row { margin-bottom: 5px; }
+.drop-label { color: #aaa; }
+.drop-val { color: #ddd; }
+.drop-rate-val { color: var(--accent-cyan); }
+
+.modal-upgrade-section { background: #141414; border: 1px dashed #ff9e80; border-radius: 4px; padding: 15px; margin-bottom: 15px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
+.modal-upgrade-label { font-size: 12px; font-weight: bold; color: #ff9e80; margin-bottom: 12px; letter-spacing: 1px; }
+.modal-upgrade-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px; }
+.modal-upgrade-row.margin-bottom { margin-bottom: 15px; }
+.upgrade-material-label { color: #aaa; }
+.modal-upgrade-val { font-weight: bold; }
+.modal-btn-upgrade { width: 100%; padding: 10px; background: rgba(255, 158, 128, 0.1); border: 1px solid #ff9e80; color: #ff9e80; font-weight: bold; border-radius: 4px; transition: 0.2s; cursor: pointer; }
+
+.modal-btn-group { display: flex; gap: 10px; }
+.modal-btn-use { flex: 2; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 4px; transition: 0.2s; cursor: pointer;}
+.modal-btn-discard { flex: 1; padding: 12px; font-size: 14px; background: rgba(255, 85, 85, 0.05); border: 1px solid rgba(255, 85, 85, 0.3); color: #ff5555; font-weight: bold; transition: 0.2s; border-radius: 4px; cursor: pointer;}
+.hidden { display: none; }

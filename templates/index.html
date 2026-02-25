@@ -22,7 +22,7 @@
             <div class="side-section">
                 <div class="panelHeader">
                     <span>:: NAVIGATION ::</span>
-                    <button class="action-btn" onclick="openModalAnimation('settingsModal')">⚙️ SETTINGS</button>
+                    <button class="action-btn" id="navBtnSettings">⚙️ SETTINGS</button>
                 </div>
                 <div class="mapWrapper"><div id="miniMap" class="miniMapGrid"></div></div>
             </div>
@@ -30,7 +30,7 @@
             <div class="side-section inventory-section">
                 <div class="panelHeader">
                     <span>:: INVENTORY ::</span>
-                    <button class="action-btn" onclick="openModalAnimation('archiveModal')">📜 ARCHIVE</button>
+                    <button class="action-btn" id="navBtnArchive">📜 ARCHIVE</button>
                 </div>
                 <div id="inventoryList" class="inventoryContainer">
                     <div class="emptyMsg">가방이 비었습니다.</div>
@@ -40,7 +40,7 @@
             <div class="side-section status-section">
                 <div class="panelHeader status-header">
                     <span class="status-title">:: STATUS ::</span>
-                    <button class="action-btn" onclick="openModalAnimation('upgradeModal')">🫀 UPGRADE</button>
+                    <button class="action-btn" id="navBtnUpgrade">🫀 UPGRADE</button>
                 </div>
 
                 <div class="systemInfo">
@@ -64,7 +64,7 @@
 
                     <div class="user-card">
                         <div class="user-info-row">
-                            <p class="user-name-wrapper">USER: <span class="user-name">{{ username }}</span></p>
+                            <p class="user-name-wrapper">USER:<span class="user-name">{{ username }}</span></p>
                             <span class="levelText">LV.<span id="levelVal">1</span></span>
                         </div>
                         <div class="expContainer"><div id="expBar" class="expFill"></div></div>
@@ -76,44 +76,38 @@
     </div>
 
     <div id="settingsModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-content settings-modal-content">
             <span class="close">&times;</span>
-            <h2 style="color:var(--accent-cyan); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px; font-size:20px;">⚙️ SYSTEM SETTINGS</h2>
+            <h2 class="modal-title cyan-title">⚙️ SYSTEM SETTINGS</h2>
             
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:20px;">
-                <span style="font-size:11px; color:#666; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">PREFERENCES</span>
-                <button disabled style="background:#111; border:1px solid #222; color:#555; padding:12px 15px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; font-family:inherit;">
-                    <span>🔊 사운드 설정</span><span style="font-size:10px; color:#444;">[지원 예정]</span>
+            <div class="settings-list">
+                <span class="settings-label">PREFERENCES</span>
+                <button disabled class="settings-btn">
+                    <span>🔊 사운드 설정</span><span class="settings-desc">[지원 예정]</span>
                 </button>
-                <button disabled style="background:#111; border:1px solid #222; color:#555; padding:12px 15px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; font-family:inherit;">
-                    <span>🖥️ 화면 효과</span><span style="font-size:10px; color:#444;">[지원 예정]</span>
+                <button disabled class="settings-btn">
+                    <span>🖥️ 화면 효과</span><span class="settings-desc">[지원 예정]</span>
                 </button>
 
-                <hr style="border: 0; border-top: 1px dashed #333; width:100%; margin:15px 0;">
+                <hr class="settings-divider">
                 
-                <span style="font-size:11px; color:#666; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">DATA MANAGEMENT</span>
-                <button id="btnResetAccount" style="width:100%; display:block; padding:12px; font-size:13px; background:rgba(255, 158, 128, 0.05); border:1px solid rgba(255, 158, 128, 0.3); color:#ff9e80; font-weight:bold; border-radius:4px; cursor:pointer; transition:0.2s;">
-                    ⚠️ 게임 데이터 초기화
-                </button>
-                <button id="btnDeleteAccount" style="width:100%; display:block; padding:12px; font-size:13px; background:rgba(255, 42, 42, 0.05); border:1px solid rgba(255, 42, 42, 0.3); color:#ff2a2a; font-weight:bold; border-radius:4px; cursor:pointer; transition:0.2s;">
-                    ☠️ 계정 영구 삭제
-                </button>
+                <span class="settings-label">DATA MANAGEMENT</span>
+                <button id="btnResetAccount" class="btn-reset">⚠️ 게임 데이터 초기화</button>
+                <button id="btnDeleteAccount" class="btn-delete-acc">☠️ 계정 영구 삭제</button>
 
-                <hr style="border: 0; border-top: 1px dashed #333; width:100%; margin:15px 0;">
-                <span style="font-size:11px; color:#666; font-weight:bold; letter-spacing:1px; margin-bottom:2px;">ACCOUNT</span>
-                <a href="/logout" style="text-decoration:none;">
-                    <button style="width:100%; display:block; padding:14px; font-size:14px; background:rgba(255,85,85,0.05); border:1px solid rgba(255,85,85,0.3); color:#ff5555; font-weight:bold; border-radius:4px; cursor:pointer; transition:0.2s;">
-                        [ SYSTEM LOGOUT ]
-                    </button>
+                <hr class="settings-divider">
+                <span class="settings-label">ACCOUNT</span>
+                <a href="/logout" class="logout-link">
+                    <button class="btn-logout">[ SYSTEM LOGOUT ]</button>
                 </a>
             </div>
         </div>
     </div>
 
     <div id="upgradeModal" class="modal">
-        <div class="modal-content" style="max-width: 750px;">
+        <div class="modal-content upgrade-modal-content">
             <span class="close">&times;</span>
-            <h2 style="color:#ff0080; margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">🫀 BODY UPGRADE</h2>
+            <h2 class="modal-title pink-title">🫀 BODY UPGRADE</h2>
             <div id="upgradeList"></div>
         </div>
     </div>
@@ -121,64 +115,66 @@
     <div id="archiveModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2 style="color:var(--accent-cyan); margin-top:0; border-bottom:1px solid #333; padding-bottom:10px;">📂 SURVIVAL LOGS</h2>
-            <div id="archiveList" style="max-height:400px; overflow-y:auto; padding-right:5px;"></div>
+            <h2 class="modal-title cyan-title">📂 SURVIVAL LOGS</h2>
+            <div id="archiveList" class="archive-list-container"></div>
         </div>
     </div>
 
     <div id="itemModal" class="modal">
-        <div class="modal-content" style="max-width: 380px; padding: 0; background: #0d0d0d; border: 1px solid #333; overflow: hidden; border-radius: 6px;">
-            <div id="modalTopAccent" style="height: 4px; width: 100%; background: #555;"></div>
-            <div style="padding: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                    <span id="modalItemType" style="font-size: 11px; padding: 4px 10px; border-radius: 4px; font-weight: bold; letter-spacing: 1px; background: rgba(255,255,255,0.05); border: 1px solid;">TYPE</span>
-                    <span class="close" style="margin: 0; padding: 0; line-height: 1;">&times;</span>
+        <div class="modal-content item-modal-content">
+            <div id="modalTopAccent" class="modal-top-accent"></div>
+            <div class="modal-inner-padding">
+                <div class="modal-item-header">
+                    <span id="modalItemType" class="modal-item-type">TYPE</span>
+                    <span class="close close-btn-cross">&times;</span>
                 </div>
-                <h2 id="modalItemName" style="margin: 0 0 15px 0; color: #fff; font-size: 20px; text-align: left; letter-spacing: 0.5px;">Item Name</h2>
-                <div style="background: #141414; border: 1px solid #222; border-radius: 6px; padding: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);">
-                    <div id="modalItemStat" style="font-size: 16px; letter-spacing: 0.5px;">Stat Info</div>
+                <h2 id="modalItemName" class="modal-item-name">Item Name</h2>
+                <div class="modal-item-stat-wrapper">
+                    <div id="modalItemStat" class="modal-item-stat">Stat Info</div>
                 </div>
-                <div id="modalItemDesc" style="color: #aaa; font-size: 13px; line-height: 1.6; margin-bottom: 15px; text-align: left; word-break: keep-all; padding: 0 5px;">Item Description</div>
-                <div style="background: #111; border: 1px solid #222; border-radius: 4px; padding: 10px; margin-bottom: 20px; font-size: 12px; color: #888; text-align: left;">
-                    <div style="margin-bottom: 5px;">🌍 <span style="color:#aaa;">스폰 장소:</span> <span id="modalItemDropLoc" style="color:#ddd;">모든 곳</span></div>
-                    <div>🎲 <span style="color:#aaa;">스폰 확률:</span> <span id="modalItemDropRate" style="color:#00e5ff;">10%</span></div>
+                <div id="modalItemDesc" class="modal-item-desc">Item Description</div>
+                <div class="modal-drop-info">
+                    <div class="modal-drop-row">🌍 <span class="drop-label">스폰 장소:</span> <span id="modalItemDropLoc" class="drop-val">모든 곳</span></div>
+                    <div>🎲 <span class="drop-label">스폰 확률:</span> <span id="modalItemDropRate" class="drop-rate-val">10%</span></div>
                 </div>
                 
-                <div id="modalUpgradeSection" style="display: none; background: #141414; border: 1px dashed #ff9e80; border-radius: 4px; padding: 15px; margin-bottom: 15px; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);">
-                    <div style="font-size: 12px; font-weight: bold; color: #ff9e80; margin-bottom: 12px; letter-spacing: 1px;">⚙️ 장비 강화</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px;">
-                        <span style="color: #aaa;">아무 재료 아이템</span>
-                        <span id="upgMetalVal" style="font-weight: bold;">0 / 0</span>
+                <div id="modalUpgradeSection" class="modal-upgrade-section hidden">
+                    <div class="modal-upgrade-label">⚙️ 장비 강화</div>
+                    <div class="modal-upgrade-row">
+                        <span class="upgrade-material-label">아무 재료 아이템</span>
+                        <span id="upgMetalVal" class="modal-upgrade-val">0 / 0</span>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 15px;">
-                        <span style="color: #aaa;">심장 조각</span>
-                        <span id="upgFragVal" style="font-weight: bold;">0 / 0</span>
+                    <div class="modal-upgrade-row margin-bottom">
+                        <span class="upgrade-material-label">심장 조각</span>
+                        <span id="upgFragVal" class="modal-upgrade-val">0 / 0</span>
                     </div>
-                    <button id="modalBtnUpgrade" style="width: 100%; padding: 10px; background: rgba(255, 158, 128, 0.1); border: 1px solid #ff9e80; color: #ff9e80; font-weight: bold; border-radius: 4px; transition: 0.2s;">강화 실행</button>
+                    <button id="modalBtnUpgrade" class="modal-btn-upgrade">강화 실행</button>
                 </div>
 
-                <div style="display: flex; gap: 10px;">
-                    <button id="modalBtnUse" style="flex: 2; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 4px; transition: 0.2s;"></button>
-                    <button id="modalBtnDiscard" style="flex: 1; padding: 12px; font-size: 14px; background: rgba(255, 85, 85, 0.05); border: 1px solid rgba(255, 85, 85, 0.3); color: #ff5555; font-weight: bold; transition: 0.2s; border-radius: 4px;">버리기</button>
+                <div class="modal-btn-group">
+                    <button id="modalBtnUse" class="modal-btn-use"></button>
+                    <button id="modalBtnDiscard" class="modal-btn-discard">버리기</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="locationModal" class="modal">
-        <div class="modal-content" style="max-width: 400px; padding: 0; overflow: hidden; border-radius: 6px;">
-            <div id="locModalTopAccent" style="height: 4px; width: 100%; background: #555;"></div>
-            <div style="padding: 20px;">
+        <div class="modal-content loc-modal-content">
+            <div id="locModalTopAccent" class="modal-top-accent"></div>
+            
+            <div class="modal-inner-padding">
                 <div class="loc-header">
                     <div class="loc-header-top">
                         <span id="modalLocName" class="loc-title">장소 이름</span>
-                        <span class="close" style="margin: 0; padding: 0; line-height: 1;">&times;</span>
+                        <span class="close close-btn-cross">&times;</span>
                     </div>
                     <div class="loc-meta">
                         <span id="modalLocCoord" class="loc-coord">X:0 Y:0</span>
                         <span id="modalLocStatus"></span>
                     </div>
                 </div>
+                
                 <div id="modalLocDesc" class="loc-desc">설명</div>
                 <div id="modalLocInfo"></div>
             </div>
