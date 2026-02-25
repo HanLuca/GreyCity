@@ -6,7 +6,7 @@
         "requiresKey": "admin_card",
         "spawnList": ["juggernaut", "chemical_mutant"],
         "spawnRate": 0.6,
-        "connectedTo": ["gate_east", "ground_zero_east"],
+        "connectedTo": ["central_control_room"],
         "coordinates": {"x": 10, "y": 11},
         "searchable": true,
         "itemChance": 0.2
