@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grey City: Apocalypse</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modules/index.css') }}">
 </head>
@@ -38,7 +39,7 @@
                     <button class="inv-tab" data-category="weapon">WPN</button>
                     <button class="inv-tab" data-category="consumable">USE</button>
                     <button class="inv-tab" data-category="material">MAT</button>
-                    <button class="inv-tab" data-category="important">IMP</button>
+                    <button class="inv-tab" data-category="important">KEY</button>
                 </div>
 
                 <div id="inventoryList" class="inventoryContainer">
@@ -90,6 +91,14 @@
             <h2 class="modal-title cyan-title">⚙️ SYSTEM SETTINGS</h2>
             
             <div class="settings-list">
+                <span class="settings-label">COMMUNICATION</span>
+                <div class="settings-comm-group">
+                    <button class="settings-btn comm-btn-notice" id="btnOpenNotice">📢 공지사항</button>
+                    <button class="settings-btn comm-btn-message" id="btnOpenMessage">✉️ 메세지함</button>
+                </div>
+                
+                <hr class="settings-divider">
+
                 <span class="settings-label">PREFERENCES</span>
                 <button disabled class="settings-btn">
                     <span>🔊 사운드 설정</span><span class="settings-desc">[지원 예정]</span>
@@ -126,6 +135,22 @@
             <span class="close">&times;</span>
             <h2 class="modal-title cyan-title">📂 SURVIVAL LOGS</h2>
             <div id="archiveList" class="archive-list-container"></div>
+        </div>
+    </div>
+
+    <div id="noticeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title cyan-title">📢 SYSTEM NOTICES</h2>
+            <div id="noticeList" class="comm-list-container"></div>
+        </div>
+    </div>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content msg-modal-content">
+            <span class="close">&times;</span>
+            <h2 class="modal-title msg-title">✉️ INBOX</h2>
+            <div id="messageList" class="comm-list-container"></div>
         </div>
     </div>
 

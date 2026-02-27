@@ -8,36 +8,53 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modules/admin.css') }}">
 </head>
 <body>
-    <div class="header-container">
-        <div class="header">SYS-ADMIN OVERSEER</div>
-        <div class="sub-header"></div>
-    </div>
-    
-    <button class="back-btn" id="btnReturn">RETURN TO GAME</button>
-
     <div class="dashboard">
         <div class="list-panel">
             <div class="search-container">
-                <input type="text" id="searchInput" class="search-box" placeholder="Search ID, Name, Email..." autocomplete="off">
-                <div class="list-info" id="userCountInfo">Loading users...</div>
+                <input type="text" id="searchInput" class="search-box" placeholder="아이디, 이름, 이메일 검색..." autocomplete="off">
+                <div class="list-info" id="userCountInfo">유저 데이터를 불러오는 중...</div>
             </div>
+            
             <div class="user-list" id="userList">
-                <div class="init-msg">SYSTEM INITIATING...</div>
+                <div class="init-msg">시스템 초기화 중...</div>
+            </div>
+
+            <div class="list-bottom-btns">
+                <button class="panel-btn notice-btn" id="btnGlobalNotice">📢 전체 공지 발송</button>
+                <button class="panel-btn return-btn" id="btnReturn">게임으로 돌아가기</button>
             </div>
         </div>
         
         <div class="editor-panel">
             <div class="editor-header">
                 <span id="editorTitle">대상을 선택하십시오.</span>
-                <span id="statusMsg" class="status-msg">WAITING...</span>
+                <span id="statusMsg" class="status-msg">대기 중...</span>
             </div>
+            
             <textarea id="jsonEditor" disabled spellcheck="false" placeholder="데이터가 여기에 표시됩니다..." wrap="off"></textarea>
             
             <div class="btn-group">
-                <button class="btn-save" id="btnSave" disabled>[ 💾 OVERWRITE ]</button>
-                <button class="btn-warn" id="btnForceLogout" disabled>[ 🚪 LOGOUT ]</button>
-                <button class="btn-warn" id="btnSuspend" disabled>[ ⏳ SUSPEND ]</button>
-                <button class="btn-delete" id="btnDelete" disabled>[ ☠️ PURGE ]</button>
+                <button class="btn-save" id="btnSave" disabled>💾 데이터 덮어쓰기</button>
+                <button class="btn-msg" id="btnSendMessage" disabled>✉️ 메세지 전송</button>
+                <button class="btn-warn" id="btnForceLogout" disabled>🚪 강제 로그아웃</button>
+                <button class="btn-warn" id="btnSuspend" disabled>⏳ 계정 정지</button>
+                <button class="btn-delete" id="btnDelete" disabled>☠️ 데이터 삭제</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="composeModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <div class="compose-header">
+                <span id="composeTitle">작성기</span>
+                <span class="close-compose" id="btnCloseCompose">&times;</span>
+            </div>
+            <input type="text" id="composeSubject" class="compose-input" placeholder="제목을 입력하세요" autocomplete="off">
+            <div class="markdown-hint">※ 마크다운(Markdown) 문법이 지원됩니다. (*기울임*, **강조**, # 제목 등)</div>
+            <textarea id="composeBody" class="compose-textarea" placeholder="내용을 입력하세요..."></textarea>
+            <div class="compose-actions">
+                <button class="panel-btn return-btn" id="btnCancelCompose">취소</button>
+                <button class="panel-btn notice-btn" id="btnSendCompose">전송하기</button>
             </div>
         </div>
     </div>

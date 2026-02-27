@@ -97,3 +97,27 @@ class FirebaseManager:
         except Exception as e:
             print(f"Delete User Complete Error: {e}")
             return False
+        
+    def sendGlobalNotice(self, data):
+            try:
+                db.reference('notices').push(data)
+            except Exception as e:
+                print(f"Firebase Notice Error: {e}")
+
+    def getGlobalNotices(self):
+        try:
+            return db.reference('notices').get() or {}
+        except Exception:
+            return {}
+
+    def sendPrivateMessage(self, userId, data):
+        try:
+            db.reference(f'messages/{userId}').push(data)
+        except Exception as e:
+            print(f"Firebase Message Error: {e}")
+
+    def getPrivateMessages(self, userId):
+        try:
+            return db.reference(f'messages/{userId}').get() or {}
+        except Exception:
+            return {}

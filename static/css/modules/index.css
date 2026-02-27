@@ -6,7 +6,6 @@
 .sidePanel { flex: 1; min-width: 0; display: flex; flex-direction: column; background: #141414; padding: 20px; height: 100%; gap: 15px; }
 
 .side-section { display: flex; flex-direction: column; }
-/* 인벤토리 세로 길이 축소 (하단 여백 확보) */
 .inventory-section { height: 205px; flex: none; }
 .status-section { flex: 1; min-height: 0; }
 
@@ -83,7 +82,7 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 .heart-val { font-size: 18px; color: #ff0080; font-weight: bold; }
 
 .user-card { background: #111; padding: 10px 15px; border-radius: 6px; border: 1px solid #333; margin-top: auto; }
-.user-info-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; }
+.user-info-row { display: flex; justify-content: space-between; align-items: flex-end; }
 .user-name-wrapper { margin: 0; font-weight: bold; color: #888; }
 .user-name { color: var(--accent-cyan); }
 .levelText { font-size: 18px; color: var(--accent-cyan); font-weight: bold; text-shadow: 0 0 5px rgba(0, 229, 255, 0.3); }
@@ -109,6 +108,7 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 #upgradeModal .modal-content { border-color: #ff0080; box-shadow: 0 0 15px rgba(255,0,128,0.2); }
 #settingsModal .modal-content { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
 #archiveModal .modal-content { border-color: var(--accent-cyan); }
+#noticeModal .modal-content { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(0, 229, 255, 0.2); }
 #locationModal .modal-content { transition: border-color 0.3s ease, transform 0.4s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.3s ease; }
 
 /* =========================================
@@ -203,7 +203,7 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 /* =========================================
    11. JS 동적 렌더링 추출 클래스 (위협 정보 등)
 ========================================= */
-.threat-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.threat-list { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .threat-item { background: rgba(0,0,0,0.3); color: #ddd; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; border: 1px solid; }
 .threat-grade { margin-right: 4px; }
 
@@ -235,3 +235,60 @@ button:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); back
 .text-muted { color: #888 !important; }
 .text-accent-red { color: var(--accent-red) !important; }
 .status-combat-text { color: #ff2a2a; }
+
+/* =========================================
+   12. 통신 시스템 (공지사항 & 메세지)
+========================================= */
+.settings-comm-group { display: flex; gap: 10px; margin-bottom: 10px; }
+.comm-btn-notice { flex: 1; justify-content: center; color: var(--accent-cyan); border-color: var(--accent-cyan); background: rgba(0,229,255,0.05); }
+.comm-btn-notice:hover { background: rgba(0,229,255,0.2); }
+.comm-btn-message { flex: 1; justify-content: center; color: #00ff88; border-color: #00ff88; background: rgba(0,255,136,0.05); }
+.comm-btn-message:hover { background: rgba(0,255,136,0.2); }
+
+.comm-list-container { max-height: 400px; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 10px; }
+.comm-item { background: #111; border: 1px solid #333; padding: 15px; border-radius: 4px; border-left: 3px solid var(--accent-cyan); }
+.comm-item-msg { border-left-color: #00ff88; }
+
+.comm-item-title { color: #fff; font-weight: bold; font-size: 14px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+.comm-item-title.msg-text { color: #00ff88; }
+.comm-item-date { font-size: 10px; color: #666; font-weight: normal; }
+.comm-item-content { color: #aaa; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: keep-all; }
+
+.msg-modal-content { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.2) !important; }
+.comm-empty { color: #666; text-align: center; padding: 30px 20px; font-size: 13px; }
+
+/* ... 기존 코드 유지 ... */
+
+/* =========================================
+   12. 통신 시스템 (공지사항 & 메세지 마크다운 대응)
+========================================= */
+.settings-comm-group { display: flex; gap: 10px; margin-bottom: 10px; }
+.comm-btn-notice { flex: 1; justify-content: center; color: var(--accent-cyan); border-color: var(--accent-cyan); background: rgba(0,229,255,0.05); }
+.comm-btn-notice:hover { background: rgba(0,229,255,0.2); }
+.comm-btn-message { flex: 1; justify-content: center; color: #00ff88; border-color: #00ff88; background: rgba(0,255,136,0.05); }
+.comm-btn-message:hover { background: rgba(0,255,136,0.2); }
+
+.comm-list-container { max-height: 400px; overflow-y: auto; padding-right: 5px; display: flex; flex-direction: column; gap: 10px; }
+.comm-item { background: #111; border: 1px solid #333; padding: 15px; border-radius: 4px; border-left: 3px solid var(--accent-cyan); }
+.comm-item-msg { border-left-color: #00ff88; }
+
+.comm-item-title { color: #fff; font-weight: bold; font-size: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #333; padding-bottom: 8px; }
+.comm-item-title.msg-text { color: #00ff88; }
+.comm-item-date { font-size: 10px; color: #666; font-weight: normal; }
+
+/* 마크다운 요소 스타일링 */
+.comm-item-content { color: #aaa; font-size: 13px; line-height: 1.6; word-break: keep-all; }
+.comm-item-content p { margin: 0 0 10px 0; }
+.comm-item-content p:last-child { margin-bottom: 0; }
+.comm-item-content h1, .comm-item-content h2, .comm-item-content h3 { color: #fff; margin: 15px 0 8px 0; padding-bottom: 4px; border-bottom: 1px solid #333; }
+.comm-item-content strong { color: #eee; font-weight: bold; text-shadow: 0 0 3px rgba(255,255,255,0.2); }
+.comm-item-content em { color: #bbb; font-style: italic; }
+.comm-item-content ul, .comm-item-content ol { margin: 0 0 10px 0; padding-left: 20px; }
+.comm-item-content li { margin-bottom: 4px; }
+.comm-item-content a { color: var(--accent-cyan); text-decoration: none; border-bottom: 1px dashed var(--accent-cyan); }
+.comm-item-content blockquote { border-left: 3px solid #555; margin: 0; padding-left: 10px; color: #888; font-style: italic; }
+.comm-item-content code { background: #222; border: 1px solid #444; padding: 2px 5px; border-radius: 4px; color: #ff9e80; font-family: 'Courier New', Courier, monospace; font-size: 12px; }
+
+.msg-modal-content { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.2) !important; }
+.msg-title { color: #00ff88; }
+.comm-empty { color: #666; text-align: center; padding: 30px 20px; font-size: 13px; }

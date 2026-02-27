@@ -1,6 +1,6 @@
 {
     "mutated_rat": {
-        "name": "돌연변이 쥐",
+        "name": "오염된 실험쥐",
         "hp": 20,
         "maxHp": 20,
         "attack": 5,
@@ -15,84 +15,156 @@
         "exp": 12,
         "grade": 1
     },
-    "wild_dog": {
-        "name": "피굶은 들개",
+    "mutant_spider": {
+        "name": "변이된 거미",
+        "hp": 15,
+        "maxHp": 15,
+        "attack": 10,
+        "exp": 11,
+        "grade": 1
+    },
+    "infected_janitor": {
+        "name": "감염된 청소부",
         "hp": 30,
         "maxHp": 30,
-        "attack": 11,
-        "exp": 14,
+        "attack": 8,
+        "exp": 13,
+        "grade": 1
+    },
+    "wild_dog": {
+        "name": "굶주린 보안견",
+        "hp": 35,
+        "maxHp": 35,
+        "attack": 12,
+        "exp": 15,
         "grade": 1
     },
     "crazed_survivor": {
-        "name": "미쳐버린 생존자",
-        "hp": 40,
-        "maxHp": 40,
-        "attack": 15,
-        "exp": 16,
+        "name": "미쳐버린 연구원",
+        "hp": 45,
+        "maxHp": 45,
+        "attack": 16,
+        "exp": 18,
+        "grade": 2
+    },
+    "rogue_drone": {
+        "name": "고장난 정찰 드론",
+        "hp": 35,
+        "maxHp": 35,
+        "attack": 18,
+        "exp": 19,
         "grade": 2
     },
     "toxic_crawler": {
-        "name": "독성 크롤러",
-        "hp": 50,
-        "maxHp": 50,
-        "attack": 18,
-        "exp": 20,
+        "name": "유출된 폐기물 덩어리",
+        "hp": 55,
+        "maxHp": 55,
+        "attack": 20,
+        "exp": 22,
+        "grade": 2
+    },
+    "unstable_test_subject": {
+        "name": "불안정한 피험자",
+        "hp": 60,
+        "maxHp": 60,
+        "attack": 22,
+        "exp": 24,
         "grade": 2
     },
     "security_bot": {
-        "name": "오작동 보안 로봇",
-        "hp": 60,
-        "maxHp": 60,
-        "attack": 20,
-        "exp": 23,
+        "name": "통제 불능 방역 로봇",
+        "hp": 70,
+        "maxHp": 70,
+        "attack": 25,
+        "exp": 26,
         "grade": 2
     },
+    "bio_hound": {
+        "name": "생체 병기견",
+        "hp": 110,
+        "maxHp": 110,
+        "attack": 40,
+        "exp": 48,
+        "grade": 3
+    },
     "flesh_beast": {
-        "name": "살점 괴수",
-        "hp": 100,
-        "maxHp": 100,
-        "attack": 30,
-        "exp": 40,
+        "name": "실패체: 살점 융합수",
+        "hp": 120,
+        "maxHp": 120,
+        "attack": 35,
+        "exp": 45,
         "grade": 3
     },
     "armored_infected": {
-        "name": "진압복 감염자",
-        "hp": 150,
-        "maxHp": 150,
-        "attack": 50,
+        "name": "감염된 진압 대원",
+        "hp": 160,
+        "maxHp": 160,
+        "attack": 45,
+        "exp": 55,
+        "grade": 3
+    },
+    "hazmat_zombie": {
+        "name": "방호복 감염자",
+        "hp": 180,
+        "maxHp": 180,
+        "attack": 30,
         "exp": 50,
         "grade": 3
     },
     "chemical_mutant": {
-        "name": "화학물 변이체",
-        "hp": 300,
-        "maxHp": 300,
-        "attack": 100,
+        "name": "실험체 42호",
+        "hp": 320,
+        "maxHp": 320,
+        "attack": 90,
         "exp": 180,
         "grade": 4
     },
-    "juggernaut": {
-        "name": "강화 감염자",
-        "hp": 500,
-        "maxHp": 500,
-        "attack": 150,
+    "failed_alpha": {
+        "name": "열화된 알파 복제체",
+        "hp": 400,
+        "maxHp": 400,
+        "attack": 120,
         "exp": 200,
         "grade": 4
     },
+    "origin_researcher": {
+        "name": "원념의 수석 연구원",
+        "hp": 450,
+        "maxHp": 450,
+        "attack": 110,
+        "exp": 210,
+        "grade": 4
+    },
+    "juggernaut": {
+        "name": "프로토타입: 저거너트",
+        "hp": 550,
+        "maxHp": 550,
+        "attack": 140,
+        "exp": 220,
+        "grade": 4
+    },
     "bio_weapon_alpha": {
-        "name": "생체 병기 알파",
-        "hp": 1000,
-        "maxHp": 1000,
+        "name": "프로젝트: 알파 (Alpha)",
+        "hp": 1200,
+        "maxHp": 1200,
         "attack": 250,
-        "exp": 1200,
+        "exp": 1500,
         "grade": 5
     },
     "patient_zero": {
-        "name": "최초 감염자",
-        "hp": 3500,
-        "maxHp": 3500,
-        "attack": 300,
-        "exp": 1500,
+        "name": "오리진: 최초 감염자",
+        "hp": 4000,
+        "maxHp": 4000,
+        "attack": 350,
+        "exp": 3000,
+        "grade": 5
+    },
+    "origin_core": {
+        "name": "오리진 코어",
+        "hp": 5000,
+        "maxHp": 5000,
+        "attack": 400,
+        "exp": 4000,
         "grade": 5
     }
 }

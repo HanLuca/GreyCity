@@ -335,3 +335,35 @@ def admin_suspend_user(user_id):
             userData['banned_until'] = 0 
         fbManager.setUserData(user_id, userData)
     return jsonify({"success": True})
+
+# ==========================================
+# COMMUNICATION API
+# ==========================================
+
+@gameBP.route('/api/notices', methods=['GET'])
+def get_notices():
+    return jsonify(fbManager.getGlobalNotices())
+
+@gameBP.route('/api/messages', methods=['GET'])
+def get_messages():
+    if 'user_id' not in session: 
+        return jsonify({"error": "Unauthorized"}), 401
+    return jsonify(fbManager.getPrivateMessages(session['user_id']))
+
+@gameBP.route('/api/admin/notice', methods=['POST'])
+def admin_send_notice():
+    if not is_admin(): 
+        return jsonify({"error": "Unauthorized"}), 403
+    data = request.json or {}
+    data['timestamp'] = int(time.time())
+    fbManager.sendGlobalNotice(data)
+    return jsonify({"success": True})
+
+@gameBP.route('/api/admin/user/<user_id>/message', methods=['POST'])
+def admin_send_message(user_id):
+    if not is_admin(): 
+        return jsonify({"error": "Unauthorized"}), 403
+    data = request.json or {}
+    data['timestamp'] = int(time.time())
+    fbManager.sendPrivateMessage(user_id, data)
+    return jsonify({"success": True})

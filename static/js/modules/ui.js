@@ -609,21 +609,26 @@ export class UIManager {
             let html = "";
             if (level !== "SAFE" && locationData.spawnList && locationData.spawnList.length > 0 && enemyData) {
                 html += `<div class="loc-section"><div class="loc-label">DETECTED THREATS</div><div class="threat-list">`;
-                locationData.spawnList.forEach(enemyId => {
-                    const enemy = enemyData[enemyId];
-                    if (enemy) {
-                        let gradeText = `Lv.${enemy.grade || 1}`;
-                        let gradeClass = "grade-1";
-                        if (enemy.grade === 2) gradeClass = "grade-2";
-                        if (enemy.grade >= 3) gradeClass = "grade-3";
-                        if (enemy.grade >= 4) gradeClass = "grade-4";
-                        if (enemy.grade >= 5) gradeClass = "grade-5";
+                
+                let spawnedEnemies = locationData.spawnList
+                    .map(id => enemyData[id])
+                    .filter(e => e !== undefined);
 
-                        html += `<div class="threat-item ${gradeClass}">
-                                    <span class="threat-grade">[ ${gradeText} ]</span> ${enemy.name}
-                                 </div>`;
-                    }
+                spawnedEnemies.sort((a, b) => (a.grade || 1) - (b.grade || 1));
+
+                spawnedEnemies.forEach(enemy => {
+                    let gradeText = `Lv.${enemy.grade || 1}`;
+                    let gradeClass = "grade-1";
+                    if (enemy.grade === 2) gradeClass = "grade-2";
+                    if (enemy.grade >= 3) gradeClass = "grade-3";
+                    if (enemy.grade >= 4) gradeClass = "grade-4";
+                    if (enemy.grade >= 5) gradeClass = "grade-5";
+
+                    html += `<div class="threat-item ${gradeClass}">
+                                <span class="threat-grade">[ ${gradeText} ]</span> ${enemy.name}
+                             </div>`;
                 });
+                
                 html += `</div></div>`;
             } else if (level !== "SAFE") {
                  html += `<div class="loc-section"><div class="loc-label">THREATS</div><div class="threat-empty">감지된 생명체가 없습니다.</div></div>`;
@@ -718,3 +723,77 @@ export class UIManager {
         }
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnOpenNotice = document.getElementById('btnOpenNotice');
+    const btnOpenMessage = document.getElementById('btnOpenMessage');
+    const noticeList = document.getElementById('noticeList');
+    const messageList = document.getElementById('messageList');
+
+    const formatDate = (ts) => {
+        const d = new Date(ts * 1000);
+        return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    };
+
+    if (btnOpenNotice) {
+        btnOpenNotice.addEventListener('click', async () => {
+            noticeList.innerHTML = '<div class="comm-empty">Loading...</div>';
+            window.openModalAnimation('noticeModal');
+            
+            try {
+                const res = await fetch('/api/notices');
+                const data = await res.json();
+                noticeList.innerHTML = '';
+                
+                const keys = Object.keys(data).reverse();
+                if(keys.length === 0) {
+                    noticeList.innerHTML = '<div class="comm-empty">등록된 공지사항이 없습니다.</div>';
+                    return;
+                }
+                
+                keys.forEach(k => {
+                    const n = data[k];
+                    // 마크다운 파싱 (줄바꿈 허용)
+                    const parsedContent = typeof marked !== 'undefined' ? marked.parse(n.content, {breaks: true}) : n.content;
+                    noticeList.innerHTML += `
+                        <div class="comm-item">
+                            <div class="comm-item-title"><span>📢 ${n.title}</span> <span class="comm-item-date">${formatDate(n.timestamp)}</span></div>
+                            <div class="comm-item-content">${parsedContent}</div>
+                        </div>
+                    `;
+                });
+            } catch(e) { noticeList.innerHTML = '<div class="comm-empty text-danger">통신 오류가 발생했습니다.</div>'; }
+        });
+    }
+
+    if (btnOpenMessage) {
+        btnOpenMessage.addEventListener('click', async () => {
+            messageList.innerHTML = '<div class="comm-empty">Loading...</div>';
+            window.openModalAnimation('messageModal');
+            
+            try {
+                const res = await fetch('/api/messages');
+                const data = await res.json();
+                messageList.innerHTML = '';
+                
+                const keys = Object.keys(data).reverse();
+                if(keys.length === 0) {
+                    messageList.innerHTML = '<div class="comm-empty">수신된 메세지가 없습니다.</div>';
+                    return;
+                }
+                
+                keys.forEach(k => {
+                    const m = data[k];
+                    // 마크다운 파싱 (줄바꿈 허용)
+                    const parsedContent = typeof marked !== 'undefined' ? marked.parse(m.content, {breaks: true}) : m.content;
+                    messageList.innerHTML += `
+                        <div class="comm-item comm-item-msg">
+                            <div class="comm-item-title msg-text"><span>✉️ ${m.title}</span> <span class="comm-item-date">${formatDate(m.timestamp)}</span></div>
+                            <div class="comm-item-content">${parsedContent}</div>
+                        </div>
+                    `;
+                });
+            } catch(e) { messageList.innerHTML = '<div class="comm-empty text-danger">통신 오류가 발생했습니다.</div>'; }
+        });
+    }
+});
