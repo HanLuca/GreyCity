@@ -279,6 +279,44 @@ def handleAction():
     fbManager.updateUserData(userId, responsePayload['userData'])
     return jsonify(responsePayload)
 
+@gameBP.route('/api/reset_account', methods=['POST'])
+def reset_account():
+    if 'user_id' not in session:
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+    
+    user_id = session['user_id']
+    username = session.get('username')
+    
+    # 기존 유저 데이터에서 이메일 정보만 보존
+    old_data = fbManager.getUserData(user_id)
+    email = old_data.get('email', '') if old_data else ''
+
+    # 게임 엔진을 통해 완전 초기화된 새 데이터 생성
+    new_data = gameEngine.initNewPlayer()
+    new_data['username'] = username
+    new_data['email'] = email
+    
+    # DB 덮어쓰기
+    fbManager.setUserData(user_id, new_data)
+    
+    return jsonify({"success": True})
+
+@gameBP.route('/api/delete_account', methods=['POST'])
+def delete_account():
+    if 'user_id' not in session:
+        return jsonify({"success": False, "error": "Unauthorized"}), 401
+    
+    user_id = session['user_id']
+    
+    # Firebase Manager의 완전 삭제 메서드 호출 (인증 정보 + 유저 데이터 모두 삭제)
+    success = fbManager.deleteUserComplete(user_id)
+    
+    if success:
+        session.clear() # 세션 로그아웃 처리
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False, "error": "계정 데이터를 삭제하는 데 실패했습니다."})
+
 # ==========================================
 # ADMIN API
 # ==========================================
