@@ -8,11 +8,43 @@ import random
 import string
 import smtplib
 from email.mime.text import MIMEText
-import time # 계정 정지 시간 계산을 위해 추가됨
+import time
+import re
+import html
 
 gameBP = Blueprint('gameBP', __name__)
 fbManager = FirebaseManager()
 gameEngine = GameEngine()
+
+# ==========================================
+# SECURITY MODULE: 입력값 검증 로직
+# ==========================================
+def sanitize_input(data):
+    # XSS 방지를 위한 HTML 특수문자 이스케이프
+    if not isinstance(data, str): return ""
+    return html.escape(data.strip())
+
+def is_valid_username(username):
+    # NoSQL Injection 및 Firebase 경로 조작 방지.
+    # - 문자열 타입인지 확인 (Type Injection 방어)
+    # - 영문 대소문자, 숫자, 언더스코어(_)만 허용 (경로 이탈 문자 '/' 및 Firebase 금지 문자 방어)
+    # - 3자 이상 20자 이하 제한
+    if not username or not isinstance(username, str):
+        return False
+    return bool(re.match(r"^[a-zA-Z0-9_]{3,20}$", username))
+
+def is_valid_password(password):
+    # 최소한의 비밀번호 정책 및 자료형 검사
+    if not password or not isinstance(password, str):
+        return False
+    return len(password) >= 6
+
+def is_valid_email(email):
+    # 기본적인 이메일 형식 검사
+    if not email or not isinstance(email, str):
+        return False
+    return bool(re.match(r"^[\w\.-]+@[\w\.-]+\.\w+$", email))
+# ==========================================
 
 @gameBP.route('/')
 def index():
@@ -22,11 +54,13 @@ def index():
 
 @gameBP.route('/api/send_code', methods=['POST'])
 def send_code():
-    data = request.json
+    data = request.json or {}
     email = data.get('email')
-    if not email:
-        return jsonify({"success": False, "msg": "이메일을 입력하십시오."})
+    
+    if not is_valid_email(email):
+        return jsonify({"success": False, "msg": "유효하지 않은 이메일 형식입니다."})
 
+    email = sanitize_input(email)
     code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
     session['verification_code'] = code
     session['verification_email'] = email
@@ -63,14 +97,24 @@ def send_code():
 
 @gameBP.route('/api/register', methods=['POST'])
 def register_local():
-    data = request.json
+    data = request.json or {}
     username = data.get('username')
     password = data.get('password')
     email = data.get('email')
     code = data.get('code')
 
-    if not username or not password or not email or not code:
-        return jsonify({"success": False, "msg": "모든 정보를 입력 및 인증하십시오."})
+    if not is_valid_username(username):
+        return jsonify({"success": False, "msg": "ID는 3~20자의 영문, 숫자, 언더바(_)만 사용 가능합니다."})
+    if not is_valid_password(password):
+        return jsonify({"success": False, "msg": "암호 코드는 6자 이상이어야 합니다."})
+    if not is_valid_email(email):
+        return jsonify({"success": False, "msg": "유효하지 않은 이메일 형식입니다."})
+    if not isinstance(code, str):
+        return jsonify({"success": False, "msg": "보안 코드 형식이 잘못되었습니다."})
+
+    username = sanitize_input(username)
+    email = sanitize_input(email)
+    code = sanitize_input(code)
 
     if session.get('verification_code') != code or session.get('verification_email') != email:
         return jsonify({"success": False, "msg": "보안 코드가 일치하지 않거나 만료되었습니다."})
@@ -96,24 +140,28 @@ def register_local():
 
 @gameBP.route('/api/login_local', methods=['POST'])
 def login_local():
-    data = request.json
+    data = request.json or {}
     username = data.get('username')
     password = data.get('password')
 
+    # 검증 실패 시 DB 접근 자체를 차단
+    if not is_valid_username(username) or not is_valid_password(password):
+        return jsonify({"success": False, "msg": "존재하지 않는 생존자이거나 자격 증명이 잘못되었습니다."})
+
+    username = sanitize_input(username)
+    
     auth_data = fbManager.getAuthData(username)
     if not auth_data:
         return jsonify({"success": False, "msg": "존재하지 않는 생존자입니다."})
 
-    userId = auth_data['userId']
+    userId = auth_data.get('userId')
     userData = fbManager.getUserData(userId)
     
-    # 🚨 정지된 계정인지 확인 (로그인 차단)
     if userData and userData.get('banned_until', 0) > time.time():
         remain = int((userData['banned_until'] - time.time()) / 86400) + 1
         return jsonify({"success": False, "msg": f"<br>시스템 접근이 차단되었습니다. (정지 해제까지 약 {remain}일)"})
 
-    if check_password_hash(auth_data['password'], password):
-        # 로그인 성공 시 혹시 남아있는 강제 로그아웃 플래그 해제
+    if check_password_hash(auth_data.get('password', ''), password):
         if userData and userData.get('force_logout'):
             userData['force_logout'] = False
             fbManager.setUserData(userId, userData)
@@ -158,11 +206,10 @@ def callback():
         user_data = user_res.json()
         
         userId = user_data['id']
-        username = user_data['username']
+        username = sanitize_input(user_data['username'])
         
         userData = fbManager.getUserData(userId)
         
-        # 🚨 정지된 계정인지 확인 (디스코드 로그인 차단)
         if userData and userData.get('banned_until', 0) > time.time():
             remain = int((userData['banned_until'] - time.time()) / 86400) + 1
             return f"<script>alert('접근 차단: 계정이 정지되었습니다. (약 {remain}일 남음)'); window.location.href='/';</script>"
@@ -196,7 +243,6 @@ def loadGame():
         userData['username'] = session.get('username', 'Unknown')
         fbManager.setUserData(userId, userData)
     
-    # 🚨 플레이 도중 계정 정지 / 강제 로그아웃 당했는지 실시간 체크하여 세션 파기
     if userData.get('banned_until', 0) > time.time() or userData.get('force_logout'):
         if userData.get('force_logout'):
             userData['force_logout'] = False
@@ -212,14 +258,16 @@ def handleAction():
     if 'user_id' not in session:
         return jsonify({"error": "Unauthorized"}), 401
 
-    data = request.json
+    data = request.json or {}
     userId = session['user_id']
+    
     actionType = data.get('type')
     target = data.get('target')
+    if not isinstance(actionType, str) or (target is not None and not isinstance(target, str)):
+        return jsonify({"error": "Invalid payload data type"}), 400
 
     currentUserData = fbManager.getUserData(userId)
     
-    # 🚨 액션(이동/버튼 클릭) 순간에도 차단 여부 실시간 체크
     if currentUserData.get('banned_until', 0) > time.time() or currentUserData.get('force_logout'):
         if currentUserData.get('force_logout'):
             currentUserData['force_logout'] = False
@@ -231,11 +279,9 @@ def handleAction():
     fbManager.updateUserData(userId, responsePayload['userData'])
     return jsonify(responsePayload)
 
-
 # ==========================================
-# 관리자(ADMIN) 전용 API
+# ADMIN API
 # ==========================================
-
 def is_admin():
     return session.get('username') in getattr(Config, 'ADMIN_ACCOUNTS', [])
 
@@ -253,6 +299,8 @@ def admin_get_users():
 def admin_update_user(user_id):
     if not is_admin(): return jsonify({"error": "Unauthorized"}), 403
     new_data = request.json
+    if not new_data or not isinstance(new_data, dict):
+        return jsonify({"error": "Invalid payload"}), 400
     fbManager.setUserData(user_id, new_data)
     return jsonify({"success": True, "msg": "유저 데이터가 업데이트되었습니다."})
 
@@ -262,7 +310,6 @@ def admin_delete_user(user_id):
     success = fbManager.deleteUserComplete(user_id)
     return jsonify({"success": success})
 
-# 💡 [신규] 사용자 강제 로그아웃 API
 @gameBP.route('/api/admin/user/<user_id>/logout', methods=['POST'])
 def admin_force_logout(user_id):
     if not is_admin(): return jsonify({"error": "Unauthorized"}), 403
@@ -272,17 +319,19 @@ def admin_force_logout(user_id):
         fbManager.setUserData(user_id, userData)
     return jsonify({"success": True})
 
-# 💡 [신규] 사용자 계정 정지 API
 @gameBP.route('/api/admin/user/<user_id>/suspend', methods=['POST'])
 def admin_suspend_user(user_id):
     if not is_admin(): return jsonify({"error": "Unauthorized"}), 403
     days = request.json.get('days', 0)
+    if not isinstance(days, int):
+        return jsonify({"error": "Invalid data type"}), 400
+        
     userData = fbManager.getUserData(user_id)
     if userData:
         if days > 0:
-            userData['banned_until'] = time.time() + (days * 86400) # 일수 -> 초 단위 변환
-            userData['force_logout'] = True # 정지 먹이면 즉시 접속도 끊기게 함
+            userData['banned_until'] = time.time() + (days * 86400)
+            userData['force_logout'] = True 
         else:
-            userData['banned_until'] = 0 # 0일 입력 시 정지 해제
+            userData['banned_until'] = 0 
         fbManager.setUserData(user_id, userData)
     return jsonify({"success": True})
